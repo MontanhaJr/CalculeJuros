@@ -29,7 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
+import com.montanhajr.calculejuros.network.Api
+import com.montanhajr.calculejuros.network.RetrofitBuilder
 import com.montanhajr.calculejuros.ui.theme.CalculeJurosTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,9 +41,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             CalculeJurosTheme {
                 Surface {
-                    Greeting("Android")
+                    Greeting()
                 }
             }
+        }
+
+        val service = RetrofitBuilder.createNetworkService()
+
+        lifecycleScope.launch {
+            val cdi = service.getCDI()
+            Log.i("CDI", cdi.value[cdi.value.size-2].valValor.toString())
         }
     }
 }
@@ -134,8 +145,7 @@ fun Greeting() {
             onClick = {
                 result = calculateResult(
                     originalValue.toDouble(),
-                    installmentsValue.toDouble(),
-                    installmentsAmount.toDouble()
+                    installmentsValue.toDouble()
                 )
                 Log.i(
                     "BUTTON CLICKED",
@@ -206,6 +216,6 @@ fun formatInputValue(text: String): String {
 @Composable
 fun GreetingPreview() {
     CalculeJurosTheme {
-        Greeting("Android")
+        Greeting()
     }
 }
