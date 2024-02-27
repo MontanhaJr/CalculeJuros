@@ -1,5 +1,6 @@
 package com.montanhajr.calculejuros
 
+import android.health.connect.datatypes.units.Length
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -22,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +37,10 @@ import androidx.lifecycle.lifecycleScope
 import com.montanhajr.calculejuros.network.Api
 import com.montanhajr.calculejuros.network.RetrofitBuilder
 import com.montanhajr.calculejuros.ui.theme.CalculeJurosTheme
+import com.montanhajr.calculejuros.util.CurrencyAmountInputVisualTransformation
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
+import kotlin.math.max
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             val cdi = service.getCDI()
-            Log.i("CDI", cdi.value[cdi.value.size-2].valValor.toString())
+            Log.i("CDI", cdi.value[cdi.value.size - 2].valValor.toString())
         }
     }
 }
@@ -84,8 +91,9 @@ fun Greeting() {
         ) {
             OutlinedTextField(
                 value = originalValue, onValueChange = {
-                    originalValue = formatInputValue(it)
+                    originalValue = if (it.startsWith("0")) "" else it
                 },
+                visualTransformation = CurrencyAmountInputVisualTransformation(),
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
@@ -95,7 +103,7 @@ fun Greeting() {
                 },
                 shape = RoundedCornerShape(30),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal,
+                    keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Next
                 )
             )
@@ -108,8 +116,9 @@ fun Greeting() {
         ) {
             OutlinedTextField(
                 value = installmentsValue, onValueChange = {
-                    installmentsValue = formatInputValue(it)
+                    installmentsValue = if (it.startsWith("0")) "" else it
                 },
+                visualTransformation = CurrencyAmountInputVisualTransformation(),
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp)
                     .weight(4f),
@@ -118,7 +127,7 @@ fun Greeting() {
                 },
                 shape = RoundedCornerShape(30),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Next
                 )
             )
@@ -197,19 +206,6 @@ fun calculateResult(
     installmentsAmount: Double
 ): Double {
     return installmentsValue.times(installmentsAmount)
-}
-
-fun formatInputValue(text: String): String {
-    val digitsOnly = text.filter { it.isDigit() }
-
-    if (digitsOnly.isEmpty()) return "0"
-
-    // Inserir a vírgula para separar os centavos
-    val cents = if (digitsOnly.length > 2) digitsOnly.takeLast(2) else digitsOnly
-    val dollars = if (digitsOnly.length <= 2) "0" else digitsOnly.dropLast(2)
-    val formattedText = "$dollars.$cents"
-
-    return formattedText
 }
 
 @Preview(showBackground = true)
