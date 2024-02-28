@@ -1,6 +1,5 @@
 package com.montanhajr.calculejuros
 
-import android.health.connect.datatypes.units.Length
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -23,24 +22,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.montanhajr.calculejuros.network.Api
 import com.montanhajr.calculejuros.network.RetrofitBuilder
 import com.montanhajr.calculejuros.ui.theme.CalculeJurosTheme
 import com.montanhajr.calculejuros.util.CurrencyAmountInputVisualTransformation
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
-import kotlin.math.max
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,14 +58,23 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting() {
-    var originalValue by remember {
+    var originalValueInput by remember {
         mutableStateOf("")
     }
+    var installmentsValueInput by remember {
+        mutableStateOf("")
+    }
+    var originalValue by remember {
+        mutableStateOf(0.0)
+    }
     var installmentsValue by remember {
+        mutableStateOf(0.0)
+    }
+    var installmentsAmountInput by remember {
         mutableStateOf("")
     }
     var installmentsAmount by remember {
-        mutableStateOf("")
+        mutableStateOf(0.0)
     }
     var result by remember {
         mutableStateOf(0.0)
@@ -90,8 +92,8 @@ fun Greeting() {
                 .padding(start = 8.dp, end = 8.dp)
         ) {
             OutlinedTextField(
-                value = originalValue, onValueChange = {
-                    originalValue = if (it.startsWith("0")) "" else it
+                value = originalValueInput, onValueChange = {
+                    originalValueInput = if (it.startsWith("0")) "" else it
                 },
                 visualTransformation = CurrencyAmountInputVisualTransformation(),
                 modifier = Modifier
@@ -115,8 +117,8 @@ fun Greeting() {
                 .padding(start = 8.dp, end = 8.dp)
         ) {
             OutlinedTextField(
-                value = installmentsValue, onValueChange = {
-                    installmentsValue = if (it.startsWith("0")) "" else it
+                value = installmentsValueInput, onValueChange = {
+                    installmentsValueInput = if (it.startsWith("0")) "" else it
                 },
                 visualTransformation = CurrencyAmountInputVisualTransformation(),
                 modifier = Modifier
@@ -133,8 +135,8 @@ fun Greeting() {
             )
 
             OutlinedTextField(
-                value = installmentsAmount, onValueChange = {
-                    installmentsAmount = it
+                value = installmentsAmountInput, onValueChange = {
+                    installmentsAmountInput = it
                 },
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp)
@@ -152,13 +154,17 @@ fun Greeting() {
 
         ElevatedButton(
             onClick = {
+                originalValue = originalValueInput.insertCurrencySeparator().toDouble()
+                installmentsValue = installmentsValueInput.insertCurrencySeparator().toDouble()
+                installmentsAmount = installmentsAmountInput.toDouble()
+
                 result = calculateResult(
-                    originalValue.toDouble(),
-                    installmentsValue.toDouble()
+                    installmentsValue,
+                    installmentsAmount
                 )
                 Log.i(
                     "BUTTON CLICKED",
-                    "$originalValue $installmentsValue $installmentsAmount $result"
+                    "$originalValueInput $installmentsValue $installmentsAmountInput $result"
                 )
             },
             modifier = Modifier
@@ -181,9 +187,9 @@ fun Greeting() {
                 color = Color.Blue,
                 fontWeight = FontWeight.ExtraBold
             )
-            val totalFees = result.minus(originalValue.toDouble())
+            val totalFees = result.minus(originalValue)
             Text(
-                text = "Juros total: $totalFees (${totalFees.percent(originalValue.toDouble())}%)",
+                text = "Juros total: $totalFees (${totalFees.percent(originalValue)}%)",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -195,6 +201,10 @@ fun Greeting() {
             )
         }
     }
+}
+
+private fun String.insertCurrencySeparator(): String {
+    return substring(0, this.length-2) + "." + this.substring(this.length-2)
 }
 
 fun Double.percent(originalValue: Double): Double {
