@@ -154,18 +154,20 @@ fun Greeting() {
 
         ElevatedButton(
             onClick = {
-                originalValue = originalValueInput.insertCurrencySeparator().toDouble()
-                installmentsValue = installmentsValueInput.insertCurrencySeparator().toDouble()
-                installmentsAmount = installmentsAmountInput.toDouble()
+                if (originalValueInput.isNotEmpty() && installmentsValueInput.isNotEmpty() && installmentsAmountInput.isNotEmpty()) {
+                    originalValue = originalValueInput.insertCurrencySeparator().toDouble()
+                    installmentsValue = installmentsValueInput.insertCurrencySeparator().toDouble()
+                    installmentsAmount = installmentsAmountInput.toDouble()
 
-                result = calculateResult(
-                    installmentsValue,
-                    installmentsAmount
-                )
-                Log.i(
-                    "BUTTON CLICKED",
-                    "$originalValueInput $installmentsValue $installmentsAmountInput $result"
-                )
+                    result = calculateResult(
+                        installmentsValue,
+                        installmentsAmount
+                    )
+                    Log.i(
+                        "BUTTON CLICKED",
+                        "$originalValueInput $installmentsValue $installmentsAmountInput $result"
+                    )
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -204,7 +206,12 @@ fun Greeting() {
 }
 
 private fun String.insertCurrencySeparator(): String {
-    return substring(0, this.length-2) + "." + this.substring(this.length-2)
+    return if (this.length > 1) substring(
+        0,
+        this.length - 2
+    ) + "." + this.substring(this.length - 2)
+    else if (this.length == 1) "0.0$this"
+    else this
 }
 
 fun Double.percent(originalValue: Double): Double {
