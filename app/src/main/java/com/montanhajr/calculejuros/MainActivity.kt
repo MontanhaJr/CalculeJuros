@@ -1,234 +1,130 @@
 package com.montanhajr.calculejuros
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
-import com.montanhajr.calculejuros.network.RetrofitBuilder
-import com.montanhajr.calculejuros.ui.theme.CalculeJurosTheme
-import com.montanhajr.calculejuros.util.CurrencyAmountInputVisualTransformation
-import kotlinx.coroutines.launch
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.montanhajr.calculejuros.feature.favorites.FavoritesScreen
+import com.montanhajr.calculejuros.feature.favorites.FavoritesViewModel
+import com.montanhajr.calculejuros.feature.history.HistoryScreen
+import com.montanhajr.calculejuros.feature.history.HistoryViewModel
+import com.montanhajr.calculejuros.feature.home.HomeScreen
+import com.montanhajr.calculejuros.feature.home.HomeViewModel
+import com.montanhajr.calculejuros.feature.profile.ProfileScreen
+import com.montanhajr.calculejuros.feature.profile.ProfileViewModel
+import com.montanhajr.calculejuros.feature.simulator.SimulatorScreen
+import com.montanhajr.calculejuros.feature.simulator.SimulatorViewModel
+import com.montanhajr.calculejuros.ui.theme.CashWiseTheme
+import com.montanhajr.calculejuros.ui.theme.BrandPurple
+import com.montanhajr.calculejuros.ui.theme.DmSansFont
+import com.montanhajr.calculejuros.ui.theme.SoraFont
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CalculeJurosTheme {
-                Surface {
-                    Greeting()
+            CashWiseTheme {
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+
+                Scaffold(
+                    bottomBar = {
+                        NavigationBar(
+                            containerColor = Color.White,
+                            contentColor = BrandPurple
+                        ) {
+                            val items = listOf(
+                                Triple("home", "Início", Icons.Default.Home),
+                                Triple("simulator", "Simulações", Icons.Default.Calculate),
+                                Triple("history", "Histórico", Icons.Default.History),
+                                Triple("favorites", "Favoritos", Icons.Default.Star),
+                                Triple("profile", "Perfil", Icons.Default.Person)
+                            )
+                            items.forEach { (route, label, icon) ->
+                                NavigationBarItem(
+                                    icon = { Icon(icon, contentDescription = label) },
+                                    label = { Text(label, fontFamily = DmSansFont) },
+                                    selected = currentDestination?.hierarchy?.any { it.route == route } == true,
+                                    onClick = {
+                                        navController.navigate(route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = BrandPurple,
+                                        selectedTextColor = BrandPurple,
+                                        unselectedIconColor = Color.Gray,
+                                        unselectedTextColor = Color.Gray,
+                                        indicatorColor = Color.Transparent
+                                    )
+                                )
+                            }
+                        }
+                    }
+                ) { padding ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        NavHost(navController = navController, startDestination = "home") {
+                            composable("home") {
+                                val viewModel: HomeViewModel = hiltViewModel()
+                                HomeScreen(
+                                    viewModel = viewModel
+                                ) { navController.navigate("simulator") }
+                            }
+                            composable("simulator") {
+                                val viewModel: SimulatorViewModel = hiltViewModel()
+                                SimulatorScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
+                            composable("simulations") { /* Placeholder */ }
+                            composable("history") {
+                                val viewModel: HistoryViewModel = hiltViewModel()
+                                HistoryScreen(
+                                    viewModel = viewModel,
+                                    onNavigateToSimulator = { navController.navigate("simulator") }
+                                )
+                            }
+                            composable("favorites") {
+                                val viewModel: FavoritesViewModel = hiltViewModel()
+                                FavoritesScreen(
+                                    viewModel = viewModel,
+                                    onNavigateToSimulator = { navController.navigate("simulator") }
+                                )
+                            }
+                            composable("profile") {
+                                val viewModel: ProfileViewModel = hiltViewModel()
+                                ProfileScreen(viewModel = viewModel)
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        val service = RetrofitBuilder.createNetworkService()
-
-        lifecycleScope.launch {
-            val cdi = service.getCDI()
-            Log.i("CDI", cdi.value[cdi.value.size - 2].valValor.toString())
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Greeting() {
-    var originalValueInput by remember {
-        mutableStateOf("")
-    }
-    var installmentsValueInput by remember {
-        mutableStateOf("")
-    }
-    var originalValue by remember {
-        mutableStateOf(0.0)
-    }
-    var installmentsValue by remember {
-        mutableStateOf(0.0)
-    }
-    var installmentsAmountInput by remember {
-        mutableStateOf("")
-    }
-    var installmentsAmount by remember {
-        mutableStateOf(0.0)
-    }
-    var result by remember {
-        mutableStateOf(0.0)
-    }
-    Column {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 16.dp),
-            text = "Insira os valores para descobrir se vale a pena parcelar:"
-        )
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp)
-        ) {
-            OutlinedTextField(
-                value = originalValueInput, onValueChange = {
-                    originalValueInput = if (it.startsWith("0")) "" else it
-                },
-                visualTransformation = CurrencyAmountInputVisualTransformation(),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .weight(2f),
-                label = {
-                    Text(text = "Valor à vista")
-                },
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Next
-                )
-            )
-        }
-
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp)
-        ) {
-            OutlinedTextField(
-                value = installmentsValueInput, onValueChange = {
-                    installmentsValueInput = if (it.startsWith("0")) "" else it
-                },
-                visualTransformation = CurrencyAmountInputVisualTransformation(),
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp)
-                    .weight(4f),
-                label = {
-                    Text(text = "Valor das parcelas")
-                },
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            OutlinedTextField(
-                value = installmentsAmountInput, onValueChange = {
-                    installmentsAmountInput = it
-                },
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp)
-                    .weight(3f),
-                label = {
-                    Text(text = "N° de parcelas")
-                },
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal,
-                    imeAction = ImeAction.Next
-                )
-            )
-        }
-
-        ElevatedButton(
-            onClick = {
-                if (originalValueInput.isNotEmpty() && installmentsValueInput.isNotEmpty() && installmentsAmountInput.isNotEmpty()) {
-                    originalValue = originalValueInput.insertCurrencySeparator().toDouble()
-                    installmentsValue = installmentsValueInput.insertCurrencySeparator().toDouble()
-                    installmentsAmount = installmentsAmountInput.toDouble()
-
-                    result = calculateResult(
-                        installmentsValue,
-                        installmentsAmount
-                    )
-                    Log.i(
-                        "BUTTON CLICKED",
-                        "$originalValueInput $installmentsValue $installmentsAmountInput $result"
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(30)
-        ) {
-            Text(text = "Vale parcelar?")
-        }
-
-        if (!result.equals(0.0)) {
-            Text(
-                text = "Valor total parcelado: $result",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                textAlign = TextAlign.Center,
-                lineHeight = 36.sp,
-                fontSize = 32.sp,
-                color = Color.Blue,
-                fontWeight = FontWeight.ExtraBold
-            )
-            val totalFees = result.minus(originalValue)
-            Text(
-                text = "Juros total: $totalFees (${totalFees.percent(originalValue)}%)",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                textAlign = TextAlign.Center,
-                lineHeight = 36.sp,
-                fontSize = 32.sp,
-                color = Color.Red,
-                fontWeight = FontWeight.ExtraBold
-            )
-        }
-    }
-}
-
-private fun String.insertCurrencySeparator(): String {
-    return if (this.length > 1) substring(
-        0,
-        this.length - 2
-    ) + "." + this.substring(this.length - 2)
-    else if (this.length == 1) "0.0$this"
-    else this
-}
-
-fun Double.percent(originalValue: Double): Double {
-    return this.times(100).div(originalValue)
-}
-
-fun calculateResult(
-    installmentsValue: Double,
-    installmentsAmount: Double
-): Double {
-    return installmentsValue.times(installmentsAmount)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CalculeJurosTheme {
-        Greeting()
     }
 }
