@@ -1,0 +1,81 @@
+package com.montanhajr.calculejuros.feature.simulator
+
+import com.montanhajr.calculejuros.core.domain.model.RecommendationType
+import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.*
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class SimulatorViewModelTest {
+
+    private lateinit var viewModel: SimulatorViewModel
+    private val useCase = CalculateSimulationUseCase()
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        viewModel = SimulatorViewModel(useCase)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `when useDiscount is true, result should have correct cashPrice`() {
+        viewModel.onProductPriceChange("100000") // 1000,00
+        viewModel.onDiscountChange("1000") // 10,00 %
+        viewModel.onUseDiscountToggle(true)
+        
+        viewModel.onCalculate()
+        
+        val result = viewModel.uiState.value.simulationResult
+        assertEquals(900.0, result?.cashPrice ?: 0.0, 0.01)
+    }
+
+    @Test
+    fun `when switching toggle to cash price, it should prefill based on discount`() {
+        viewModel.onProductPriceChange("100000") // 1000,00
+        viewModel.onDiscountChange("1000") // 10,00 %
+        viewModel.onUseDiscountToggle(true)
+        
+        viewModel.onUseDiscountToggle(false)
+        
+        assertEquals("900,00", viewModel.uiState.value.cashPrice)
+    }
+
+    @Test
+    fun `when switching toggle to monthly rate, it should prefill based on total value`() {
+        viewModel.onProductPriceChange("100000") // 1000,00
+        viewModel.onInstallmentsChange(12)
+        // First switch to Total Value mode
+        viewModel.onUseMonthlyRateToggle(false)
+        // Then set the total value
+        viewModel.onTotalInstallmentValueChange("120555") // 1205,55
+        
+        // Now switch back to Monthly Rate mode to see if it converts 1205,55 back to 3,00%
+        viewModel.onUseMonthlyRateToggle(true)
+        
+        assertEquals("3,00", viewModel.uiState.value.cardTaxRate)
+    }
+
+    @Test
+    fun `when switching to annual profitability, it should convert monthly rate`() {
+        // First switch to Monthly mode
+        viewModel.onUseAnnualProfitabilityToggle(false)
+        // Then set the monthly rate
+        viewModel.onInvestmentMonthlyRateChange("100") // 1,00 %
+        
+        // Now switch back to Annual mode to see if it converts 1,00% monthly to ~12,68% annual
+        viewModel.onUseAnnualProfitabilityToggle(true)
+        
+        assertEquals("12,68", viewModel.uiState.value.investmentAnnualRate)
+    }
+}

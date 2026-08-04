@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.montanhajr.calculejuros.core.domain.model.SimulationResult
-import com.montanhajr.calculejuros.core.domain.model.WinnerType
+import com.montanhajr.calculejuros.core.domain.model.RecommendationType
 import com.montanhajr.calculejuros.ui.theme.MonoValueStyle
 import java.text.NumberFormat
 import java.util.Locale
@@ -22,13 +22,13 @@ fun ResultCard(
 ) {
     val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     
-    val containerColor = when (result.winner) {
-        WinnerType.CASH -> MaterialTheme.colorScheme.primary
-        WinnerType.INSTALLMENT -> MaterialTheme.colorScheme.secondary
-        WinnerType.NEUTRAL -> MaterialTheme.colorScheme.surfaceVariant
+    val containerColor = when (result.recommendation) {
+        RecommendationType.A_VISTA -> MaterialTheme.colorScheme.primary
+        RecommendationType.PARCELADO -> MaterialTheme.colorScheme.secondary
+        RecommendationType.EMPATE -> MaterialTheme.colorScheme.surfaceVariant
     }
 
-    val contentColor = if (result.winner == WinnerType.NEUTRAL) {
+    val contentColor = if (result.recommendation == RecommendationType.EMPATE) {
         MaterialTheme.colorScheme.onSurfaceVariant
     } else {
         MaterialTheme.colorScheme.onPrimary
@@ -47,10 +47,10 @@ fun ResultCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = when (result.winner) {
-                    WinnerType.CASH -> "PAGAR À VISTA COMPENSA MAIS!"
-                    WinnerType.INSTALLMENT -> "PARCELAR E INVESTIR COMPENSA MAIS!"
-                    WinnerType.NEUTRAL -> "PRATICAMENTE EMPATE"
+                text = when (result.recommendation) {
+                    RecommendationType.A_VISTA -> "PAGAR À VISTA COMPENSA MAIS!"
+                    RecommendationType.PARCELADO -> "PARCELAR E INVESTIR COMPENSA MAIS!"
+                    RecommendationType.EMPATE -> "PRATICAMENTE EMPATE"
                 },
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
@@ -62,25 +62,25 @@ fun ResultCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Custo à vista:", style = MaterialTheme.typography.bodyMedium)
-                Text(currencyFormat.format(result.cashTotalCost), style = MonoValueStyle)
+                Text("Ganho à vista:", style = MaterialTheme.typography.bodyMedium)
+                Text(currencyFormat.format(result.netGainCash), style = MonoValueStyle)
             }
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Custo parcelado:", style = MaterialTheme.typography.bodyMedium)
-                Text(currencyFormat.format(result.installmentTotalCost), style = MonoValueStyle)
+                Text("Ganho parcelado:", style = MaterialTheme.typography.bodyMedium)
+                Text(currencyFormat.format(result.netGainInstallment), style = MonoValueStyle)
             }
             
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 16.dp),
                 color = contentColor.copy(alpha = 0.2f)
             )
             
             Text(
-                text = "Economia de ${currencyFormat.format(result.difference)}",
+                text = "Diferença de ${currencyFormat.format(result.difference)}",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )

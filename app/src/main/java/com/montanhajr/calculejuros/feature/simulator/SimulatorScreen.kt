@@ -8,9 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.montanhajr.calculejuros.core.ui.components.ResultCard
 import com.montanhajr.calculejuros.feature.simulator.components.*
 import com.montanhajr.calculejuros.ui.theme.*
 
@@ -52,47 +51,102 @@ fun SimulatorScreen(
             )
             
             Spacer(modifier = Modifier.height(16.dp))
-            
-            SimulatorInputField(
-                label = "Desconto à vista (opcional)",
-                value = uiState.discountPercentage,
-                onValueChange = viewModel::onDiscountChange,
-                icon = Icons.Default.LocalOffer,
-                suffix = "%",
-                helperText = "Ex.: 10 para 10% de desconto"
+
+            ModeSelector(
+                options = listOf("Desconto %", "Valor à vista"),
+                selectedOption = if (uiState.useDiscount) "Desconto %" else "Valor à vista",
+                onOptionSelected = { viewModel.onUseDiscountToggle(it == "Desconto %") }
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (uiState.useDiscount) {
+                SimulatorInputField(
+                    label = "Porcentagem de Desconto",
+                    value = uiState.discountPercentage,
+                    onValueChange = viewModel::onDiscountChange,
+                    icon = Icons.Default.LocalOffer,
+                    suffix = "%",
+                    helperText = "Informe o desconto (0 a 100)"
+                )
+            } else {
+                SimulatorInputField(
+                    label = "Valor do Preço à Vista",
+                    value = uiState.cashPrice,
+                    onValueChange = viewModel::onCashPriceChange,
+                    icon = Icons.Default.LocalOffer,
+                    suffix = "R$",
+                    helperText = "Valor final com desconto aplicado"
+                )
+            }
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            SimulatorInputField(
-                label = "Número de parcelas",
-                value = "${uiState.installmentsCount}x",
-                onValueChange = { /* TODO: Dropdown */ },
-                icon = Icons.Default.CreditCard,
-                trailingIcon = Icons.Default.KeyboardArrowDown
+            InstallmentSelector(
+                value = uiState.installmentsCount,
+                onValueChange = viewModel::onInstallmentsChange,
+                onTextChange = viewModel::onInstallmentsTextChange
             )
             
             Spacer(modifier = Modifier.height(16.dp))
-            
-            SimulatorInputField(
-                label = "Taxa do cartão (ao mês)",
-                value = uiState.cardTaxRate,
-                onValueChange = viewModel::onCardTaxChange,
-                icon = Icons.Default.CreditCard,
-                suffix = "% a.m.",
-                helperText = "Informe a taxa de juros do seu cartão"
+
+            ModeSelector(
+                options = listOf("Taxa mensal", "Valor total"),
+                selectedOption = if (uiState.useMonthlyRate) "Taxa mensal" else "Valor total",
+                onOptionSelected = { viewModel.onUseMonthlyRateToggle(it == "Taxa mensal") }
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (uiState.useMonthlyRate) {
+                SimulatorInputField(
+                    label = "Taxa do cartão (ao mês)",
+                    value = uiState.cardTaxRate,
+                    onValueChange = viewModel::onCardTaxChange,
+                    icon = Icons.Default.CreditCard,
+                    suffix = "% a.m.",
+                    helperText = "Informe a taxa de juros do seu cartão"
+                )
+            } else {
+                SimulatorInputField(
+                    label = "Valor total parcelado",
+                    value = uiState.totalInstallmentValue,
+                    onValueChange = viewModel::onTotalInstallmentValueChange,
+                    icon = Icons.Default.CreditCard,
+                    suffix = "R$",
+                    helperText = "Soma de todas as parcelas"
+                )
+            }
             
             Spacer(modifier = Modifier.height(16.dp))
-            
-            SimulatorSliderField(
-                label = "Rentabilidade do investimento (ao ano)",
-                value = uiState.investmentAnnualRate,
-                onValueChange = viewModel::onInvestmentRateChange,
-                icon = Icons.AutoMirrored.Filled.TrendingUp,
-                suffix = "% a.a.",
-                helperText = "Digite a rentabilidade esperada do seu investimento"
+
+            ModeSelector(
+                options = listOf("Taxa Anual", "Taxa Mensal"),
+                selectedOption = if (uiState.useAnnualProfitability) "Taxa Anual" else "Taxa Mensal",
+                onOptionSelected = { viewModel.onUseAnnualProfitabilityToggle(it == "Taxa Anual") }
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (uiState.useAnnualProfitability) {
+                SimulatorInputField(
+                    label = "Rentabilidade do investimento (ao ano)",
+                    value = uiState.investmentAnnualRate,
+                    onValueChange = viewModel::onInvestmentAnnualRateChange,
+                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                    suffix = "% a.a.",
+                    helperText = "Digite a rentabilidade (ex: 12,75)"
+                )
+            } else {
+                SimulatorInputField(
+                    label = "Rentabilidade do investimento (ao mês)",
+                    value = uiState.investmentMonthlyRate,
+                    onValueChange = viewModel::onInvestmentMonthlyRateChange,
+                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                    suffix = "% a.m.",
+                    helperText = "Digite a rentabilidade mensal"
+                )
+            }
             
             Spacer(modifier = Modifier.height(16.dp))
             
@@ -132,6 +186,11 @@ fun SimulatorScreen(
                 onToggle = viewModel::onSaveScenarioToggle
             )
             
+            uiState.simulationResult?.let { result ->
+                Spacer(modifier = Modifier.height(24.dp))
+                ResultCard(result = result)
+            }
+
             Spacer(modifier = Modifier.height(32.dp))
         }
     }

@@ -1,10 +1,8 @@
 package com.montanhajr.calculejuros.core.domain.usecase
 
-import com.montanhajr.calculejuros.core.domain.model.InvestmentType
+import com.montanhajr.calculejuros.core.domain.model.RecommendationType
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
-import com.montanhajr.calculejuros.core.domain.model.WinnerType
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class CalculateSimulationUseCaseTest {
@@ -12,53 +10,103 @@ class CalculateSimulationUseCaseTest {
     private val useCase = CalculateSimulationUseCase()
 
     @Test
-    fun `when no investment and no discount, cash should be neutral or cash depending on precision`() {
+    fun `Example A - no discount, no interest, positive profitability`() {
         val input = SimulationInput(
             productPrice = 1000.0,
-            cashPrice = 1000.0,
-            installmentsCount = 10,
-            installmentValue = 100.0,
-            investmentType = InvestmentType.NONE
-        )
-
-        val result = useCase(input)
-
-        assertEquals(WinnerType.NEUTRAL, result.winner)
-        assertEquals(1000.0, result.cashTotalCost, 0.01)
-        assertEquals(1000.0, result.installmentTotalCost, 0.01)
-    }
-
-    @Test
-    fun `when high investment rate, installment should win`() {
-        val input = SimulationInput(
-            productPrice = 1000.0,
-            cashPrice = 1000.0, // No discount at sight
+            discountPercentage = 0.0,
+            useDiscountToggle = true,
             installmentsCount = 12,
-            installmentValue = 83.33, // approx 1000/12
-            investmentType = InvestmentType.CUSTOM,
-            annualInvestmentRate = 0.12 // 12% per year
+            monthlyCardRate = 0.0,
+            useMonthlyRateToggle = true,
+            monthlyProfitability = 1.0,
+            useAnnualProfitabilityToggle = false
         )
 
         val result = useCase(input)
 
-        assertEquals(WinnerType.INSTALLMENT, result.winner)
-        assertTrue("Installment cost should be less than 1000", result.installmentTotalCost < 1000.0)
+        assertEquals(83.33, result.installmentValue, 0.01)
+        assertEquals(0.00, result.netGainCash, 0.01)
+        assertEquals(69.95, result.netGainInstallment, 0.05)
+        assertEquals(RecommendationType.PARCELADO, result.recommendation)
     }
 
     @Test
-    fun `when big discount at sight, cash should win`() {
+    fun `Example B - 10 percent discount, no interest, 1 percent monthly profitability`() {
         val input = SimulationInput(
             productPrice = 1000.0,
-            cashPrice = 800.0, // 20% discount
-            installmentsCount = 10,
-            installmentValue = 100.0,
-            investmentType = InvestmentType.SAVINGS, // low rate
-            annualInvestmentRate = 0.06
+            discountPercentage = 10.0,
+            useDiscountToggle = true,
+            installmentsCount = 12,
+            monthlyCardRate = 0.0,
+            useMonthlyRateToggle = true,
+            monthlyProfitability = 1.0,
+            useAnnualProfitabilityToggle = false
         )
 
         val result = useCase(input)
 
-        assertEquals(WinnerType.CASH, result.winner)
-        assertEquals(800.0, result.cashTotalCost, 0.01)
+        assertEquals(900.0, result.cashPrice, 0.01)
+        assertEquals(100.0, result.discountValue, 0.01)
+        assertEquals(112.68, result.netGainCash, 0.01)
+        assertEquals(69.95, result.netGainInstallment, 0.05)
+        assertEquals(RecommendationType.A_VISTA, result.recommendation)
+    }
+
+    @Test
+    fun `Example C - no discount, 3 percent card rate, 1 percent monthly profitability`() {
+        val input = SimulationInput(
+            productPrice = 1000.0,
+            discountPercentage = 0.0,
+            useDiscountToggle = true,
+            installmentsCount = 12,
+            monthlyCardRate = 3.0,
+            useMonthlyRateToggle = true,
+            monthlyProfitability = 1.0,
+            useAnnualProfitabilityToggle = false
+        )
+
+        val result = useCase(input)
+
+        assertEquals(100.46, result.installmentValue, 0.01)
+        assertEquals(1205.55, result.totalInstallmentValue, 0.1)
+        assertEquals(0.00, result.netGainCash, 0.01)
+        assertEquals(-147.29, result.netGainInstallment, 0.1)
+        assertEquals(RecommendationType.A_VISTA, result.recommendation)
+    }
+
+    @Test
+    fun `Example D - everything zero (neutral)`() {
+        val input = SimulationInput(
+            productPrice = 1000.0,
+            discountPercentage = 0.0,
+            useDiscountToggle = true,
+            installmentsCount = 12,
+            monthlyCardRate = 0.0,
+            useMonthlyRateToggle = true,
+            monthlyProfitability = 0.0,
+            useAnnualProfitabilityToggle = false
+        )
+
+        val result = useCase(input)
+
+        assertEquals(0.00, result.netGainCash, 0.01)
+        assertEquals(0.00, result.netGainInstallment, 0.01)
+        assertEquals(RecommendationType.EMPATE, result.recommendation)
+    }
+
+    @Test
+    fun `Example E - implicit rate from total value`() {
+        val input = SimulationInput(
+            productPrice = 1000.0,
+            installmentsCount = 12,
+            totalInstallmentValue = 1205.55,
+            useMonthlyRateToggle = false,
+            monthlyProfitability = 1.0,
+            useAnnualProfitabilityToggle = false
+        )
+
+        val result = useCase(input)
+
+        assertEquals(3.0, result.monthlyCardRate, 0.01)
     }
 }

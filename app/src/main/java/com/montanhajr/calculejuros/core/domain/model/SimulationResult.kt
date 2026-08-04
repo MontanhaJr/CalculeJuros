@@ -1,20 +1,29 @@
 package com.montanhajr.calculejuros.core.domain.model
 
 data class SimulationResult(
-    val cashTotalCost: Double,
-    val installmentTotalCost: Double,
+    val productPrice: Double,
+    val cashPrice: Double,
+    val discountValue: Double,
+    val discountPercentage: Double,
+    val installmentsCount: Int,
+    val installmentValue: Double,
+    val totalInstallmentValue: Double,
+    val monthlyCardRate: Double,
+    val annualCardRate: Double,
+    val totalFinancingInterest: Double,
+    val monthlyProfitability: Double,
+    val annualProfitability: Double,
+    val netGainCash: Double,
+    val interestGainedCash: Double,
+    val netGainInstallment: Double,
     val difference: Double,
-    val winner: WinnerType,
-    val grossYield: Double,
-    val taxAmount: Double,
-    val netYield: Double,
-    val monthlyDetails: List<MonthlyDetail>
+    val recommendation: RecommendationType
 )
 
-enum class WinnerType {
-    CASH,
-    INSTALLMENT,
-    NEUTRAL
+enum class RecommendationType {
+    A_VISTA,
+    PARCELADO,
+    EMPATE
 }
 
 data class MonthlyDetail(
