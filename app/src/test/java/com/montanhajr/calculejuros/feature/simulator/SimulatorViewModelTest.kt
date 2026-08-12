@@ -48,7 +48,7 @@ class SimulatorViewModelTest {
         
         viewModel.onUseDiscountToggle(false)
         
-        assertEquals("900,00", viewModel.uiState.value.cashPrice)
+        assertEquals("90000", viewModel.uiState.value.cashPrice)
     }
 
     @Test
@@ -63,7 +63,7 @@ class SimulatorViewModelTest {
         // Now switch back to Monthly Rate mode to see if it converts 1205,55 back to 3,00%
         viewModel.onUseMonthlyRateToggle(true)
         
-        assertEquals("3,00", viewModel.uiState.value.cardTaxRate)
+        assertEquals("300", viewModel.uiState.value.cardTaxRate)
     }
 
     @Test
@@ -76,6 +76,6 @@ class SimulatorViewModelTest {
         // Now switch back to Annual mode to see if it converts 1,00% monthly to ~12,68% annual
         viewModel.onUseAnnualProfitabilityToggle(true)
         
-        assertEquals("12,68", viewModel.uiState.value.investmentAnnualRate)
+        assertEquals("1268", viewModel.uiState.value.investmentAnnualRate)
     }
 }

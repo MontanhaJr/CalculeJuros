@@ -22,6 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import com.montanhajr.calculejuros.ui.theme.BrandPurple
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import com.montanhajr.calculejuros.ui.theme.SoraFont
@@ -58,7 +62,10 @@ fun SimulatorInputField(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BasicTextField(
                             value = value,
-                            onValueChange = onValueChange,
+                            onValueChange = { newValue ->
+                                val digitsOnly = newValue.filter { it.isDigit() }
+                                onValueChange(digitsOnly)
+                            },
                             textStyle = TextStyle(
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
@@ -66,6 +73,7 @@ fun SimulatorInputField(
                                 color = Color.Black
                             ),
                             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                            visualTransformation = DecimalVisualTransformation(),
                             modifier = Modifier.weight(1f)
                         )
                         if (suffix != null) {
@@ -82,6 +90,43 @@ fun SimulatorInputField(
                 Text(helperText, color = Color.Gray, fontSize = 11.sp, fontFamily = DmSansFont)
             }
         }
+    }
+}
+
+class DecimalVisualTransformation : VisualTransformation {
+    override fun filter(text: androidx.compose.ui.text.AnnotatedString): TransformedText {
+        val originalText = text.text
+        if (originalText.isEmpty()) {
+            return TransformedText(
+                androidx.compose.ui.text.AnnotatedString("0,00"),
+                object : OffsetMapping {
+                    override fun originalToTransformed(offset: Int): Int = 4
+                    override fun transformedToOriginal(offset: Int): Int = 0
+                }
+            )
+        }
+
+        val digits = originalText.filter { it.isDigit() }
+        val formatted = digits.toLongOrNull()?.toString()?.padStart(3, '0') ?: "000"
+        val integerPart = formatted.substring(0, formatted.length - 2)
+        val decimalPart = formatted.substring(formatted.length - 2)
+        val out = "$integerPart,$decimalPart"
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                val offsetFromEnd = originalText.length - offset
+                val transformedOffsetFromEnd = if (offsetFromEnd >= 2) offsetFromEnd + 1 else offsetFromEnd
+                return (out.length - transformedOffsetFromEnd).coerceIn(0, out.length)
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                val offsetFromEnd = out.length - offset
+                val originalOffsetFromEnd = if (offsetFromEnd >= 3) offsetFromEnd - 1 else offsetFromEnd
+                return (originalText.length - originalOffsetFromEnd).coerceIn(0, originalText.length)
+            }
+        }
+
+        return TransformedText(androidx.compose.ui.text.AnnotatedString(out), offsetMapping)
     }
 }
 

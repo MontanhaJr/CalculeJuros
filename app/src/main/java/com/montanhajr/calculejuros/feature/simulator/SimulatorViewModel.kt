@@ -21,39 +21,37 @@ class SimulatorViewModel @Inject constructor(
     val uiState: StateFlow<SimulatorUiState> = _uiState.asStateFlow()
 
     fun onProductPriceChange(value: String) {
-        _uiState.update { it.copy(productPrice = formatToCurrency(value)) }
+        _uiState.update { it.copy(productPrice = value) }
     }
 
     fun onDiscountChange(value: String) {
-        val cleanInput = value.filter { it.isDigit() }
-        val longValue = cleanInput.toLongOrNull() ?: 0L
-        
+        val longValue = value.toLongOrNull() ?: 0L
         // Bloqueio em 100,00 % (representado por 10000 no input limpo)
-        val finalInput = if (longValue > 10000) "10000" else cleanInput
-        _uiState.update { it.copy(discountPercentage = formatToCurrency(finalInput)) }
+        val finalValue = if (longValue > 10000) "10000" else value
+        _uiState.update { it.copy(discountPercentage = finalValue) }
     }
 
     fun onUseDiscountToggle(useDiscount: Boolean) {
         val state = _uiState.value
-        val productPrice = state.productPrice.toBrazilDoubleOrNull() ?: 0.0
+        val productPrice = state.productPrice.toBrazilDouble()
         
         if (useDiscount != state.useDiscount) {
             if (useDiscount) {
                 // Switching to Discount %
-                val cashPrice = state.cashPrice.toBrazilDoubleOrNull() ?: 0.0
+                val cashPrice = state.cashPrice.toBrazilDouble()
                 val perc = if (productPrice > 0) ((productPrice - cashPrice) / productPrice * 100.0).coerceIn(0.0, 100.0) else 0.0
-                _uiState.update { it.copy(useDiscount = true, discountPercentage = formatDouble(perc)) }
+                _uiState.update { it.copy(useDiscount = true, discountPercentage = fromDoubleToDigits(perc)) }
             } else {
                 // Switching to Cash Price
-                val perc = (state.discountPercentage.toBrazilDoubleOrNull() ?: 0.0).coerceIn(0.0, 100.0)
+                val perc = (state.discountPercentage.toBrazilDouble()).coerceIn(0.0, 100.0)
                 val cashPrice = productPrice * (1 - perc / 100.0)
-                _uiState.update { it.copy(useDiscount = false, cashPrice = formatDouble(cashPrice)) }
+                _uiState.update { it.copy(useDiscount = false, cashPrice = fromDoubleToDigits(cashPrice)) }
             }
         }
     }
 
     fun onCashPriceChange(value: String) {
-        _uiState.update { it.copy(cashPrice = formatToCurrency(value)) }
+        _uiState.update { it.copy(cashPrice = value) }
     }
 
     fun onInstallmentsChange(count: Int) {
@@ -67,32 +65,32 @@ class SimulatorViewModel @Inject constructor(
 
     fun onUseMonthlyRateToggle(useMonthlyRate: Boolean) {
         val state = _uiState.value
-        val productPrice = state.productPrice.toBrazilDoubleOrNull() ?: 0.0
+        val productPrice = state.productPrice.toBrazilDouble()
         val n = state.installmentsCount
 
         if (useMonthlyRate != state.useMonthlyRate) {
             if (useMonthlyRate) {
                 // Switching to Monthly Rate
-                val totalValue = state.totalInstallmentValue.toBrazilDoubleOrNull() ?: 0.0
+                val totalValue = state.totalInstallmentValue.toBrazilDouble()
                 val installment = totalValue / n
                 val i = calculateImplicitRate(productPrice, installment, n)
-                _uiState.update { it.copy(useMonthlyRate = true, cardTaxRate = formatDouble(i * 100.0)) }
+                _uiState.update { it.copy(useMonthlyRate = true, cardTaxRate = fromDoubleToDigits(i * 100.0)) }
             } else {
                 // Switching to Total Value
-                val i = (state.cardTaxRate.toBrazilDoubleOrNull() ?: 0.0) / 100.0
+                val i = (state.cardTaxRate.toBrazilDouble()) / 100.0
                 val installment = if (i == 0.0) productPrice / n else productPrice * i / (1 - (1 + i).pow(-n))
                 val total = installment * n
-                _uiState.update { it.copy(useMonthlyRate = false, totalInstallmentValue = formatDouble(total)) }
+                _uiState.update { it.copy(useMonthlyRate = false, totalInstallmentValue = fromDoubleToDigits(total)) }
             }
         }
     }
 
     fun onTotalInstallmentValueChange(value: String) {
-        _uiState.update { it.copy(totalInstallmentValue = formatToCurrency(value)) }
+        _uiState.update { it.copy(totalInstallmentValue = value) }
     }
 
     fun onCardTaxChange(value: String) {
-        _uiState.update { it.copy(cardTaxRate = formatToCurrency(value)) }
+        _uiState.update { it.copy(cardTaxRate = value) }
     }
 
     fun onUseAnnualProfitabilityToggle(useAnnual: Boolean) {
@@ -100,42 +98,34 @@ class SimulatorViewModel @Inject constructor(
         if (useAnnual != state.useAnnualProfitability) {
             if (useAnnual) {
                 // Switching to Annual Profitability
-                val mensal = (state.investmentMonthlyRate.toBrazilDoubleOrNull() ?: 0.0) / 100.0
+                val mensal = (state.investmentMonthlyRate.toBrazilDouble()) / 100.0
                 val anual = (1 + mensal).pow(12) - 1
-                _uiState.update { it.copy(useAnnualProfitability = true, investmentAnnualRate = formatDouble(anual * 100.0)) }
+                _uiState.update { it.copy(useAnnualProfitability = true, investmentAnnualRate = fromDoubleToDigits(anual * 100.0)) }
             } else {
                 // Switching to Monthly Profitability
-                val anual = (state.investmentAnnualRate.toBrazilDoubleOrNull() ?: 0.0) / 100.0
+                val anual = (state.investmentAnnualRate.toBrazilDouble()) / 100.0
                 val mensal = (1 + anual).pow(1.0 / 12.0) - 1
-                _uiState.update { it.copy(useAnnualProfitability = false, investmentMonthlyRate = formatDouble(mensal * 100.0)) }
+                _uiState.update { it.copy(useAnnualProfitability = false, investmentMonthlyRate = fromDoubleToDigits(mensal * 100.0)) }
             }
         }
     }
 
     fun onInvestmentAnnualRateChange(value: String) {
-        _uiState.update { it.copy(investmentAnnualRate = formatToCurrency(value)) }
+        _uiState.update { it.copy(investmentAnnualRate = value) }
     }
 
     fun onInvestmentMonthlyRateChange(value: String) {
-        _uiState.update { it.copy(investmentMonthlyRate = formatToCurrency(value)) }
+        _uiState.update { it.copy(investmentMonthlyRate = value) }
     }
 
-    private fun formatToCurrency(input: String): String {
-        val cleanInput = input.filter { it.isDigit() }
-        if (cleanInput.isEmpty()) return "0,00"
-        val longValue = cleanInput.toLong()
-        val formatted = longValue.toString().padStart(3, '0')
-        val integerPart = formatted.substring(0, formatted.length - 2)
-        val decimalPart = formatted.substring(formatted.length - 2)
-        return "$integerPart,$decimalPart"
+    private fun fromDoubleToDigits(value: Double): String {
+        return kotlin.math.round(value * 100).toLong().toString()
     }
 
-    private fun formatDouble(value: Double): String {
-        return "%.2f".format(value).replace(".", ",")
-    }
-
-    private fun String.toBrazilDoubleOrNull(): Double? {
-        return this.replace(",", ".").toDoubleOrNull()
+    private fun String.toBrazilDouble(): Double {
+        val clean = this.filter { it.isDigit() }
+        if (clean.isEmpty()) return 0.0
+        return clean.toDouble() / 100.0
     }
 
     fun toggleHowItWorks() {
@@ -154,16 +144,16 @@ class SimulatorViewModel @Inject constructor(
         val state = _uiState.value
         
         val input = SimulationInput(
-            productPrice = state.productPrice.toBrazilDoubleOrNull() ?: 0.0,
-            discountPercentage = state.discountPercentage.toBrazilDoubleOrNull() ?: 0.0,
-            cashPrice = state.cashPrice.toBrazilDoubleOrNull() ?: 0.0,
+            productPrice = state.productPrice.toBrazilDouble(),
+            discountPercentage = state.discountPercentage.toBrazilDouble(),
+            cashPrice = state.cashPrice.toBrazilDouble(),
             useDiscountToggle = state.useDiscount,
             installmentsCount = state.installmentsCount,
-            monthlyCardRate = state.cardTaxRate.toBrazilDoubleOrNull() ?: 0.0,
-            totalInstallmentValue = state.totalInstallmentValue.toBrazilDoubleOrNull() ?: 0.0,
+            monthlyCardRate = state.cardTaxRate.toBrazilDouble(),
+            totalInstallmentValue = state.totalInstallmentValue.toBrazilDouble(),
             useMonthlyRateToggle = state.useMonthlyRate,
-            annualProfitability = state.investmentAnnualRate.toBrazilDoubleOrNull() ?: 0.0,
-            monthlyProfitability = state.investmentMonthlyRate.toBrazilDoubleOrNull() ?: 0.0,
+            annualProfitability = state.investmentAnnualRate.toBrazilDouble(),
+            monthlyProfitability = state.investmentMonthlyRate.toBrazilDouble(),
             useAnnualProfitabilityToggle = state.useAnnualProfitability
         )
         
