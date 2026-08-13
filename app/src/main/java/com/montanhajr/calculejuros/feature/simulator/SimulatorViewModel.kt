@@ -55,12 +55,13 @@ class SimulatorViewModel @Inject constructor(
     }
 
     fun onInstallmentsChange(count: Int) {
-        _uiState.update { it.copy(installmentsCount = count) }
+        _uiState.update { it.copy(installmentsCount = count.coerceIn(0, 1000)) }
     }
 
     fun onInstallmentsTextChange(value: String) {
         val count = value.filter { it.isDigit() }.toIntOrNull() ?: 0
-        _uiState.update { it.copy(installmentsCount = count) }
+        val finalCount = count.coerceIn(0, 1000)
+        _uiState.update { it.copy(installmentsCount = finalCount) }
     }
 
     fun onUseMonthlyRateToggle(useMonthlyRate: Boolean) {

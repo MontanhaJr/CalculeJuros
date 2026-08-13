@@ -4,12 +4,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,15 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.montanhajr.calculejuros.ui.theme.BrandPurple
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import com.montanhajr.calculejuros.ui.theme.SoraFont
@@ -93,40 +96,53 @@ fun SimulatorInputField(
     }
 }
 
-class DecimalVisualTransformation : VisualTransformation {
-    override fun filter(text: androidx.compose.ui.text.AnnotatedString): TransformedText {
+class DecimalVisualTransformation() : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
         val originalText = text.text
-        if (originalText.isEmpty()) {
-            return TransformedText(
-                androidx.compose.ui.text.AnnotatedString("0,00"),
-                object : OffsetMapping {
-                    override fun originalToTransformed(offset: Int): Int = 4
-                    override fun transformedToOriginal(offset: Int): Int = 0
-                }
-            )
-        }
-
         val digits = originalText.filter { it.isDigit() }
-        val formatted = digits.toLongOrNull()?.toString()?.padStart(3, '0') ?: "000"
-        val integerPart = formatted.substring(0, formatted.length - 2)
-        val decimalPart = formatted.substring(formatted.length - 2)
-        val out = "$integerPart,$decimalPart"
-
+        
+        val out = if (digits.isEmpty()) {
+            "0,00"
+        } else {
+            val longValue = digits.toLongOrNull() ?: 0L
+            val padded = longValue.toString().padStart(3, '0')
+            val integerPart = padded.substring(0, padded.length - 2)
+            val decimalPart = padded.substring(padded.length - 2)
+            "$integerPart,$decimalPart"
+        }
+        
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                val offsetFromEnd = originalText.length - offset
-                val transformedOffsetFromEnd = if (offsetFromEnd >= 2) offsetFromEnd + 1 else offsetFromEnd
-                return (out.length - transformedOffsetFromEnd).coerceIn(0, out.length)
+                if (digits.isEmpty()) return 4 // End of "0,00"
+                
+                val diff = out.length - originalText.length
+                return (offset + diff).coerceIn(0, out.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                val offsetFromEnd = out.length - offset
-                val originalOffsetFromEnd = if (offsetFromEnd >= 3) offsetFromEnd - 1 else offsetFromEnd
-                return (originalText.length - originalOffsetFromEnd).coerceIn(0, originalText.length)
+                val diff = out.length - originalText.length
+                return (offset - diff).coerceIn(0, originalText.length)
             }
         }
 
-        return TransformedText(androidx.compose.ui.text.AnnotatedString(out), offsetMapping)
+        return TransformedText(AnnotatedString(out), offsetMapping)
+    }
+}
+
+class SuffixVisualTransformation(private val suffix: String) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val originalText = text.text
+        val out = if (originalText.isEmpty()) "" else "$originalText$suffix"
+        
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int = offset
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset > originalText.length) return originalText.length
+                return offset
+            }
+        }
+        
+        return TransformedText(AnnotatedString(out), offsetMapping)
     }
 }
 
@@ -174,6 +190,8 @@ fun InstallmentSelector(
     onValueChange: (Int) -> Unit,
     onTextChange: (String) -> Unit
 ) {
+    val suggestions = listOf(1, 6, 12, 24, 36, 48)
+
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(16.dp),
@@ -187,42 +205,80 @@ fun InstallmentSelector(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(Icons.Default.CreditCard, contentDescription = null, tint = BrandPurple, modifier = Modifier.padding(8.dp))
+                    Icon(
+                        Icons.Default.CreditCard,
+                        contentDescription = null,
+                        tint = BrandPurple,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Número de parcelas", color = Color.Gray, fontSize = 12.sp, fontFamily = DmSansFont)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        BasicTextField(
-                            value = if (value == 0) "" else value.toString(),
-                            onValueChange = onTextChange,
-                            textStyle = TextStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = SoraFont,
-                                color = Color.Black
-                            ),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.widthIn(min = 32.dp)
-                        )
-                        Text("x", fontWeight = FontWeight.Bold, fontSize = 18.sp, fontFamily = SoraFont)
-                    }
+                    BasicTextField(
+                        value = if (value == 0) "" else value.toString(),
+                        onValueChange = onTextChange,
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = SoraFont,
+                            color = Color.Black
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        visualTransformation = SuffixVisualTransformation("x"),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
-            
-            Slider(
-                value = value.toFloat().coerceIn(1f, 60f),
-                onValueChange = { onValueChange(it.toInt()) },
-                valueRange = 1f..60f,
-                steps = 58, // 1 to 60 has 58 steps in between if we want integers
-                colors = SliderDefaults.colors(
-                    thumbColor = BrandPurple,
-                    activeTrackColor = BrandPurple,
-                    inactiveTrackColor = BrandPurple.copy(alpha = 0.2f)
-                )
-            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp)
+            ) {
+                items(suggestions) { suggestion ->
+                    SuggestionChip(
+                        label = "${suggestion}x",
+                        selected = value == suggestion,
+                        onClick = { onValueChange(suggestion) }
+                    )
+                }
+            }
         }
     }
 }
 
+@Composable
+fun SuggestionChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        color = if (selected) BrandPurple else BrandPurple.copy(alpha = 0.05f),
+        shape = RoundedCornerShape(8.dp),
+        border = if (selected) null else BorderStroke(1.dp, BrandPurple.copy(alpha = 0.1f))
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            color = if (selected) Color.White else BrandPurple,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = SoraFont,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun InstallmentSelectorPreview() {
+    InstallmentSelector(
+        value = 12,
+        onValueChange = {},
+        onTextChange = {}
+    )
+}
