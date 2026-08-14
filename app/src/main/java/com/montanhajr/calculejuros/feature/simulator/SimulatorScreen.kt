@@ -47,6 +47,7 @@ fun SimulatorScreen(
                 value = uiState.productPrice,
                 onValueChange = viewModel::onProductPriceChange,
                 icon = Icons.Default.ShoppingBag,
+                suffix = "R$",
                 trailingIcon = Icons.Default.Edit
             )
             

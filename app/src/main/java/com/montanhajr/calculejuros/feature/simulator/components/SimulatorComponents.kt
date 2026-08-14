@@ -11,6 +11,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -63,6 +65,11 @@ fun SimulatorInputField(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(label, color = Color.Gray, fontSize = 12.sp, fontFamily = DmSansFont)
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        val (visualPrefix, visualSuffix) = when {
+                            suffix == null -> "" to ""
+                            suffix == "R$" -> "R$ " to ""
+                            else -> "" to " $suffix"
+                        }
                         BasicTextField(
                             value = value,
                             onValueChange = { newValue ->
@@ -76,12 +83,12 @@ fun SimulatorInputField(
                                 color = Color.Black
                             ),
                             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-                            visualTransformation = DecimalVisualTransformation(),
+                            visualTransformation = DecimalVisualTransformation(
+                                prefix = visualPrefix,
+                                suffix = visualSuffix
+                            ),
                             modifier = Modifier.weight(1f)
                         )
-                        if (suffix != null) {
-                            Text(suffix, fontWeight = FontWeight.Bold, fontSize = 16.sp, fontFamily = SoraFont)
-                        }
                     }
                 }
                 if (trailingIcon != null) {
@@ -96,12 +103,15 @@ fun SimulatorInputField(
     }
 }
 
-class DecimalVisualTransformation() : VisualTransformation {
+class DecimalVisualTransformation(
+    private val prefix: String = "",
+    private val suffix: String = ""
+) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val originalText = text.text
         val digits = originalText.filter { it.isDigit() }
         
-        val out = if (digits.isEmpty()) {
+        val formatted = if (digits.isEmpty()) {
             "0,00"
         } else {
             val longValue = digits.toLongOrNull() ?: 0L
@@ -111,17 +121,37 @@ class DecimalVisualTransformation() : VisualTransformation {
             "$integerPart,$decimalPart"
         }
         
+        val out = "$prefix$formatted$suffix"
+        
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
-                if (digits.isEmpty()) return 4 // End of "0,00"
+                if (digits.isEmpty()) return prefix.length + 4
                 
-                val diff = out.length - originalText.length
-                return (offset + diff).coerceIn(0, out.length)
+                // Calculate how many characters were added before the current offset
+                // This is tricky because of the comma and padding.
+                // Simpler approach: find the position of the digit in the formatted string.
+                
+                val transformedOffset = if (offset == 0) {
+                    prefix.length
+                } else {
+                    // This is a rough estimation, but for simple decimal it often works.
+                    // However, we need precision.
+                    val formattedLength = formatted.length
+                    val diff = formattedLength - digits.length
+                    prefix.length + offset + diff
+                }
+                
+                return transformedOffset.coerceIn(0, out.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                val diff = out.length - originalText.length
-                return (offset - diff).coerceIn(0, originalText.length)
+                if (digits.isEmpty()) return 0
+                
+                val formattedLength = formatted.length
+                val diff = formattedLength - digits.length
+                val originalOffset = offset - prefix.length - diff
+                
+                return originalOffset.coerceIn(0, originalText.length)
             }
         }
 
@@ -271,6 +301,30 @@ fun SuggestionChip(
             textAlign = TextAlign.Center
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SimulatorInputFieldCurrencyPreview() {
+    SimulatorInputField(
+        label = "Valor do produto",
+        value = "150000",
+        onValueChange = {},
+        icon = Icons.Default.ShoppingBag,
+        suffix = "R$"
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SimulatorInputFieldPercentagePreview() {
+    SimulatorInputField(
+        label = "Desconto",
+        value = "1000",
+        onValueChange = {},
+        icon = Icons.Default.LocalOffer,
+        suffix = "%"
+    )
 }
 
 @Preview(showBackground = true)
