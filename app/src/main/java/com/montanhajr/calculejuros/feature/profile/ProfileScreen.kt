@@ -30,7 +30,7 @@ fun ProfileScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = Color(0xFFFBFBFB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -56,7 +56,7 @@ fun ProfileScreen(
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -91,12 +91,12 @@ fun ProfileHeader() {
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
-                color = Color(0xFF1A1A1A)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 "Gerencie sua conta, plano e preferências",
                 fontFamily = DmSansFont,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
@@ -105,9 +105,9 @@ fun ProfileHeader() {
             onClick = { /* TODO: Settings */ },
             modifier = Modifier
                 .size(40.dp)
-                .border(1.dp, Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
         ) {
-            Icon(Icons.Default.Settings, contentDescription = "Configurações", tint = Color.Black)
+            Icon(Icons.Default.Settings, contentDescription = "Configurações", tint = MaterialTheme.colorScheme.onSurface)
         }
     }
 }
@@ -120,7 +120,7 @@ fun UserProfileCard(uiState: ProfileUiState) {
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.linearGradient(
-                    colors = listOf(BrandPurple, Color(0xFF8B66FF))
+                    colors = listOf(MaterialTheme.colorScheme.primary, BrandPurpleLight)
                 )
             )
     ) {
@@ -132,25 +132,25 @@ fun UserProfileCard(uiState: ProfileUiState) {
                 Surface(
                     modifier = Modifier.size(72.dp),
                     shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.2f)
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
                 ) {
                     Icon(
                         Icons.Default.Person,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
                 Surface(
                     modifier = Modifier.size(24.dp),
                     shape = CircleShape,
-                    color = Color.White,
-                    border = BorderStroke(2.dp, BrandPurple)
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(
                         Icons.Default.Edit,
                         contentDescription = null,
-                        tint = BrandPurple,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(4.dp)
                     )
                 }
@@ -164,19 +164,19 @@ fun UserProfileCard(uiState: ProfileUiState) {
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text(
                     uiState.userEmail,
                     fontFamily = DmSansFont,
                     fontSize = 13.sp,
-                    color = Color.White.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.CalendarToday,
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.6f),
+                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -184,14 +184,14 @@ fun UserProfileCard(uiState: ProfileUiState) {
                         uiState.memberSince,
                         fontFamily = DmSansFont,
                         fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                     )
                 }
             }
             
             Column(horizontalAlignment = Alignment.End) {
                 Surface(
-                    color = BrandYellow,
+                    color = MaterialTheme.colorScheme.tertiary,
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.height(28.dp)
                 ) {
@@ -199,13 +199,13 @@ fun UserProfileCard(uiState: ProfileUiState) {
                         modifier = Modifier.padding(horizontal = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Star, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiary, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("PRO", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                        Text("PRO", color = MaterialTheme.colorScheme.onTertiary, fontWeight = FontWeight.Bold, fontSize = 11.sp)
                     }
                 }
                 TextButton(onClick = { /* TODO */ }) {
-                    Text("Ver plano >", color = Color.White, fontSize = 12.sp, fontFamily = SoraFont)
+                    Text("Ver plano >", color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp, fontFamily = SoraFont)
                 }
             }
         }
@@ -215,9 +215,9 @@ fun UserProfileCard(uiState: ProfileUiState) {
 @Composable
 fun SubscriptionCard(uiState: ProfileUiState) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -225,41 +225,41 @@ fun SubscriptionCard(uiState: ProfileUiState) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = Color(0xFFF3F0FF),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.size(48.dp)
             ) {
-                Icon(Icons.Default.Star, contentDescription = null, tint = BrandPurple, modifier = Modifier.padding(12.dp))
+                Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(12.dp))
             }
             
             Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
                 Text("Plano Pro", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 15.sp)
-                Text("Aproveite todos os recursos\ne simule sem limites.", color = Color.Gray, fontSize = 12.sp, fontFamily = DmSansFont)
+                Text("Aproveite todos os recursos\ne simule sem limites.", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
             }
             
             Column(horizontalAlignment = Alignment.End) {
                 Surface(
-                    color = BrandGreen.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         "Ativo",
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        color = BrandGreen,
+                        color = MaterialTheme.colorScheme.secondary,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("Próxima cobrança", color = Color.Gray, fontSize = 10.sp, fontFamily = DmSansFont)
+                Text("Próxima cobrança", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
                 Text(uiState.nextBillingDate, fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = SoraFont)
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
         }
     }
 }
@@ -270,19 +270,19 @@ fun SummaryGrid(uiState: ProfileUiState) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        SummaryCard(Icons.Default.Calculate, BrandPurple, "Simulações\neste mês", uiState.totalSimulations, Modifier.weight(1f))
-        SummaryCard(Icons.AutoMirrored.Filled.TrendingUp, BrandGreen, "Você pode ganhar\nno total", uiState.totalGain, Modifier.weight(1.2f))
-        SummaryCard(Icons.Default.Star, BrandYellow, "Favoritas", uiState.totalFavorites, Modifier.weight(1f))
-        SummaryCard(Icons.Default.History, Color.Blue, "Tempo\neconomizado", uiState.timeSaved, Modifier.weight(1f))
+        SummaryCard(Icons.Default.Calculate, MaterialTheme.colorScheme.primary, "Simulações\neste mês", uiState.totalSimulations, Modifier.weight(1f))
+        SummaryCard(Icons.AutoMirrored.Filled.TrendingUp, MaterialTheme.colorScheme.secondary, "Você pode ganhar\nno total", uiState.totalGain, Modifier.weight(1.2f))
+        SummaryCard(Icons.Default.Star, MaterialTheme.colorScheme.tertiary, "Favoritas", uiState.totalFavorites, Modifier.weight(1f))
+        SummaryCard(Icons.Default.History, MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), "Tempo\neconomizado", uiState.timeSaved, Modifier.weight(1f))
     }
 }
 
 @Composable
 fun SummaryCard(icon: ImageVector, iconColor: Color, label: String, value: String, modifier: Modifier) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = modifier.height(130.dp)
     ) {
         Column(
@@ -299,11 +299,11 @@ fun SummaryCard(icon: ImageVector, iconColor: Color, label: String, value: Strin
             }
             
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(value, fontSize = 15.sp, fontWeight = FontWeight.Black, fontFamily = SoraFont, color = if (label.contains("ganhar")) BrandGreen else Color.Black)
+                Text(value, fontSize = 15.sp, fontWeight = FontWeight.Black, fontFamily = SoraFont, color = if (label.contains("ganhar")) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface)
                 Text(
                     label,
                     fontSize = 9.sp,
-                    color = if (label.contains("mês")) BrandPurple else if (label.contains("total")) BrandGreen else if (label.contains("economizado")) Color.Blue else Color.Gray,
+                    color = if (label.contains("mês")) MaterialTheme.colorScheme.primary else if (label.contains("total")) MaterialTheme.colorScheme.secondary else if (label.contains("economizado")) MaterialTheme.colorScheme.primary.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = DmSansFont,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     lineHeight = 10.sp
@@ -316,22 +316,22 @@ fun SummaryCard(icon: ImageVector, iconColor: Color, label: String, value: Strin
 @Composable
 fun SettingsList() {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column {
             SettingsItem(Icons.Default.Person, "Editar perfil", "Altere suas informações pessoais")
-            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray.copy(alpha = 0.2f))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             SettingsItem(Icons.Default.Notifications, "Notificações", "Gerencie seus alertas e lembretes")
-            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray.copy(alpha = 0.2f))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             SettingsItem(Icons.Default.CreditCard, "Pagamento e faturamento", "Gerencie seu plano e métodos de pagamento")
-            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray.copy(alpha = 0.2f))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             SettingsItem(Icons.Default.Shield, "Privacidade e segurança", "Seus dados e permissões")
-            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray.copy(alpha = 0.2f))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             SettingsItem(Icons.Default.Help, "Central de ajuda", "Tire dúvidas e veja tutoriais")
-            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.LightGray.copy(alpha = 0.2f))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
             SettingsItem(Icons.Default.Info, "Sobre o app", "Versão 1.0.0", isLast = true)
         }
     }
@@ -347,21 +347,21 @@ fun SettingsItem(icon: ImageVector, title: String, subtitle: String, isLast: Boo
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
-            color = BrandPurple.copy(alpha = 0.1f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.size(40.dp)
         ) {
-            Icon(icon, contentDescription = null, tint = BrandPurple, modifier = Modifier.padding(10.dp))
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(10.dp))
         }
         
         Spacer(modifier = Modifier.width(16.dp))
         
         Column(modifier = Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
-            Text(subtitle, color = Color.Gray, fontSize = 11.sp, fontFamily = DmSansFont)
+            Text(subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp, fontFamily = DmSansFont)
         }
         
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray)
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
     }
 }
 
@@ -373,8 +373,8 @@ fun LogoutButton() {
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color.Red.copy(alpha = 0.1f)),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.1f)),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
     ) {
         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(modifier = Modifier.width(8.dp))

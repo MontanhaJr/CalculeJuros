@@ -10,40 +10,43 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryTurquoise,
-    onPrimary = DarkBackground,
-    secondary = SecondaryAmber,
-    onSecondary = DarkBackground,
-    tertiary = PrimaryDark,
+    primary = DarkPrimary,
+    onPrimary = Color.White,
+    secondary = BrandGreen,
+    onSecondary = Color.White,
+    tertiary = BrandYellow,
     background = DarkBackground,
     surface = DarkSurface,
     onBackground = DarkTextPrimary,
     onSurface = DarkTextPrimary,
     surfaceVariant = DarkSurfaceElevated,
     onSurfaceVariant = DarkTextSecondary,
-    outline = DarkDivider,
+    outline = DarkOutline,
+    outlineVariant = DarkOutline.copy(alpha = 0.5f),
     error = ErrorRed
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = LightPrimary,
-    onPrimary = LightSurface,
-    secondary = LightSecondary,
-    onSecondary = LightSurface,
-    tertiary = LightPrimary,
+    primary = BrandPurple,
+    onPrimary = Color.White,
+    secondary = BrandGreen,
+    onSecondary = Color.White,
+    tertiary = BrandYellow,
     background = LightBackground,
     surface = LightSurface,
     onBackground = LightTextPrimary,
     onSurface = LightTextPrimary,
     surfaceVariant = LightSurfaceElevated,
     onSurfaceVariant = LightTextSecondary,
-    outline = LightTextSecondary,
+    outline = LightOutline,
+    outlineVariant = LightOutline.copy(alpha = 0.5f),
     error = ErrorRed
 )
 

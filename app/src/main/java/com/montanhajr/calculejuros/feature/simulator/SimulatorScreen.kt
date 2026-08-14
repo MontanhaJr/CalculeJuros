@@ -29,7 +29,7 @@ fun SimulatorScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = Color(0xFFFBFBFB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -164,7 +164,7 @@ fun SimulatorScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = BrandPurple)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Icon(Icons.Default.Calculate, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -177,7 +177,7 @@ fun SimulatorScreen(
             ) {
                 Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Limpar campos", color = BrandPurple, fontFamily = DmSansFont)
+                Text("Limpar campos", color = MaterialTheme.colorScheme.primary, fontFamily = DmSansFont)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -211,9 +211,9 @@ fun SimulatorHeader(onBack: () -> Unit) {
                 onClick = onBack,
                 modifier = Modifier
                     .size(40.dp)
-                    .border(1.dp, Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = BrandPurple)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = MaterialTheme.colorScheme.primary)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -221,12 +221,12 @@ fun SimulatorHeader(onBack: () -> Unit) {
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
-                color = Color(0xFF1A1A1A)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 "Preencha os dados para descobrir o\nque vale mais a pena para você.",
                 fontFamily = DmSansFont,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
@@ -241,7 +241,7 @@ fun SimulatorHeader(onBack: () -> Unit) {
                 Icons.Default.Build, // Placeholder for calculator 3D
                 contentDescription = null,
                 modifier = Modifier.size(100.dp),
-                tint = BrandPurple.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             )
         }
     }
@@ -251,26 +251,26 @@ fun SimulatorHeader(onBack: () -> Unit) {
 fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
     Surface(
         onClick = onToggle,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    color = BrandPurple,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color.White, modifier = Modifier.padding(8.dp))
+                    Icon(Icons.Default.Lightbulb, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(8.dp))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Como funciona?", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
                     Text(
                         "Comparamos o rendimento do seu investimento com o custo de parcelar para você decidir a melhor opção.",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                         fontFamily = DmSansFont,
                         maxLines = if (expanded) Int.MAX_VALUE else 1
@@ -279,7 +279,7 @@ fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
                 Icon(
                     if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = BrandPurple
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -289,9 +289,9 @@ fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
 @Composable
 fun SaveScenarioCard(enabled: Boolean, onToggle: (Boolean) -> Unit) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -299,11 +299,11 @@ fun SaveScenarioCard(enabled: Boolean, onToggle: (Boolean) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = BrandPurple.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.size(40.dp)
             ) {
-                Icon(Icons.Default.Bookmark, contentDescription = null, tint = BrandPurple, modifier = Modifier.padding(8.dp))
+                Icon(Icons.Default.Bookmark, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(8.dp))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -315,7 +315,7 @@ fun SaveScenarioCard(enabled: Boolean, onToggle: (Boolean) -> Unit) {
                 )
                 Text(
                     "Dê um nome para esta simulação\ne encontre mais rápido depois.",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     fontFamily = DmSansFont
                 )
@@ -324,10 +324,10 @@ fun SaveScenarioCard(enabled: Boolean, onToggle: (Boolean) -> Unit) {
                 checked = enabled,
                 onCheckedChange = onToggle,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = BrandPurple,
-                    uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Color.LightGray
+                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             )
         }

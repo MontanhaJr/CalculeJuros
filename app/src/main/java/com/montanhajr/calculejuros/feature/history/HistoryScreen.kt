@@ -31,7 +31,7 @@ fun HistoryScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = Color(0xFFFBFBFB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -54,7 +54,7 @@ fun HistoryScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Simulações recentes", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text("Ver todas >", fontFamily = SoraFont, color = BrandPurple, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text("Ver todas >", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -88,12 +88,12 @@ fun HistoryHeader() {
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
-                color = Color(0xFF1A1A1A)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 "Acompanhe todas as suas simulações",
                 fontFamily = DmSansFont,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
@@ -101,12 +101,12 @@ fun HistoryHeader() {
         OutlinedButton(
             onClick = { /* TODO: Filter */ },
             shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            Icon(Icons.Default.FilterList, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(18.dp))
+            Icon(Icons.Default.FilterList, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Filtrar", color = Color.Gray, fontSize = 12.sp, fontFamily = DmSansFont)
+            Text("Filtrar", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
         }
     }
 }
@@ -119,8 +119,8 @@ fun StatsRow(uiState: HistoryUiState) {
     ) {
         StatCard(
             icon = Icons.AutoMirrored.Filled.TrendingUp,
-            iconColor = BrandPurple,
-            iconBg = BrandPurple.copy(alpha = 0.1f),
+            iconColor = MaterialTheme.colorScheme.primary,
+            iconBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             label = "Total de\nsimulações",
             value = uiState.totalSimulations,
             period = uiState.totalSimulationsPeriod,
@@ -128,8 +128,8 @@ fun StatsRow(uiState: HistoryUiState) {
         )
         StatCard(
             icon = Icons.AutoMirrored.Filled.TrendingUp,
-            iconColor = BrandGreen,
-            iconBg = BrandGreen.copy(alpha = 0.1f),
+            iconColor = MaterialTheme.colorScheme.secondary,
+            iconBg = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
             label = "Você pode\nganhar",
             value = uiState.potentialGain,
             period = uiState.potentialGainLabel,
@@ -137,8 +137,8 @@ fun StatsRow(uiState: HistoryUiState) {
         )
         StatCard(
             icon = Icons.Default.Hexagon, // Placeholder for poly icon
-            iconColor = BrandYellow,
-            iconBg = BrandYellow.copy(alpha = 0.1f),
+            iconColor = MaterialTheme.colorScheme.tertiary,
+            iconBg = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
             label = "Média por\nsimulação",
             value = uiState.averageGain,
             period = uiState.averageGainLabel,
@@ -158,9 +158,9 @@ fun StatCard(
     modifier: Modifier
 ) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = modifier.height(140.dp)
     ) {
         Column(
@@ -177,9 +177,9 @@ fun StatCard(
             }
             
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(label, fontSize = 9.sp, color = Color.Gray, fontFamily = DmSansFont, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-                Text(value, fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = SoraFont, color = if (label.contains("ganhar")) BrandGreen else Color.Black)
-                Text(period, fontSize = 9.sp, color = if (label.contains("simulações")) BrandPurple else Color.Gray, fontFamily = DmSansFont)
+                Text(label, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = DmSansFont, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                Text(value, fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = SoraFont, color = if (label.contains("ganhar")) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface)
+                Text(period, fontSize = 9.sp, color = if (label.contains("simulações")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = DmSansFont)
             }
         }
     }
@@ -188,9 +188,9 @@ fun StatCard(
 @Composable
 fun HistoryListItem(item: HistoryItem) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -198,7 +198,7 @@ fun HistoryListItem(item: HistoryItem) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = Color.LightGray.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.size(56.dp)
             ) {
@@ -212,7 +212,7 @@ fun HistoryListItem(item: HistoryItem) {
                         else -> Icons.Default.ShoppingBag
                     },
                     contentDescription = null,
-                    tint = Color.Gray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(12.dp)
                 )
             }
@@ -221,38 +221,38 @@ fun HistoryListItem(item: HistoryItem) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(item.description, fontFamily = DmSansFont, color = Color.Gray, fontSize = 11.sp)
-                Text(item.timestamp, fontFamily = DmSansFont, color = Color.LightGray, fontSize = 10.sp)
+                Text(item.description, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                Text(item.timestamp, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.outline, fontSize = 10.sp)
             }
             
             Column(horizontalAlignment = Alignment.End) {
                 Surface(
-                    color = (if (item.resultType == "Parcelar") BrandGreen else Color.Red).copy(alpha = 0.1f),
+                    color = (if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         item.resultType,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                         fontFamily = SoraFont,
-                        color = if (item.resultType == "Parcelar") BrandGreen else Color.Red,
+                        color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(item.resultLabel, color = Color.Gray, fontSize = 10.sp, fontFamily = DmSansFont)
+                Text(item.resultLabel, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
                 Text(
                     item.resultValue,
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = if (item.resultType == "Parcelar") BrandGreen else Color.Red
+                    color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                 )
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
         }
     }
 }
@@ -260,7 +260,7 @@ fun HistoryListItem(item: HistoryItem) {
 @Composable
 fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
     Surface(
-        color = BrandPurple,
+        color = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -272,10 +272,10 @@ fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.1f)),
+                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = BrandYellow, modifier = Modifier.size(32.dp))
+                Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(32.dp))
             }
             
             Spacer(modifier = Modifier.width(16.dp))
@@ -283,7 +283,7 @@ fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     "Continue simulando e\nfaça sempre a melhor escolha!",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 12.sp,
                     fontFamily = DmSansFont,
                     fontWeight = FontWeight.Medium
@@ -292,13 +292,13 @@ fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
             
             Button(
                 onClick = onNavigateToSimulator,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                Text("Nova simulação", color = BrandPurple, fontSize = 11.sp, fontFamily = SoraFont, fontWeight = FontWeight.Bold)
+                Text("Nova simulação", color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontFamily = SoraFont, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.width(4.dp))
-                Icon(Icons.Default.AddCircle, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(14.dp))
+                Icon(Icons.Default.AddCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
             }
         }
     }

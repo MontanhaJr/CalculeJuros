@@ -46,8 +46,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         NavigationBar(
-                            containerColor = Color.White,
-                            contentColor = BrandPurple
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.primary
                         ) {
                             val items = listOf(
                                 Triple("home", "Início", Icons.Default.Home),
@@ -71,17 +71,18 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = BrandPurple,
-                                        selectedTextColor = BrandPurple,
-                                        unselectedIconColor = Color.Gray,
-                                        unselectedTextColor = Color.Gray,
+                                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                         indicatorColor = Color.Transparent
                                     )
                                 )
                             }
                         }
                     }
-                ) { padding ->
+                ) {
+padding ->
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()

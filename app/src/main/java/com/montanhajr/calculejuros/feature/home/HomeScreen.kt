@@ -36,7 +36,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = { HomeTopBar() },
-        containerColor = BrandBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -74,7 +74,7 @@ fun HomeTopBar() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
-            color = Color(0xFFFFF8E1),
+            color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.height(32.dp)
         ) {
@@ -85,14 +85,14 @@ fun HomeTopBar() {
                 Icon(
                     Icons.Default.Star, // Placeholder for Crown
                     contentDescription = null,
-                    tint = BrandYellow,
+                    tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     "PRO",
                     style = MaterialTheme.typography.labelLarge,
-                    color = BrandYellow,
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -102,9 +102,9 @@ fun HomeTopBar() {
             onClick = { /* TODO */ },
             modifier = Modifier
                 .size(40.dp)
-                .border(1.dp, Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
         ) {
-            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.Black)
+            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.onSurface)
         }
     }
 }
@@ -119,10 +119,10 @@ fun HomeHeader() {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 buildAnnotatedString {
-                    withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = Color(0xFF1A1A1A))) {
+                    withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.onSurface)) {
                         append("Parcelar\n")
                     }
-                    withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = BrandPurple)) {
+                    withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.primary)) {
                         append("ou Investir?")
                     }
                 },
@@ -131,7 +131,7 @@ fun HomeHeader() {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "Descubra o que realmente vale mais a pena",
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
@@ -147,7 +147,7 @@ fun HomeHeader() {
                 Icons.Default.Build, // Placeholder for calculator icon
                 contentDescription = null,
                 modifier = Modifier.size(80.dp),
-                tint = BrandPurple.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             )
         }
     }
@@ -157,7 +157,7 @@ fun HomeHeader() {
 fun NewSimulationCard(onClick: () -> Unit) {
     Surface(
         onClick = onClick,
-        color = BrandPurple,
+        color = MaterialTheme.colorScheme.primary,
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -166,14 +166,14 @@ fun NewSimulationCard(onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.size(56.dp)
             ) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = null,
-                    tint = BrandPurple,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .padding(16.dp)
                         .size(24.dp)
@@ -184,27 +184,27 @@ fun NewSimulationCard(onClick: () -> Unit) {
                 Text(
                     "Nova Simulação",
                     fontFamily = SoraFont,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
                 Text(
                     "Compare à vista vs parcelado\ne veja o melhor para você",
                     fontFamily = DmSansFont,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                     fontSize = 13.sp,
                     lineHeight = 16.sp
                 )
             }
             Surface(
-                color = Color.White.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
                 shape = CircleShape,
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(8.dp)
                 )
             }
@@ -217,35 +217,35 @@ fun SuggestedResultCard(result: RecentSimulation?) {
     if (result == null) return
     
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(24.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         shadowElevation = 2.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    color = BrandGreen.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.TrendingUp,
                         contentDescription = null,
-                        tint = BrandGreen,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(4.dp).size(24.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Surface(
-                        color = BrandGreen.copy(alpha = 0.1f),
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
                             "Resultado sugerido",
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                            color = BrandGreen,
+                            color = MaterialTheme.colorScheme.secondary,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -253,7 +253,7 @@ fun SuggestedResultCard(result: RecentSimulation?) {
                     Text(
                         buildAnnotatedString {
                             append("Vale a pena ")
-                            withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Bold, color = if (result.type == "Parcelar") BrandGreen else Color.Red)) {
+                            withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Bold, color = if (result.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)) {
                                 append(if (result.type == "Parcelar") "PARCELAR!" else "À VISTA!")
                             }
                         },
@@ -264,7 +264,7 @@ fun SuggestedResultCard(result: RecentSimulation?) {
                 Spacer(modifier = Modifier.weight(1f))
                 Surface(
                     color = Color.Transparent,
-                    border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Row(
@@ -281,16 +281,16 @@ fun SuggestedResultCard(result: RecentSimulation?) {
             
             Row(verticalAlignment = Alignment.Bottom) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(result.details, fontFamily = DmSansFont, color = Color.Gray, fontSize = 12.sp)
-                    Text(result.value, fontFamily = SoraFont, color = BrandGreen, fontSize = 28.sp, fontWeight = FontWeight.Black)
-                    Text(result.yield, fontFamily = DmSansFont, color = Color.Gray, fontSize = 11.sp)
+                    Text(result.details, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                    Text(result.value, fontFamily = SoraFont, color = MaterialTheme.colorScheme.secondary, fontSize = 28.sp, fontWeight = FontWeight.Black)
+                    Text(result.yield, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                 }
                 // Placeholder for piggy bank illustration
                 Icon(
                     Icons.Default.ShoppingCart, // Placeholder
                     contentDescription = null,
                     modifier = Modifier.size(80.dp),
-                    tint = BrandGreen.copy(alpha = 0.5f)
+                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
                 )
             }
         }
@@ -313,9 +313,9 @@ fun QuickActionsGrid() {
 @Composable
 fun QuickActionItem(title: String, subtitle: String, icon: ImageVector, modifier: Modifier) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = modifier.height(160.dp)
     ) {
         Column(
@@ -324,18 +324,18 @@ fun QuickActionItem(title: String, subtitle: String, icon: ImageVector, modifier
             verticalArrangement = Arrangement.SpaceBetween
         ) {
              Surface(
-                color = BrandPurple.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 shape = CircleShape,
                 modifier = Modifier.size(40.dp)
             ) {
-                Icon(icon, contentDescription = null, tint = BrandPurple, modifier = Modifier.padding(8.dp))
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(8.dp))
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(subtitle, fontFamily = DmSansFont, color = Color.Gray, fontSize = 9.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                Text(subtitle, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray, modifier = Modifier.size(16.dp))
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -348,20 +348,20 @@ fun RecentSimulationsHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Refresh, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(20.dp))
+            Icon(Icons.Default.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(8.dp))
             Text("Simulações recentes", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
-        Text("Ver todas >", fontFamily = SoraFont, color = BrandPurple, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Text("Ver todas >", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
 fun RecentSimulationItem(simulation: RecentSimulation) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -369,35 +369,35 @@ fun RecentSimulationItem(simulation: RecentSimulation) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = Color.LightGray.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.size(48.dp)
             ) {
-                Icon(Icons.Default.DesktopMac, contentDescription = null, tint = Color.Gray, modifier = Modifier.padding(8.dp))
+                Icon(Icons.Default.DesktopMac, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(8.dp))
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(simulation.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(simulation.details, fontFamily = DmSansFont, color = Color.Gray, fontSize = 11.sp)
-                Text(simulation.yield, fontFamily = DmSansFont, color = Color.Gray, fontSize = 11.sp)
+                Text(simulation.details, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                Text(simulation.yield, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
             }
             Column(horizontalAlignment = Alignment.End) {
                 Surface(
-                    color = (if (simulation.type == "Parcelar") BrandGreen else Color.Red).copy(alpha = 0.1f),
+                    color = (if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         simulation.type,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         fontFamily = SoraFont,
-                        color = if (simulation.type == "Parcelar") BrandGreen else Color.Red,
+                        color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
-                Text(simulation.value, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") BrandGreen else Color.Red)
+                Text(simulation.value, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
         }
     }
 }

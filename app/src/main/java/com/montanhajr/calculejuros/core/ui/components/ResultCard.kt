@@ -28,10 +28,10 @@ fun ResultCard(
         RecommendationType.EMPATE -> MaterialTheme.colorScheme.surfaceVariant
     }
 
-    val contentColor = if (result.recommendation == RecommendationType.EMPATE) {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    } else {
-        MaterialTheme.colorScheme.onPrimary
+    val contentColor = when (result.recommendation) {
+        RecommendationType.A_VISTA -> MaterialTheme.colorScheme.onPrimary
+        RecommendationType.PARCELADO -> MaterialTheme.colorScheme.onSecondary
+        RecommendationType.EMPATE -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Card(

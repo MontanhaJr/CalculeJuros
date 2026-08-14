@@ -30,7 +30,7 @@ fun FavoritesScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = Color(0xFFFBFBFB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -54,9 +54,9 @@ fun FavoritesScreen(
             ) {
                 Text("Minhas simulações favoritas", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 TextButton(onClick = { /* TODO */ }) {
-                    Text("Editar", fontFamily = SoraFont, color = BrandPurple, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("Editar", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Icon(Icons.Default.Edit, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                 }
             }
             
@@ -91,32 +91,32 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
-                color = Color(0xFF1A1A1A)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 "Suas simulações favoritas para\nacompanhar sempre 💜",
                 fontFamily = DmSansFont,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
         
         Surface(
             onClick = onNavigateToSimulator,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             modifier = Modifier.height(56.dp)
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Nova\nsimulação",
-                    color = BrandPurple,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 10.sp,
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
@@ -130,9 +130,9 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
 @Composable
 fun QuickAccessCard() {
     Surface(
-        color = Color(0xFFF8F9FE),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -140,11 +140,11 @@ fun QuickAccessCard() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = BrandPurple.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 shape = CircleShape,
                 modifier = Modifier.size(60.dp)
             ) {
-                Icon(Icons.Default.Star, contentDescription = null, tint = BrandYellow, modifier = Modifier.padding(12.dp))
+                Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.padding(12.dp))
             }
             
             Spacer(modifier = Modifier.width(16.dp))
@@ -153,7 +153,7 @@ fun QuickAccessCard() {
                 Text("Acesso rápido", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
                 Text(
                     "Salve suas simulações favoritas\ne compare sempre que quiser.",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     fontFamily = DmSansFont
                 )
@@ -166,7 +166,7 @@ fun QuickAccessCard() {
                     .clip(RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.FolderSpecial, contentDescription = null, tint = BrandPurple.copy(alpha = 0.5f), modifier = Modifier.size(64.dp))
+                Icon(Icons.Default.FolderSpecial, contentDescription = null, tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), modifier = Modifier.size(64.dp))
             }
         }
     }
@@ -175,9 +175,9 @@ fun QuickAccessCard() {
 @Composable
 fun FavoriteListItem(item: FavoriteItem) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -185,7 +185,7 @@ fun FavoriteListItem(item: FavoriteItem) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = Color.LightGray.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.size(56.dp)
             ) {
@@ -199,7 +199,7 @@ fun FavoriteListItem(item: FavoriteItem) {
                         else -> Icons.Default.ShoppingBag
                     },
                     contentDescription = null,
-                    tint = Color.Gray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(12.dp)
                 )
             }
@@ -208,42 +208,42 @@ fun FavoriteListItem(item: FavoriteItem) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(item.description, fontFamily = DmSansFont, color = Color.Gray, fontSize = 11.sp)
-                Text(item.creationDate, fontFamily = DmSansFont, color = Color.LightGray, fontSize = 10.sp)
+                Text(item.description, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                Text(item.creationDate, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.outline, fontSize = 10.sp)
             }
             
             Column(horizontalAlignment = Alignment.End) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = (if (item.resultType == "Parcelar") BrandGreen else Color.Red).copy(alpha = 0.1f),
+                        color = (if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             item.resultType,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             fontFamily = SoraFont,
-                            color = if (item.resultType == "Parcelar") BrandGreen else Color.Red,
+                            color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.Default.Star, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(item.resultLabel, color = Color.Gray, fontSize = 10.sp, fontFamily = DmSansFont)
+                Text(item.resultLabel, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
                 Text(
                     item.resultValue,
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = if (item.resultType == "Parcelar") BrandGreen else Color.Red
+                    color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                 )
             }
             
             Spacer(modifier = Modifier.width(8.dp))
             
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
         }
     }
 }
@@ -251,9 +251,9 @@ fun FavoriteListItem(item: FavoriteItem) {
 @Composable
 fun TipCard() {
     Surface(
-        color = Color(0xFFF8F9FE),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -261,11 +261,11 @@ fun TipCard() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = BrandPurple,
+                color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
                 modifier = Modifier.size(40.dp)
             ) {
-                Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color.White, modifier = Modifier.padding(8.dp))
+                Icon(Icons.Default.Lightbulb, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(8.dp))
             }
             
             Spacer(modifier = Modifier.width(16.dp))
@@ -274,14 +274,14 @@ fun TipCard() {
                 Text("Dica", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
                 Text(
                     "Compare suas simulações favoritas sempre que houver mudança nos juros ou descontos!",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp,
                     fontFamily = DmSansFont
                 )
             }
             
             // Placeholder for chart icon
-            Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = BrandGreen, modifier = Modifier.size(48.dp))
+            Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(48.dp))
         }
     }
 }

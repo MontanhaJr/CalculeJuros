@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.montanhajr.calculejuros.ui.theme.BrandPurple
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import com.montanhajr.calculejuros.ui.theme.SoraFont
 
@@ -47,23 +46,23 @@ fun SimulatorInputField(
     trailingIcon: ImageVector? = null
 ) {
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    color = BrandPurple.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Icon(icon, contentDescription = null, tint = BrandPurple, modifier = Modifier.padding(8.dp))
+                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(8.dp))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(label, color = Color.Gray, fontSize = 12.sp, fontFamily = DmSansFont)
+                    Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         val (visualPrefix, visualSuffix) = when {
                             suffix == null -> "" to ""
@@ -80,7 +79,7 @@ fun SimulatorInputField(
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = SoraFont,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurface
                             ),
                             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                             visualTransformation = DecimalVisualTransformation(
@@ -92,12 +91,12 @@ fun SimulatorInputField(
                     }
                 }
                 if (trailingIcon != null) {
-                    Icon(trailingIcon, contentDescription = null, tint = BrandPurple, modifier = Modifier.size(20.dp))
+                    Icon(trailingIcon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 }
             }
             if (helperText != null) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(helperText, color = Color.Gray, fontSize = 11.sp, fontFamily = DmSansFont)
+                Text(helperText, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp, fontFamily = DmSansFont)
             }
         }
     }
@@ -188,7 +187,7 @@ fun ModeSelector(
             .fillMaxWidth()
             .height(48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.LightGray.copy(alpha = 0.2f))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
             .padding(4.dp)
     ) {
         options.forEach { option ->
@@ -198,7 +197,7 @@ fun ModeSelector(
                     .weight(1f)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(10.dp))
-                    .background(if (isSelected) Color.White else Color.Transparent)
+                    .background(if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent)
                     .clickable { onOptionSelected(option) },
                 contentAlignment = Alignment.Center
             ) {
@@ -207,7 +206,7 @@ fun ModeSelector(
                     fontSize = 13.sp,
                     fontFamily = SoraFont,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) BrandPurple else Color.Gray
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -223,28 +222,28 @@ fun InstallmentSelector(
     val suggestions = listOf(1, 6, 12, 24, 36, 48)
 
     Surface(
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    color = BrandPurple.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         Icons.Default.CreditCard,
                         contentDescription = null,
-                        tint = BrandPurple,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Número de parcelas", color = Color.Gray, fontSize = 12.sp, fontFamily = DmSansFont)
+                    Text("Número de parcelas", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
                     BasicTextField(
                         value = if (value == 0) "" else value.toString(),
                         onValueChange = onTextChange,
@@ -252,7 +251,7 @@ fun InstallmentSelector(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = SoraFont,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onSurface
                         ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         visualTransformation = SuffixVisualTransformation("x"),
@@ -287,14 +286,14 @@ fun SuggestionChip(
 ) {
     Surface(
         onClick = onClick,
-        color = if (selected) BrandPurple else BrandPurple.copy(alpha = 0.05f),
+        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
         shape = RoundedCornerShape(8.dp),
-        border = if (selected) null else BorderStroke(1.dp, BrandPurple.copy(alpha = 0.1f))
+        border = if (selected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
     ) {
         Text(
             text = label,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            color = if (selected) Color.White else BrandPurple,
+            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = SoraFont,
