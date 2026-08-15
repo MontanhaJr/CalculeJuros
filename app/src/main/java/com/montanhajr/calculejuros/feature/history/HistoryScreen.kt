@@ -9,9 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +28,7 @@ fun HistoryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    var showFilterSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -41,7 +40,7 @@ fun HistoryScreen(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
-            HistoryHeader()
+            HistoryHeader(onFilterClick = { showFilterSheet = true })
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -54,15 +53,34 @@ fun HistoryScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Simulações recentes", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text("Ver todas >", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = when(uiState.activeFilter) {
+                        HistoryFilter.ALL -> "Todas as simulações"
+                        HistoryFilter.INSTALLMENTS -> "Simulações (Parcelar)"
+                        HistoryFilter.CASH -> "Simulações (À vista)"
+                    },
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
             }
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            uiState.recentSimulations.forEach { item ->
-                HistoryListItem(item, onClick = { viewModel.onSimulationClick(item.fullEntity) })
-                Spacer(modifier = Modifier.height(12.dp))
+            if (uiState.recentSimulations.isEmpty()) {
+                Box(modifier = Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
+                    Text("Nenhuma simulação encontrada", fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                uiState.recentSimulations.forEach { item ->
+                    HistoryListItem(
+                        item = item,
+                        onClick = { viewModel.onSimulationClick(item.fullEntity) },
+                        onDelete = { viewModel.requestDelete(item.fullEntity) },
+                        onToggleFavorite = { viewModel.toggleFavorite(item.fullEntity) }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -79,11 +97,93 @@ fun HistoryScreen(
                 onReuse = { id -> onNavigateToSimulator(id) }
             )
         }
+
+        if (showFilterSheet) {
+            FilterBottomSheet(
+                currentFilter = uiState.activeFilter,
+                onFilterSelected = {
+                    viewModel.setFilter(it)
+                    showFilterSheet = false
+                },
+                onDismissRequest = { showFilterSheet = false }
+            )
+        }
+
+        uiState.pendingDelete?.let { _ ->
+            AlertDialog(
+                onDismissRequest = viewModel::dismissDeleteDialog,
+                title = { Text("Excluir simulação?", fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
+                text = { Text("Esta ação não pode ser desfeita. A simulação será removida permanentemente do seu histórico.", fontFamily = DmSansFont) },
+                confirmButton = {
+                    TextButton(onClick = viewModel::confirmDelete) {
+                        Text("Excluir", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = viewModel::dismissDeleteDialog) {
+                        Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FilterBottomSheet(
+    currentFilter: HistoryFilter,
+    onFilterSelected: (HistoryFilter) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = rememberModalBottomSheetState(),
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 48.dp, start = 24.dp, end = 24.dp)
+        ) {
+            Text(
+                "Filtrar por",
+                fontFamily = SoraFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+            
+            FilterOption("Todos", currentFilter == HistoryFilter.ALL) { onFilterSelected(HistoryFilter.ALL) }
+            FilterOption("Melhor parcelar", currentFilter == HistoryFilter.INSTALLMENTS) { onFilterSelected(HistoryFilter.INSTALLMENTS) }
+            FilterOption("Melhor à vista", currentFilter == HistoryFilter.CASH) { onFilterSelected(HistoryFilter.CASH) }
+        }
     }
 }
 
 @Composable
-fun HistoryHeader() {
+fun FilterOption(label: String, isSelected: Boolean, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else Color.Transparent,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(label, fontFamily = DmSansFont, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+            if (isSelected) {
+                Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
+        }
+    }
+}
+
+@Composable
+fun HistoryHeader(onFilterClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,7 +208,7 @@ fun HistoryHeader() {
         }
         
         OutlinedButton(
-            onClick = { /* TODO: Filter */ },
+            onClick = onFilterClick,
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
@@ -195,7 +295,12 @@ fun StatCard(
 }
 
 @Composable
-fun HistoryListItem(item: HistoryItem, onClick: () -> Unit) {
+fun HistoryListItem(
+    item: HistoryItem,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    onToggleFavorite: () -> Unit
+) {
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
@@ -236,18 +341,29 @@ fun HistoryListItem(item: HistoryItem, onClick: () -> Unit) {
             }
             
             Column(horizontalAlignment = Alignment.End) {
-                Surface(
-                    color = (if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        item.resultType,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        fontFamily = SoraFont,
-                        color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        color = (if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            item.resultType,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            fontFamily = SoraFont,
+                            color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = onToggleFavorite, modifier = Modifier.size(24.dp)) {
+                        Icon(
+                            imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                            contentDescription = if (item.isFavorite) "Remover dos favoritos" else "Adicionar aos favoritos",
+                            tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(item.resultLabel, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
@@ -260,9 +376,11 @@ fun HistoryListItem(item: HistoryItem, onClick: () -> Unit) {
                 )
             }
             
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Default.DeleteOutline, contentDescription = "Excluir", tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+            }
         }
     }
 }

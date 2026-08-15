@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -24,20 +26,24 @@ data class FavoriteItem(
 
 data class FavoritesUiState(
     val favoriteSimulations: List<FavoriteItem> = emptyList(),
-    val selectedSimulation: SimulationEntity? = null
+    val selectedSimulation: SimulationEntity? = null,
+    val pendingUnfavorite: SimulationEntity? = null
 )
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    getFavoritesUseCase: GetFavoritesUseCase
+    getFavoritesUseCase: GetFavoritesUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
     
     private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
+    private val _pendingUnfavorite = MutableStateFlow<SimulationEntity?>(null)
 
     val uiState: StateFlow<FavoritesUiState> = combine(
         getFavoritesUseCase(),
-        _selectedSimulation
-    ) { simulations, selected ->
+        _selectedSimulation,
+        _pendingUnfavorite
+    ) { simulations, selected, pending ->
         FavoritesUiState(
             favoriteSimulations = simulations.map { entity ->
                 FavoriteItem(
@@ -52,7 +58,8 @@ class FavoritesViewModel @Inject constructor(
                     fullEntity = entity
                 )
             },
-            selectedSimulation = selected
+            selectedSimulation = selected,
+            pendingUnfavorite = pending
         )
     }
     .stateIn(
@@ -67,5 +74,21 @@ class FavoritesViewModel @Inject constructor(
 
     fun onDismissModal() {
         _selectedSimulation.value = null
+    }
+
+    fun requestUnfavorite(simulation: SimulationEntity) {
+        _pendingUnfavorite.value = simulation
+    }
+
+    fun confirmUnfavorite() {
+        val simulation = _pendingUnfavorite.value ?: return
+        viewModelScope.launch {
+            toggleFavoriteUseCase(simulation)
+            _pendingUnfavorite.value = null
+        }
+    }
+
+    fun dismissUnfavoriteDialog() {
+        _pendingUnfavorite.value = null
     }
 }

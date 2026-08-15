@@ -64,7 +64,11 @@ fun FavoritesScreen(
             Spacer(modifier = Modifier.height(8.dp))
             
             uiState.favoriteSimulations.forEach { item ->
-                FavoriteListItem(item, onClick = { viewModel.onSimulationClick(item.fullEntity) })
+                FavoriteListItem(
+                    item = item,
+                    onClick = { viewModel.onSimulationClick(item.fullEntity) },
+                    onToggleFavorite = { viewModel.requestUnfavorite(item.fullEntity) }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
             }
             
@@ -80,6 +84,24 @@ fun FavoritesScreen(
                 simulation = simulation,
                 onDismissRequest = viewModel::onDismissModal,
                 onReuse = { id -> onNavigateToSimulator(id) }
+            )
+        }
+
+        uiState.pendingUnfavorite?.let { simulation ->
+            AlertDialog(
+                onDismissRequest = viewModel::dismissUnfavoriteDialog,
+                title = { Text("Remover dos favoritos?", fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
+                text = { Text("Esta simulação não aparecerá mais nesta tela, mas continuará no seu histórico.", fontFamily = DmSansFont) },
+                confirmButton = {
+                    TextButton(onClick = viewModel::confirmUnfavorite) {
+                        Text("Remover", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = viewModel::dismissUnfavoriteDialog) {
+                        Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
             )
         }
     }
@@ -182,7 +204,7 @@ fun QuickAccessCard() {
 }
 
 @Composable
-fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit) {
+fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit, onToggleFavorite: () -> Unit) {
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
@@ -238,7 +260,9 @@ fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit) {
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                    IconButton(onClick = onToggleFavorite, modifier = Modifier.size(24.dp)) {
+                        Icon(Icons.Default.Star, contentDescription = "Remover dos favoritos", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(item.resultLabel, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
@@ -251,7 +275,7 @@ fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit) {
                 )
             }
             
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
         }

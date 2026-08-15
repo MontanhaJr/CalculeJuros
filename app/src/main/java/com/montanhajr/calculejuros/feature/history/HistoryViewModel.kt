@@ -3,12 +3,19 @@ package com.montanhajr.calculejuros.feature.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.domain.usecase.DeleteSimulationUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.GetHistoryUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
+enum class HistoryFilter {
+    ALL, INSTALLMENTS, CASH
+}
 
 data class HistoryItem(
     val id: String,
@@ -19,6 +26,7 @@ data class HistoryItem(
     val resultLabel: String, // "Você ganha" or "Você economiza"
     val resultValue: String,
     val iconType: String, // "laptop", "phone", "tv", "watch", "ps5"
+    val isFavorite: Boolean,
     val fullEntity: SimulationEntity
 )
 
@@ -30,26 +38,40 @@ data class HistoryUiState(
     val averageGain: String = "R$ 0,00",
     val averageGainLabel: String = "de vantagem",
     val recentSimulations: List<HistoryItem> = emptyList(),
-    val selectedSimulation: SimulationEntity? = null
+    val selectedSimulation: SimulationEntity? = null,
+    val activeFilter: HistoryFilter = HistoryFilter.ALL,
+    val pendingDelete: SimulationEntity? = null
 )
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    getHistoryUseCase: GetHistoryUseCase
+    getHistoryUseCase: GetHistoryUseCase,
+    private val deleteSimulationUseCase: DeleteSimulationUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
 ) : ViewModel() {
 
     private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
+    private val _activeFilter = MutableStateFlow(HistoryFilter.ALL)
+    private val _pendingDelete = MutableStateFlow<SimulationEntity?>(null)
 
     val uiState: StateFlow<HistoryUiState> = combine(
         getHistoryUseCase(),
-        _selectedSimulation
-    ) { simulations, selected ->
+        _selectedSimulation,
+        _activeFilter,
+        _pendingDelete
+    ) { simulations, selected, filter, pendingDelete ->
+        val filteredSimulations = when (filter) {
+            HistoryFilter.ALL -> simulations
+            HistoryFilter.INSTALLMENTS -> simulations.filter { it.winner == "PARCELADO" }
+            HistoryFilter.CASH -> simulations.filter { it.winner == "A_VISTA" }
+        }
+
         val totalGain = simulations.sumOf { it.difference }
         HistoryUiState(
             totalSimulations = simulations.size.toString(),
             potentialGain = "R$ ${String.format("%.2f", totalGain)}",
             averageGain = if (simulations.isNotEmpty()) "R$ ${String.format("%.2f", totalGain / simulations.size)}" else "R$ 0,00",
-            recentSimulations = simulations.map { entity ->
+            recentSimulations = filteredSimulations.map { entity ->
                 HistoryItem(
                     id = entity.id.toString(),
                     title = entity.scenarioName ?: "Simulação",
@@ -59,10 +81,13 @@ class HistoryViewModel @Inject constructor(
                     resultLabel = if (entity.winner == "PARCELADO") "Você ganha" else "Você economiza",
                     resultValue = "R$ ${String.format("%.2f", entity.difference)}",
                     iconType = entity.iconType,
+                    isFavorite = entity.isFavorite,
                     fullEntity = entity
                 )
             },
-            selectedSimulation = selected
+            selectedSimulation = selected,
+            activeFilter = filter,
+            pendingDelete = pendingDelete
         )
     }
     .stateIn(
@@ -77,6 +102,32 @@ class HistoryViewModel @Inject constructor(
 
     fun onDismissModal() {
         _selectedSimulation.value = null
+    }
+
+    fun requestDelete(simulation: SimulationEntity) {
+        _pendingDelete.value = simulation
+    }
+
+    fun confirmDelete() {
+        val simulation = _pendingDelete.value ?: return
+        viewModelScope.launch {
+            deleteSimulationUseCase(simulation)
+            _pendingDelete.value = null
+        }
+    }
+
+    fun dismissDeleteDialog() {
+        _pendingDelete.value = null
+    }
+
+    fun toggleFavorite(simulation: SimulationEntity) {
+        viewModelScope.launch {
+            toggleFavoriteUseCase(simulation)
+        }
+    }
+
+    fun setFilter(filter: HistoryFilter) {
+        _activeFilter.value = filter
     }
 
     private fun formatTimestamp(timestamp: Long): String {
