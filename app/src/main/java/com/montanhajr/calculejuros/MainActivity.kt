@@ -25,8 +25,6 @@ import com.montanhajr.calculejuros.feature.history.HistoryScreen
 import com.montanhajr.calculejuros.feature.history.HistoryViewModel
 import com.montanhajr.calculejuros.feature.home.HomeScreen
 import com.montanhajr.calculejuros.feature.home.HomeViewModel
-import com.montanhajr.calculejuros.feature.profile.ProfileScreen
-import com.montanhajr.calculejuros.feature.profile.ProfileViewModel
 import com.montanhajr.calculejuros.feature.simulator.SimulatorScreen
 import com.montanhajr.calculejuros.feature.simulator.SimulatorViewModel
 import com.montanhajr.calculejuros.ui.theme.CashWiseTheme
@@ -53,8 +51,7 @@ class MainActivity : ComponentActivity() {
                                 Triple("home", "Início", Icons.Default.Home),
                                 Triple("simulator", "Simulações", Icons.Default.Calculate),
                                 Triple("history", "Histórico", Icons.Default.History),
-                                Triple("favorites", "Favoritos", Icons.Default.Star),
-                                Triple("profile", "Perfil", Icons.Default.Person)
+                                Triple("favorites", "Favoritos", Icons.Default.Star)
                             )
                             items.forEach { (itemRoute, label, icon) ->
                                 NavigationBarItem(
@@ -147,10 +144,6 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 )
-                            }
-                            composable("profile") {
-                                val viewModel: ProfileViewModel = hiltViewModel()
-                                ProfileScreen(viewModel = viewModel)
                             }
                         }
                     }
