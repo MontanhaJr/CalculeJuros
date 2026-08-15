@@ -30,7 +30,10 @@ import com.montanhajr.calculejuros.ui.theme.*
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onNavigateToSimulator: () -> Unit
+    onNavigateToSimulator: () -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToSimulationDetail: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -49,14 +52,23 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
             NewSimulationCard(onClick = onNavigateToSimulator)
             Spacer(modifier = Modifier.height(24.dp))
-            SuggestedResultCard(uiState.suggestedResult)
+            SuggestedResultCard(
+                result = uiState.suggestedResult,
+                onClick = { uiState.suggestedResult?.id?.let(onNavigateToSimulationDetail) }
+            )
             Spacer(modifier = Modifier.height(24.dp))
-            QuickActionsGrid()
+            QuickActionsGrid(
+                onRecentClick = onNavigateToHistory,
+                onScenariosClick = onNavigateToFavorites
+            )
             Spacer(modifier = Modifier.height(24.dp))
-            RecentSimulationsHeader()
+            RecentSimulationsHeader(onViewAllClick = onNavigateToHistory)
             Spacer(modifier = Modifier.height(12.dp))
             uiState.recentSimulations.forEach { simulation ->
-                RecentSimulationItem(simulation)
+                RecentSimulationItem(
+                    simulation = simulation,
+                    onClick = { onNavigateToSimulationDetail(simulation.id) }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -213,10 +225,11 @@ fun NewSimulationCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun SuggestedResultCard(result: RecentSimulation?) {
+fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
     if (result == null) return
     
     Surface(
+        onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -298,21 +311,48 @@ fun SuggestedResultCard(result: RecentSimulation?) {
 }
 
 @Composable
-fun QuickActionsGrid() {
+fun QuickActionsGrid(
+    onRecentClick: () -> Unit,
+    onScenariosClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        QuickActionItem("Simulações\nRecentes", "Continue de onde\nparou", Icons.Default.Refresh, Modifier.weight(1f))
-        QuickActionItem("Cenários\nProntos", "Exemplos para\nte ajudar", Icons.AutoMirrored.Filled.List, Modifier.weight(1f))
-        QuickActionItem("Comparar\nCartões", "Veja taxas e escolha\no melhor", Icons.Default.Info, Modifier.weight(1f))
-        QuickActionItem("Aprenda\nMais", "Entenda os\nconceitos", Icons.Default.Book, Modifier.weight(1f))
+        QuickActionItem(
+            title = "Simulações\nRecentes",
+            subtitle = "Continue de onde\nparou",
+            icon = Icons.Default.Refresh,
+            modifier = Modifier.weight(1f),
+            onClick = onRecentClick
+        )
+        QuickActionItem(
+            title = "Cenários\nProntos",
+            subtitle = "Exemplos para\nte ajudar",
+            icon = Icons.AutoMirrored.Filled.List,
+            modifier = Modifier.weight(1f),
+            onClick = onScenariosClick
+        )
+        QuickActionItem(
+            title = "Aprenda\nMais",
+            subtitle = "Entenda os\nconceitos",
+            icon = Icons.Default.Book,
+            modifier = Modifier.weight(1f),
+            onClick = { /* TODO: Open Learn More */ }
+        )
     }
 }
 
 @Composable
-fun QuickActionItem(title: String, subtitle: String, icon: ImageVector, modifier: Modifier) {
+fun QuickActionItem(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
     Surface(
+        onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -341,7 +381,7 @@ fun QuickActionItem(title: String, subtitle: String, icon: ImageVector, modifier
 }
 
 @Composable
-fun RecentSimulationsHeader() {
+fun RecentSimulationsHeader(onViewAllClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -352,13 +392,16 @@ fun RecentSimulationsHeader() {
             Spacer(modifier = Modifier.width(8.dp))
             Text("Simulações recentes", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
-        Text("Ver todas >", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        TextButton(onClick = onViewAllClick) {
+            Text("Ver todas >", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        }
     }
 }
 
 @Composable
-fun RecentSimulationItem(simulation: RecentSimulation) {
+fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
     Surface(
+        onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

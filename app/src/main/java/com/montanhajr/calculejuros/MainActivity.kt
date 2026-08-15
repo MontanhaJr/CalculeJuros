@@ -30,9 +30,7 @@ import com.montanhajr.calculejuros.feature.profile.ProfileViewModel
 import com.montanhajr.calculejuros.feature.simulator.SimulatorScreen
 import com.montanhajr.calculejuros.feature.simulator.SimulatorViewModel
 import com.montanhajr.calculejuros.ui.theme.CashWiseTheme
-import com.montanhajr.calculejuros.ui.theme.BrandPurple
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
-import com.montanhajr.calculejuros.ui.theme.SoraFont
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -58,13 +56,13 @@ class MainActivity : ComponentActivity() {
                                 Triple("favorites", "Favoritos", Icons.Default.Star),
                                 Triple("profile", "Perfil", Icons.Default.Person)
                             )
-                            items.forEach { (route, label, icon) ->
+                            items.forEach { (itemRoute, label, icon) ->
                                 NavigationBarItem(
                                     icon = { Icon(icon, contentDescription = label) },
                                     label = { Text(label, fontFamily = DmSansFont) },
-                                    selected = currentDestination?.hierarchy?.any { it.route == route } == true,
+                                    selected = currentDestination?.hierarchy?.any { it.route?.split("?")?.firstOrNull() == itemRoute } == true,
                                     onClick = {
-                                        navController.navigate(route) {
+                                        navController.navigate(itemRoute) {
                                             popUpTo(navController.graph.findStartDestination().id) {
                                                 saveState = true
                                             }
@@ -83,8 +81,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                ) {
-padding ->
+                ) { padding ->
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
@@ -95,8 +92,14 @@ padding ->
                             composable("home") {
                                 val viewModel: HomeViewModel = hiltViewModel()
                                 HomeScreen(
-                                    viewModel = viewModel
-                                ) { navController.navigate("simulator") }
+                                    viewModel = viewModel,
+                                    onNavigateToSimulator = { navController.navigate("simulator") },
+                                    onNavigateToHistory = { navController.navigate("history") },
+                                    onNavigateToFavorites = { navController.navigate("favorites") },
+                                    onNavigateToSimulationDetail = { id ->
+                                        navController.navigate("simulator?simulationId=$id")
+                                    }
+                                )
                             }
                             composable(
                                 route = "simulator?simulationId={simulationId}",
@@ -113,20 +116,17 @@ padding ->
                                     onNavigateBack = { navController.popBackStack() }
                                 )
                             }
-                            composable("simulations") { /* Placeholder */ }
                             composable("history") {
                                 val viewModel: HistoryViewModel = hiltViewModel()
                                 HistoryScreen(
                                     viewModel = viewModel,
                                     onNavigateToSimulator = { id ->
-                                        val route = if (id != null) "simulator?simulationId=$id" else "simulator"
-                                        navController.navigate(route) {
+                                        val simulatorRoute = if (id != null) "simulator?simulationId=$id" else "simulator"
+                                        navController.navigate(simulatorRoute) {
                                             popUpTo(navController.graph.findStartDestination().id) {
                                                 saveState = true
                                             }
                                             launchSingleTop = true
-                                            // Se estivermos reutilizando, não restauramos o estado anterior para garantir 
-                                            // que o novo simulationId seja processado pelo ViewModel.
                                             restoreState = id == null
                                         }
                                     }
@@ -137,8 +137,8 @@ padding ->
                                 FavoritesScreen(
                                     viewModel = viewModel,
                                     onNavigateToSimulator = { id ->
-                                        val route = if (id != null) "simulator?simulationId=$id" else "simulator"
-                                        navController.navigate(route) {
+                                        val simulatorRoute = if (id != null) "simulator?simulationId=$id" else "simulator"
+                                        navController.navigate(simulatorRoute) {
                                             popUpTo(navController.graph.findStartDestination().id) {
                                                 saveState = true
                                             }
