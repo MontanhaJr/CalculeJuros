@@ -1,10 +1,13 @@
 package com.montanhajr.calculejuros.feature.favorites
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 data class FavoriteItem(
@@ -15,68 +18,54 @@ data class FavoriteItem(
     val resultType: String, // "Parcelar" or "À vista"
     val resultLabel: String, // "Você ganha" or "Você economiza"
     val resultValue: String,
-    val iconType: String // "laptop", "phone", "tv", "watch", "ps5"
+    val iconType: String, // "laptop", "phone", "tv", "watch", "ps5"
+    val fullEntity: SimulationEntity
 )
 
 data class FavoritesUiState(
-    val favoriteSimulations: List<FavoriteItem> = emptyList()
+    val favoriteSimulations: List<FavoriteItem> = emptyList(),
+    val selectedSimulation: SimulationEntity? = null
 )
 
 @HiltViewModel
-class FavoritesViewModel @Inject constructor() : ViewModel() {
-    private val _uiState = MutableStateFlow(FavoritesUiState(
-        favoriteSimulations = listOf(
-            FavoriteItem(
-                id = "1",
-                title = "Notebook Dell i5",
-                description = "12x no cartão • 10% à vista",
-                creationDate = "Criado em 18/05/2024",
-                resultType = "Parcelar",
-                resultLabel = "Você ganha",
-                resultValue = "R$ 184,32",
-                iconType = "laptop"
-            ),
-            FavoriteItem(
-                id = "2",
-                title = "iPhone 15",
-                description = "10x no cartão • 5% à vista",
-                creationDate = "Criado em 15/05/2024",
-                resultType = "À vista",
-                resultLabel = "Você economiza",
-                resultValue = "R$ 218,75",
-                iconType = "phone"
-            ),
-            FavoriteItem(
-                id = "3",
-                title = "Smart TV 55\"",
-                description = "8x no cartão • 8% à vista",
-                creationDate = "Criado em 10/05/2024",
-                resultType = "Parcelar",
-                resultLabel = "Você ganha",
-                resultValue = "R$ 96,80",
-                iconType = "tv"
-            ),
-            FavoriteItem(
-                id = "4",
-                title = "Apple Watch Series 9",
-                description = "6x no cartão • 0% à vista",
-                creationDate = "Criado em 08/05/2024",
-                resultType = "À vista",
-                resultLabel = "Você economiza",
-                resultValue = "R$ 75,40",
-                iconType = "watch"
-            ),
-            FavoriteItem(
-                id = "5",
-                title = "PlayStation 5",
-                description = "12x no cartão • 3% à vista",
-                creationDate = "Criado em 05/05/2024",
-                resultType = "Parcelar",
-                resultLabel = "Você ganha",
-                resultValue = "R$ 142,10",
-                iconType = "ps5"
-            )
+class FavoritesViewModel @Inject constructor(
+    getFavoritesUseCase: GetFavoritesUseCase
+) : ViewModel() {
+    
+    private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
+
+    val uiState: StateFlow<FavoritesUiState> = combine(
+        getFavoritesUseCase(),
+        _selectedSimulation
+    ) { simulations, selected ->
+        FavoritesUiState(
+            favoriteSimulations = simulations.map { entity ->
+                FavoriteItem(
+                    id = entity.id.toString(),
+                    title = entity.scenarioName ?: "Simulação",
+                    description = "${entity.inputInstallmentsCount}x no cartão",
+                    creationDate = "Criado em ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(entity.date))}",
+                    resultType = if (entity.winner == "PARCELADO") "Parcelar" else "À vista",
+                    resultLabel = if (entity.winner == "PARCELADO") "Você ganha" else "Você economiza",
+                    resultValue = "R$ ${String.format("%.2f", entity.difference)}",
+                    iconType = entity.iconType,
+                    fullEntity = entity
+                )
+            },
+            selectedSimulation = selected
         )
-    ))
-    val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
+    }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = FavoritesUiState()
+    )
+
+    fun onSimulationClick(simulation: SimulationEntity) {
+        _selectedSimulation.value = simulation
+    }
+
+    fun onDismissModal() {
+        _selectedSimulation.value = null
+    }
 }

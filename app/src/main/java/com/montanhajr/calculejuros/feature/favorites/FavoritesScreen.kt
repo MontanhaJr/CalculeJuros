@@ -19,12 +19,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
 
 @Composable
 fun FavoritesScreen(
     viewModel: FavoritesViewModel,
-    onNavigateToSimulator: () -> Unit
+    onNavigateToSimulator: (Long?) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -39,7 +40,7 @@ fun FavoritesScreen(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
-            FavoritesHeader(onNavigateToSimulator)
+            FavoritesHeader { onNavigateToSimulator(null) }
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -63,7 +64,7 @@ fun FavoritesScreen(
             Spacer(modifier = Modifier.height(8.dp))
             
             uiState.favoriteSimulations.forEach { item ->
-                FavoriteListItem(item)
+                FavoriteListItem(item, onClick = { viewModel.onSimulationClick(item.fullEntity) })
                 Spacer(modifier = Modifier.height(12.dp))
             }
             
@@ -72,6 +73,14 @@ fun FavoritesScreen(
             TipCard()
             
             Spacer(modifier = Modifier.height(32.dp))
+        }
+
+        uiState.selectedSimulation?.let { simulation ->
+            SimulationDetailModal(
+                simulation = simulation,
+                onDismissRequest = viewModel::onDismissModal,
+                onReuse = { id -> onNavigateToSimulator(id) }
+            )
         }
     }
 }
@@ -173,8 +182,9 @@ fun QuickAccessCard() {
 }
 
 @Composable
-fun FavoriteListItem(item: FavoriteItem) {
+fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit) {
     Surface(
+        onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),

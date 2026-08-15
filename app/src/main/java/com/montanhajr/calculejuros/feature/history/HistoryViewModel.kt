@@ -1,10 +1,13 @@
 package com.montanhajr.calculejuros.feature.history
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.domain.usecase.GetHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 data class HistoryItem(
@@ -15,74 +18,86 @@ data class HistoryItem(
     val resultType: String, // "Parcelar" or "À vista"
     val resultLabel: String, // "Você ganha" or "Você economiza"
     val resultValue: String,
-    val iconType: String // "laptop", "phone", "tv", "watch", "ps5"
+    val iconType: String, // "laptop", "phone", "tv", "watch", "ps5"
+    val fullEntity: SimulationEntity
 )
 
 data class HistoryUiState(
-    val totalSimulations: String = "24",
+    val totalSimulations: String = "0",
     val totalSimulationsPeriod: String = "este mês",
-    val potentialGain: String = "R$ 1.248,50",
+    val potentialGain: String = "R$ 0,00",
     val potentialGainLabel: String = "no total",
-    val averageGain: String = "R$ 52,02",
+    val averageGain: String = "R$ 0,00",
     val averageGainLabel: String = "de vantagem",
-    val recentSimulations: List<HistoryItem> = emptyList()
+    val recentSimulations: List<HistoryItem> = emptyList(),
+    val selectedSimulation: SimulationEntity? = null
 )
 
 @HiltViewModel
-class HistoryViewModel @Inject constructor() : ViewModel() {
-    private val _uiState = MutableStateFlow(HistoryUiState(
-        recentSimulations = listOf(
-            HistoryItem(
-                id = "1",
-                title = "Notebook Dell i5",
-                description = "12x no cartão • 10% à vista",
-                timestamp = "Hoje, 10:30",
-                resultType = "Parcelar",
-                resultLabel = "Você ganha",
-                resultValue = "R$ 184,32",
-                iconType = "laptop"
-            ),
-            HistoryItem(
-                id = "2",
-                title = "iPhone 15",
-                description = "10x no cartão • 5% à vista",
-                timestamp = "Ontem, 14:22",
-                resultType = "À vista",
-                resultLabel = "Você economiza",
-                resultValue = "R$ 218,75",
-                iconType = "phone"
-            ),
-            HistoryItem(
-                id = "3",
-                title = "Smart TV 55\"",
-                description = "8x no cartão • 8% à vista",
-                timestamp = "18/05/2024, 09:15",
-                resultType = "Parcelar",
-                resultLabel = "Você ganha",
-                resultValue = "R$ 96,80",
-                iconType = "tv"
-            ),
-            HistoryItem(
-                id = "4",
-                title = "Apple Watch Series 9",
-                description = "6x no cartão • 0% à vista",
-                timestamp = "15/05/2024, 16:40",
-                resultType = "À vista",
-                resultLabel = "Você economiza",
-                resultValue = "R$ 75,40",
-                iconType = "watch"
-            ),
-            HistoryItem(
-                id = "5",
-                title = "PlayStation 5",
-                description = "12x no cartão • 3% à vista",
-                timestamp = "12/05/2024, 11:08",
-                resultType = "Parcelar",
-                resultLabel = "Você ganha",
-                resultValue = "R$ 142,10",
-                iconType = "ps5"
-            )
+class HistoryViewModel @Inject constructor(
+    getHistoryUseCase: GetHistoryUseCase
+) : ViewModel() {
+
+    private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
+
+    val uiState: StateFlow<HistoryUiState> = combine(
+        getHistoryUseCase(),
+        _selectedSimulation
+    ) { simulations, selected ->
+        val totalGain = simulations.sumOf { it.difference }
+        HistoryUiState(
+            totalSimulations = simulations.size.toString(),
+            potentialGain = "R$ ${String.format("%.2f", totalGain)}",
+            averageGain = if (simulations.isNotEmpty()) "R$ ${String.format("%.2f", totalGain / simulations.size)}" else "R$ 0,00",
+            recentSimulations = simulations.map { entity ->
+                HistoryItem(
+                    id = entity.id.toString(),
+                    title = entity.scenarioName ?: "Simulação",
+                    description = "${entity.inputInstallmentsCount}x no cartão",
+                    timestamp = formatTimestamp(entity.date),
+                    resultType = if (entity.winner == "PARCELADO") "Parcelar" else "À vista",
+                    resultLabel = if (entity.winner == "PARCELADO") "Você ganha" else "Você economiza",
+                    resultValue = "R$ ${String.format("%.2f", entity.difference)}",
+                    iconType = entity.iconType,
+                    fullEntity = entity
+                )
+            },
+            selectedSimulation = selected
         )
-    ))
-    val uiState: StateFlow<HistoryUiState> = _uiState.asStateFlow()
+    }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HistoryUiState()
+    )
+
+    fun onSimulationClick(simulation: SimulationEntity) {
+        _selectedSimulation.value = simulation
+    }
+
+    fun onDismissModal() {
+        _selectedSimulation.value = null
+    }
+
+    private fun formatTimestamp(timestamp: Long): String {
+        val date = Date(timestamp)
+        val now = Calendar.getInstance()
+        val simDate = Calendar.getInstance().apply { time = date }
+        
+        return when {
+            isSameDay(now, simDate) -> "Hoje, ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)}"
+            isYesterday(now, simDate) -> "Ontem, ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)}"
+            else -> SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault()).format(date)
+        }
+    }
+
+    private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
+
+    private fun isYesterday(now: Calendar, simDate: Calendar): Boolean {
+        val yesterday = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -1) }
+        return isSameDay(yesterday, simDate)
+    }
 }

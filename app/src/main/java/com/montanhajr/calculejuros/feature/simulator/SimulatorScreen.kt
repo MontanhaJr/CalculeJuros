@@ -184,7 +184,9 @@ fun SimulatorScreen(
             
             SaveScenarioCard(
                 enabled = uiState.isSaveScenarioEnabled,
-                onToggle = viewModel::onSaveScenarioToggle
+                onToggle = viewModel::onSaveScenarioToggle,
+                scenarioName = uiState.scenarioName,
+                onScenarioNameChange = viewModel::onScenarioNameChange
             )
             
             uiState.simulationResult?.let { result ->
@@ -287,49 +289,83 @@ fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
 }
 
 @Composable
-fun SaveScenarioCard(enabled: Boolean, onToggle: (Boolean) -> Unit) {
+fun SaveScenarioCard(
+    enabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+    scenarioName: String,
+    onScenarioNameChange: (String) -> Unit
+) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.size(40.dp)
+        Column {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.Bookmark, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(8.dp))
+                Surface(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Bookmark,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Salvar cenário (opcional)",
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = SoraFont,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        "Dê um nome para esta simulação\ne encontre mais rápido depois.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        fontFamily = DmSansFont
+                    )
+                }
+                Switch(
+                    checked = enabled,
+                    onCheckedChange = onToggle,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                )
             }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "Salvar cenário (opcional)",
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = SoraFont,
-                    fontSize = 14.sp
-                )
-                Text(
-                    "Dê um nome para esta simulação\ne encontre mais rápido depois.",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 12.sp,
-                    fontFamily = DmSansFont
-                )
+
+            AnimatedVisibility(
+                visible = enabled,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+                    OutlinedTextField(
+                        value = scenarioName,
+                        onValueChange = onScenarioNameChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("Ex: Notebook Gamer", fontSize = 14.sp, fontFamily = DmSansFont) },
+                        label = { Text("Nome do cenário", fontSize = 12.sp, fontFamily = DmSansFont) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                        ),
+                        singleLine = true
+                    )
+                }
             }
-            Switch(
-                checked = enabled,
-                onCheckedChange = onToggle,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primary,
-                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            )
         }
     }
 }

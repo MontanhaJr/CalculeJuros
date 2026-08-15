@@ -17,6 +17,7 @@ data class SimulatorUiState(
     val useAnnualProfitability: Boolean = true,
     val isHowItWorksExpanded: Boolean = false,
     val isSaveScenarioEnabled: Boolean = false,
+    val scenarioName: String = "",
     val simulationResult: SimulationResult? = null,
     val isLoading: Boolean = false
 )

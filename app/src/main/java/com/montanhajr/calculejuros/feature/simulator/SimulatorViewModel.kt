@@ -1,24 +1,63 @@
 package com.montanhajr.calculejuros.feature.simulator
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.core.domain.model.InvestmentType
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
 import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.GetSimulationByIdUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.SaveSimulationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
 
 @HiltViewModel
 class SimulatorViewModel @Inject constructor(
-    private val calculateSimulationUseCase: CalculateSimulationUseCase
+    private val calculateSimulationUseCase: CalculateSimulationUseCase,
+    private val saveSimulationUseCase: SaveSimulationUseCase,
+    private val getSimulationByIdUseCase: GetSimulationByIdUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SimulatorUiState())
     val uiState: StateFlow<SimulatorUiState> = _uiState.asStateFlow()
+
+    init {
+        savedStateHandle.getStateFlow<Long>("simulationId", -1L)
+            .onEach { id ->
+                if (id != -1L) {
+                    loadSimulation(id)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadSimulation(id: Long) {
+        viewModelScope.launch {
+            getSimulationByIdUseCase(id)?.let { entity ->
+                _uiState.update { it.copy(
+                    productPrice = fromDoubleToDigits(entity.inputProductPrice),
+                    discountPercentage = fromDoubleToDigits(entity.inputDiscountPercentage),
+                    useDiscount = entity.inputUseDiscountToggle,
+                    cashPrice = fromDoubleToDigits(entity.inputCashPrice),
+                    installmentsCount = entity.inputInstallmentsCount,
+                    cardTaxRate = fromDoubleToDigits(entity.inputMonthlyCardRate),
+                    useMonthlyRate = entity.inputUseMonthlyRateToggle,
+                    totalInstallmentValue = fromDoubleToDigits(entity.inputTotalInstallmentValue),
+                    investmentAnnualRate = fromDoubleToDigits(entity.inputAnnualProfitability),
+                    investmentMonthlyRate = fromDoubleToDigits(entity.inputMonthlyProfitability),
+                    useAnnualProfitability = entity.inputUseAnnualProfitabilityToggle,
+                    isSaveScenarioEnabled = entity.isFavorite,
+                    scenarioName = entity.scenarioName ?: "",
+                    simulationResult = null // Do not show previous results
+                ) }
+            }
+        }
+    }
 
     fun onProductPriceChange(value: String) {
         _uiState.update { it.copy(productPrice = value) }
@@ -137,6 +176,10 @@ class SimulatorViewModel @Inject constructor(
         _uiState.update { it.copy(isSaveScenarioEnabled = enabled) }
     }
 
+    fun onScenarioNameChange(value: String) {
+        _uiState.update { it.copy(scenarioName = value) }
+    }
+
     fun onClearFields() {
         _uiState.value = SimulatorUiState()
     }
@@ -160,6 +203,17 @@ class SimulatorViewModel @Inject constructor(
         
         val result = calculateSimulationUseCase(input)
         _uiState.update { it.copy(simulationResult = result) }
+
+        // Save simulation automatically to history
+        // If save scenario is enabled, it's also a favorite
+        viewModelScope.launch {
+            saveSimulationUseCase(
+                input = input,
+                result = result,
+                scenarioName = if (state.isSaveScenarioEnabled) state.scenarioName else null,
+                isFavorite = state.isSaveScenarioEnabled
+            )
+        }
     }
 
     private fun calculateImplicitRate(principal: Double, installment: Double, n: Int): Double {

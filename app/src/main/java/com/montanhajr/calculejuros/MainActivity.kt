@@ -13,10 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.montanhajr.calculejuros.feature.favorites.FavoritesScreen
 import com.montanhajr.calculejuros.feature.favorites.FavoritesViewModel
 import com.montanhajr.calculejuros.feature.history.HistoryScreen
@@ -96,7 +98,15 @@ padding ->
                                     viewModel = viewModel
                                 ) { navController.navigate("simulator") }
                             }
-                            composable("simulator") {
+                            composable(
+                                route = "simulator?simulationId={simulationId}",
+                                arguments = listOf(
+                                    navArgument("simulationId") {
+                                        type = NavType.LongType
+                                        defaultValue = -1L
+                                    }
+                                )
+                            ) {
                                 val viewModel: SimulatorViewModel = hiltViewModel()
                                 SimulatorScreen(
                                     viewModel = viewModel,
@@ -108,14 +118,34 @@ padding ->
                                 val viewModel: HistoryViewModel = hiltViewModel()
                                 HistoryScreen(
                                     viewModel = viewModel,
-                                    onNavigateToSimulator = { navController.navigate("simulator") }
+                                    onNavigateToSimulator = { id ->
+                                        val route = if (id != null) "simulator?simulationId=$id" else "simulator"
+                                        navController.navigate(route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            // Se estivermos reutilizando, não restauramos o estado anterior para garantir 
+                                            // que o novo simulationId seja processado pelo ViewModel.
+                                            restoreState = id == null
+                                        }
+                                    }
                                 )
                             }
                             composable("favorites") {
                                 val viewModel: FavoritesViewModel = hiltViewModel()
                                 FavoritesScreen(
                                     viewModel = viewModel,
-                                    onNavigateToSimulator = { navController.navigate("simulator") }
+                                    onNavigateToSimulator = { id ->
+                                        val route = if (id != null) "simulator?simulationId=$id" else "simulator"
+                                        navController.navigate(route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = id == null
+                                        }
+                                    }
                                 )
                             }
                             composable("profile") {

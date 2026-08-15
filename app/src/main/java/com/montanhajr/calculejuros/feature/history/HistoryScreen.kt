@@ -20,12 +20,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
 
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel,
-    onNavigateToSimulator: () -> Unit
+    onNavigateToSimulator: (Long?) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -60,15 +61,23 @@ fun HistoryScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             uiState.recentSimulations.forEach { item ->
-                HistoryListItem(item)
+                HistoryListItem(item, onClick = { viewModel.onSimulationClick(item.fullEntity) })
                 Spacer(modifier = Modifier.height(12.dp))
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            ContinueSimulatingBanner(onNavigateToSimulator)
+            ContinueSimulatingBanner { onNavigateToSimulator(null) }
             
             Spacer(modifier = Modifier.height(32.dp))
+        }
+
+        uiState.selectedSimulation?.let { simulation ->
+            SimulationDetailModal(
+                simulation = simulation,
+                onDismissRequest = viewModel::onDismissModal,
+                onReuse = { id -> onNavigateToSimulator(id) }
+            )
         }
     }
 }
@@ -186,8 +195,9 @@ fun StatCard(
 }
 
 @Composable
-fun HistoryListItem(item: HistoryItem) {
+fun HistoryListItem(item: HistoryItem, onClick: () -> Unit) {
     Surface(
+        onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
