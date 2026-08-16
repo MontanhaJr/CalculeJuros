@@ -57,17 +57,29 @@ class MainActivity : ComponentActivity() {
                                 Triple("favorites", "Favoritos", Icons.Default.Star)
                             )
                             items.forEach { (itemRoute, label, icon) ->
+                                val isSelected = currentDestination?.hierarchy?.any { 
+                                    it.route?.split("?")?.firstOrNull() == itemRoute 
+                                } == true
+
                                 NavigationBarItem(
                                     icon = { Icon(icon, contentDescription = label) },
                                     label = { Text(label, fontFamily = DmSansFont) },
-                                    selected = currentDestination?.hierarchy?.any { it.route?.split("?")?.firstOrNull() == itemRoute } == true,
+                                    selected = isSelected,
                                     onClick = {
-                                        navController.navigate(itemRoute) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
+                                        if (!isSelected) {
+                                            navController.navigate(itemRoute) {
+                                                // Pop up to the start destination of the graph to
+                                                // avoid building up a large stack of destinations
+                                                // on the back stack as users select items
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                // Avoid multiple copies of the same destination when
+                                                // reselecting the same item
+                                                launchSingleTop = true
+                                                // Restore state when reselecting a previously selected item
+                                                restoreState = true
                                             }
-                                            launchSingleTop = true
-                                            restoreState = true
                                         }
                                     },
                                     colors = NavigationBarItemDefaults.colors(
@@ -93,11 +105,41 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: HomeViewModel = hiltViewModel()
                                 HomeScreen(
                                     viewModel = viewModel,
-                                    onNavigateToSimulator = { navController.navigate("simulator") },
-                                    onNavigateToHistory = { navController.navigate("history") },
-                                    onNavigateToFavorites = { navController.navigate("favorites") },
+                                    onNavigateToSimulator = {
+                                        navController.navigate("simulator") {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                    onNavigateToHistory = {
+                                        navController.navigate("history") {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                    onNavigateToFavorites = {
+                                        navController.navigate("favorites") {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
                                     onNavigateToSimulationDetail = { id ->
-                                        navController.navigate("simulator?simulationId=$id")
+                                        navController.navigate("simulator?simulationId=$id") {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = false
+                                        }
                                     }
                                 )
                             }
