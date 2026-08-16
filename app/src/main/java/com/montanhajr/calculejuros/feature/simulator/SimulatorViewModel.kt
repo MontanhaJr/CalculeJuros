@@ -51,9 +51,10 @@ class SimulatorViewModel @Inject constructor(
                     investmentAnnualRate = fromDoubleToDigits(entity.inputAnnualProfitability),
                     investmentMonthlyRate = fromDoubleToDigits(entity.inputMonthlyProfitability),
                     useAnnualProfitability = entity.inputUseAnnualProfitabilityToggle,
-                    isSaveScenarioEnabled = entity.isFavorite,
+                    isSavedAsFavorite = entity.isFavorite,
                     scenarioName = entity.scenarioName ?: "",
-                    simulationResult = null // Do not show previous results
+                    simulationResult = null, // Do not show previous results
+                    currentSimulationId = entity.id
                 ) }
             }
         }
@@ -172,16 +173,85 @@ class SimulatorViewModel @Inject constructor(
         _uiState.update { it.copy(isHowItWorksExpanded = !it.isHowItWorksExpanded) }
     }
 
-    fun onSaveScenarioToggle(enabled: Boolean) {
-        _uiState.update { it.copy(isSaveScenarioEnabled = enabled) }
-    }
-
-    fun onScenarioNameChange(value: String) {
-        _uiState.update { it.copy(scenarioName = value) }
-    }
-
     fun onClearFields() {
         _uiState.value = SimulatorUiState()
+    }
+
+    fun onFavoriteClick() {
+        val state = _uiState.value
+        if (state.isSavedAsFavorite) {
+            // Unfavorite logic
+            val result = state.simulationResult ?: return
+            val id = state.currentSimulationId ?: return
+            
+            val input = SimulationInput(
+                productPrice = state.productPrice.toBrazilDouble(),
+                discountPercentage = state.discountPercentage.toBrazilDouble(),
+                cashPrice = state.cashPrice.toBrazilDouble(),
+                useDiscountToggle = state.useDiscount,
+                installmentsCount = state.installmentsCount,
+                monthlyCardRate = state.cardTaxRate.toBrazilDouble(),
+                totalInstallmentValue = state.totalInstallmentValue.toBrazilDouble(),
+                useMonthlyRateToggle = state.useMonthlyRate,
+                annualProfitability = state.investmentAnnualRate.toBrazilDouble(),
+                monthlyProfitability = state.investmentMonthlyRate.toBrazilDouble(),
+                useAnnualProfitabilityToggle = state.useAnnualProfitability
+            )
+
+            viewModelScope.launch {
+                saveSimulationUseCase(
+                    input = input,
+                    result = result,
+                    scenarioName = null,
+                    isFavorite = false,
+                    id = id
+                )
+                _uiState.update { it.copy(
+                    isSavedAsFavorite = false,
+                    scenarioName = ""
+                ) }
+            }
+        } else {
+            _uiState.update { it.copy(showSaveDialog = true) }
+        }
+    }
+
+    fun onDismissSaveDialog() {
+        _uiState.update { it.copy(showSaveDialog = false) }
+    }
+
+    fun onConfirmSaveFavorite(name: String) {
+        val state = _uiState.value
+        val result = state.simulationResult ?: return
+        
+        val input = SimulationInput(
+            productPrice = state.productPrice.toBrazilDouble(),
+            discountPercentage = state.discountPercentage.toBrazilDouble(),
+            cashPrice = state.cashPrice.toBrazilDouble(),
+            useDiscountToggle = state.useDiscount,
+            installmentsCount = state.installmentsCount,
+            monthlyCardRate = state.cardTaxRate.toBrazilDouble(),
+            totalInstallmentValue = state.totalInstallmentValue.toBrazilDouble(),
+            useMonthlyRateToggle = state.useMonthlyRate,
+            annualProfitability = state.investmentAnnualRate.toBrazilDouble(),
+            monthlyProfitability = state.investmentMonthlyRate.toBrazilDouble(),
+            useAnnualProfitabilityToggle = state.useAnnualProfitability
+        )
+
+        viewModelScope.launch {
+            saveSimulationUseCase(
+                input = input,
+                result = result,
+                scenarioName = name.ifBlank { null },
+                isFavorite = true,
+                id = state.currentSimulationId ?: 0L
+            )
+            _uiState.update { it.copy(
+                showSaveDialog = false,
+                isSavedAsFavorite = true,
+                scenarioName = name
+            ) }
+        }
     }
 
     fun onCalculate() {
@@ -202,17 +272,17 @@ class SimulatorViewModel @Inject constructor(
         )
         
         val result = calculateSimulationUseCase(input)
-        _uiState.update { it.copy(simulationResult = result) }
+        _uiState.update { it.copy(simulationResult = result, isSavedAsFavorite = false) }
 
         // Save simulation automatically to history
-        // If save scenario is enabled, it's also a favorite
         viewModelScope.launch {
-            saveSimulationUseCase(
+            val id = saveSimulationUseCase(
                 input = input,
                 result = result,
-                scenarioName = if (state.isSaveScenarioEnabled) state.scenarioName else null,
-                isFavorite = state.isSaveScenarioEnabled
+                scenarioName = null,
+                isFavorite = false
             )
+            _uiState.update { it.copy(currentSimulationId = id) }
         }
     }
 

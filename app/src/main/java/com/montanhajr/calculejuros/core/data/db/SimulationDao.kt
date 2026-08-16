@@ -15,7 +15,7 @@ interface SimulationDao {
     suspend fun getSimulationById(id: Long): SimulationEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSimulation(simulation: SimulationEntity)
+    suspend fun insertSimulation(simulation: SimulationEntity): Long
 
     @Delete
     suspend fun deleteSimulation(simulation: SimulationEntity)

@@ -14,9 +14,11 @@ class SaveSimulationUseCase @Inject constructor(
         result: SimulationResult,
         scenarioName: String? = null,
         isFavorite: Boolean = false,
-        iconType: String = "default"
-    ) {
+        iconType: String = "default",
+        id: Long = 0
+    ): Long {
         val entity = SimulationEntity(
+            id = id,
             date = System.currentTimeMillis(),
             productName = scenarioName ?: "Simulação",
             
@@ -46,6 +48,6 @@ class SaveSimulationUseCase @Inject constructor(
             scenarioName = scenarioName,
             iconType = iconType
         )
-        repository.insertSimulation(entity)
+        return repository.insertSimulation(entity)
     }
 }

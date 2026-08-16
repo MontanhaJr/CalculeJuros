@@ -181,22 +181,27 @@ fun SimulatorScreen(
                 Text("Limpar campos", color = MaterialTheme.colorScheme.primary, fontFamily = DmSansFont)
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            SaveScenarioCard(
-                enabled = uiState.isSaveScenarioEnabled,
-                onToggle = viewModel::onSaveScenarioToggle,
-                scenarioName = uiState.scenarioName,
-                onScenarioNameChange = viewModel::onScenarioNameChange
-            )
-            
             uiState.simulationResult?.let { result ->
                 Spacer(modifier = Modifier.height(24.dp))
+                
+                FavoriteOption(
+                    isFavorite = uiState.isSavedAsFavorite,
+                    onClick = viewModel::onFavoriteClick
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
                 ResultCard(result = result)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+
+    if (uiState.showSaveDialog) {
+        SaveFavoriteDialog(
+            onDismiss = viewModel::onDismissSaveDialog,
+            onConfirm = viewModel::onConfirmSaveFavorite
+        )
     }
 }
 
@@ -251,6 +256,88 @@ fun SimulatorHeader(onBack: () -> Unit) {
 }
 
 @Composable
+fun FavoriteOption(
+    isFavorite: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+            contentDescription = null,
+            tint = if (isFavorite) Color(0xFFFFB800) else MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = if (isFavorite) "Salvo nos favoritos" else "Adicionar aos favoritos",
+            fontFamily = SoraFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = if (isFavorite) Color(0xFFFFB800) else MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun SaveFavoriteDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Salvar nos favoritos",
+                fontFamily = SoraFont,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    "Dê um nome para esta simulação (opcional)",
+                    fontFamily = DmSansFont,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    placeholder = { Text("Ex: Notebook Gamer", fontFamily = DmSansFont) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(name) },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Salvar", fontFamily = SoraFont, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", fontFamily = SoraFont)
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(24.dp)
+    )
+}
+
+@Composable
 fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
     Surface(
         onClick = onToggle,
@@ -289,84 +376,3 @@ fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
     }
 }
 
-@Composable
-fun SaveScenarioCard(
-    enabled: Boolean,
-    onToggle: (Boolean) -> Unit,
-    scenarioName: String,
-    onScenarioNameChange: (String) -> Unit
-) {
-    Surface(
-        color = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Bookmark,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        "Salvar cenário (opcional)",
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = SoraFont,
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        "Dê um nome para esta simulação\ne encontre mais rápido depois.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 12.sp,
-                        fontFamily = DmSansFont
-                    )
-                }
-                Switch(
-                    checked = enabled,
-                    onCheckedChange = onToggle,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                        checkedTrackColor = MaterialTheme.colorScheme.primary,
-                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                )
-            }
-
-            AnimatedVisibility(
-                visible = enabled,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
-                    OutlinedTextField(
-                        value = scenarioName,
-                        onValueChange = onScenarioNameChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("Ex: Notebook Gamer", fontSize = 14.sp, fontFamily = DmSansFont) },
-                        label = { Text("Nome do cenário", fontSize = 12.sp, fontFamily = DmSansFont) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
-                        ),
-                        singleLine = true
-                    )
-                }
-            }
-        }
-    }
-}

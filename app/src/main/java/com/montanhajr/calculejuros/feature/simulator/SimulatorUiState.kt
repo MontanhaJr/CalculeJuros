@@ -19,5 +19,8 @@ data class SimulatorUiState(
     val isSaveScenarioEnabled: Boolean = false,
     val scenarioName: String = "",
     val simulationResult: SimulationResult? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val showSaveDialog: Boolean = false,
+    val isSavedAsFavorite: Boolean = false,
+    val currentSimulationId: Long? = null
 )
