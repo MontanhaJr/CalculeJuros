@@ -96,7 +96,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // Google AdMob
-    // implementation("com.google.android.gms:play-services-ads:23.6.0")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
 
     // Google Play Billing
     implementation("com.android.billingclient:billing-ktx:7.1.1")
