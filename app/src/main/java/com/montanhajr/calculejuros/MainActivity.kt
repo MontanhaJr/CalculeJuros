@@ -28,6 +28,7 @@ import com.montanhajr.calculejuros.feature.home.HomeScreen
 import com.montanhajr.calculejuros.feature.home.HomeViewModel
 import com.montanhajr.calculejuros.feature.simulator.SimulatorScreen
 import com.montanhajr.calculejuros.feature.simulator.SimulatorViewModel
+import com.montanhajr.calculejuros.ui.components.AdBanner
 import com.montanhajr.calculejuros.ui.theme.CashWiseTheme
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,50 +47,53 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
-                        NavigationBar(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = MaterialTheme.colorScheme.primary
-                        ) {
-                            val items = listOf(
-                                Triple("home", "Início", Icons.Default.Home),
-                                Triple("simulator", "Simulações", Icons.Default.Calculate),
-                                Triple("history", "Histórico", Icons.Default.History),
-                                Triple("favorites", "Favoritos", Icons.Default.Star)
-                            )
-                            items.forEach { (itemRoute, label, icon) ->
-                                val isSelected = currentDestination?.hierarchy?.any { 
-                                    it.route?.split("?")?.firstOrNull() == itemRoute 
-                                } == true
-
-                                NavigationBarItem(
-                                    icon = { Icon(icon, contentDescription = label) },
-                                    label = { Text(label, fontFamily = DmSansFont) },
-                                    selected = isSelected,
-                                    onClick = {
-                                        if (!isSelected) {
-                                            navController.navigate(itemRoute) {
-                                                // Pop up to the start destination of the graph to
-                                                // avoid building up a large stack of destinations
-                                                // on the back stack as users select items
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                // Avoid multiple copies of the same destination when
-                                                // reselecting the same item
-                                                launchSingleTop = true
-                                                // Restore state when reselecting a previously selected item
-                                                restoreState = true
-                                            }
-                                        }
-                                    },
-                                    colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        indicatorColor = Color.Transparent
-                                    )
+                        Column {
+                            AdBanner()
+                            NavigationBar(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.primary
+                            ) {
+                                val items = listOf(
+                                    Triple("home", "Início", Icons.Default.Home),
+                                    Triple("simulator", "Simulações", Icons.Default.Calculate),
+                                    Triple("history", "Histórico", Icons.Default.History),
+                                    Triple("favorites", "Favoritos", Icons.Default.Star)
                                 )
+                                items.forEach { (itemRoute, label, icon) ->
+                                    val isSelected = currentDestination?.hierarchy?.any { 
+                                        it.route?.split("?")?.firstOrNull() == itemRoute 
+                                    } == true
+
+                                    NavigationBarItem(
+                                        icon = { Icon(icon, contentDescription = label) },
+                                        label = { Text(label, fontFamily = DmSansFont) },
+                                        selected = isSelected,
+                                        onClick = {
+                                            if (!isSelected) {
+                                                navController.navigate(itemRoute) {
+                                                    // Pop up to the start destination of the graph to
+                                                    // avoid building up a large stack of destinations
+                                                    // on the back stack as users select items
+                                                    popUpTo(navController.graph.findStartDestination().id) {
+                                                        saveState = true
+                                                    }
+                                                    // Avoid multiple copies of the same destination when
+                                                    // reselecting the same item
+                                                    launchSingleTop = true
+                                                    // Restore state when reselecting a previously selected item
+                                                    restoreState = true
+                                                }
+                                            }
+                                        },
+                                        colors = NavigationBarItemDefaults.colors(
+                                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            indicatorColor = Color.Transparent
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

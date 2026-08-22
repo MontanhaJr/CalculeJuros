@@ -17,8 +17,8 @@ android {
         applicationId = "com.montanhajr.calculejuros"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -27,12 +27,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"ca-app-pub-3940256099942544/6300978111\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-4612925515848375~7839521591"
+            buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"ca-app-pub-4612925515848375/8706870388\"")
         }
     }
     compileOptions {
@@ -44,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
