@@ -11,10 +11,11 @@ import javax.inject.Inject
 data class RecentSimulation(
     val id: String,
     val title: String,
-    val details: String,
-    val yield: String,
-    val value: String,
-    val type: String // "Parcelar" or "À vista"
+    val installmentsCount: Int,
+    val annualProfitability: Double,
+    val difference: Double,
+    val type: String, // "Parcelar" or "À vista"
+    val isSuggested: Boolean = false
 )
 
 data class HomeUiState(
@@ -34,9 +35,9 @@ class HomeViewModel @Inject constructor(
                 RecentSimulation(
                     id = entity.id.toString(),
                     title = entity.scenarioName ?: "Simulação",
-                    details = "${entity.inputInstallmentsCount}x no cartão",
-                    yield = "Rentabilidade: ${String.format(Locale.getDefault(), "%.1f", entity.inputAnnualProfitability)}% a.a.",
-                    value = "R$ ${String.format(Locale.getDefault(), "%.2f", entity.difference)}",
+                    installmentsCount = entity.inputInstallmentsCount,
+                    annualProfitability = entity.inputAnnualProfitability,
+                    difference = entity.difference,
                     type = if (entity.winner == "PARCELADO") "Parcelar" else "À vista"
                 )
             }
@@ -44,11 +45,12 @@ class HomeViewModel @Inject constructor(
             val suggested = sortedSimulations.firstOrNull()?.let { last ->
                 RecentSimulation(
                     id = last.id.toString(),
-                    title = "Vale a pena ${if (last.winner == "PARCELADO") "PARCELAR!" else "À VISTA!"}",
-                    details = "Você pode ganhar até",
-                    yield = "investindo o que deixaria de pagar à vista.",
-                    value = "R$ ${String.format(Locale.getDefault(), "%.2f", last.difference)}",
-                    type = if (last.winner == "PARCELADO") "Parcelar" else "À vista"
+                    title = "", // Not used for suggested in UI anymore
+                    installmentsCount = last.inputInstallmentsCount,
+                    annualProfitability = last.inputAnnualProfitability,
+                    difference = last.difference,
+                    type = if (last.winner == "PARCELADO") "Parcelar" else "À vista",
+                    isSuggested = true
                 )
             }
 

@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.domain.model.SimulationResult
 import com.montanhajr.calculejuros.core.domain.model.RecommendationType
 import com.montanhajr.calculejuros.ui.theme.MonoValueStyle
@@ -20,7 +22,7 @@ fun ResultCard(
     result: SimulationResult,
     modifier: Modifier = Modifier
 ) {
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    val currencyFormat = NumberFormat.getCurrencyInstance()
     
     val containerColor = when (result.recommendation) {
         RecommendationType.A_VISTA -> MaterialTheme.colorScheme.primary
@@ -48,9 +50,9 @@ fun ResultCard(
         ) {
             Text(
                 text = when (result.recommendation) {
-                    RecommendationType.A_VISTA -> "PAGAR À VISTA COMPENSA MAIS!"
-                    RecommendationType.PARCELADO -> "PARCELAR E INVESTIR COMPENSA MAIS!"
-                    RecommendationType.EMPATE -> "PRATICAMENTE EMPATE"
+                    RecommendationType.A_VISTA -> stringResource(R.string.result_cash_better)
+                    RecommendationType.PARCELADO -> stringResource(R.string.result_installment_better)
+                    RecommendationType.EMPATE -> stringResource(R.string.result_tie)
                 },
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
@@ -62,7 +64,7 @@ fun ResultCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Ganho à vista:", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.label_gain_cash), style = MaterialTheme.typography.bodyMedium)
                 Text(currencyFormat.format(result.netGainCash), style = MonoValueStyle)
             }
             
@@ -70,7 +72,7 @@ fun ResultCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Ganho parcelado:", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.label_gain_installment), style = MaterialTheme.typography.bodyMedium)
                 Text(currencyFormat.format(result.netGainInstallment), style = MonoValueStyle)
             }
             
@@ -80,7 +82,7 @@ fun ResultCard(
             )
             
             Text(
-                text = "Diferença de ${currencyFormat.format(result.difference)}",
+                text = stringResource(R.string.label_difference, currencyFormat.format(result.difference)),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )

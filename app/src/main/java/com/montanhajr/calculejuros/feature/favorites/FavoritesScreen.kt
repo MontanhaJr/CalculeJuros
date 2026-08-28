@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
 
@@ -54,9 +56,9 @@ fun FavoritesScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Minhas simulações favoritas", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.title_my_favorites), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 TextButton(onClick = { /* TODO */ }) {
-                    Text("Editar", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_edit), fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                 }
@@ -91,16 +93,16 @@ fun FavoritesScreen(
         uiState.pendingUnfavorite?.let { simulation ->
             AlertDialog(
                 onDismissRequest = viewModel::dismissUnfavoriteDialog,
-                title = { Text("Remover dos favoritos?", fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
-                text = { Text("Esta simulação não aparecerá mais nesta tela, mas continuará no seu histórico.", fontFamily = DmSansFont) },
+                title = { Text(stringResource(R.string.dialog_unfavorite_title), fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.dialog_unfavorite_desc), fontFamily = DmSansFont) },
                 confirmButton = {
                     TextButton(onClick = viewModel::confirmUnfavorite) {
-                        Text("Remover", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_remove), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = viewModel::dismissUnfavoriteDialog) {
-                        Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             )
@@ -119,14 +121,14 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                "Favoritos",
+                stringResource(R.string.title_favorites),
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                "Suas simulações favoritas para\nacompanhar sempre 💜",
+                stringResource(R.string.subtitle_favorites),
                 fontFamily = DmSansFont,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
@@ -147,7 +149,7 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
                 Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Nova\nsimulação",
+                    stringResource(R.string.btn_new_simulation).replace(" ", "\n"),
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 10.sp,
                     fontFamily = SoraFont,
@@ -182,9 +184,9 @@ fun QuickAccessCard() {
             Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
-                Text("Acesso rápido", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
+                Text(stringResource(R.string.card_quick_access_title), fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
                 Text(
-                    "Salve suas simulações favoritas\ne compare sempre que quiser.",
+                    stringResource(R.string.card_quick_access_desc),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     fontFamily = DmSansFont
@@ -248,21 +250,21 @@ fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit, onToggleFavorite: 
             Column(horizontalAlignment = Alignment.End) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = (if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
+                        color = (if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             item.resultType,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             fontFamily = SoraFont,
-                            color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                            color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     IconButton(onClick = onToggleFavorite, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Star, contentDescription = "Remover dos favoritos", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Star, contentDescription = stringResource(R.string.content_desc_remove_favorite), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                     }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -272,7 +274,7 @@ fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit, onToggleFavorite: 
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+                    color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                 )
             }
             
@@ -306,9 +308,9 @@ fun TipCard() {
             Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
-                Text("Dica", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
+                Text(stringResource(R.string.card_tip_title), fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
                 Text(
-                    "Compare suas simulações favoritas sempre que houver mudança nos juros ou descontos!",
+                    stringResource(R.string.card_tip_desc),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 11.sp,
                     fontFamily = DmSansFont

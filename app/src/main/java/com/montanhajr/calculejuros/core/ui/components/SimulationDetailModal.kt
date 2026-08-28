@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import com.montanhajr.calculejuros.ui.theme.SoraFont
@@ -35,15 +37,16 @@ fun SimulationDetailModal(
                 .padding(start = 24.dp, end = 24.dp, bottom = 40.dp)
         ) {
             Text(
-                text = simulation.scenarioName ?: "Detalhes da Simulação",
+                text = simulation.scenarioName ?: stringResource(R.string.simulation_details),
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             
+            val atText = stringResource(R.string.date_at)
             Text(
-                text = SimpleDateFormat("dd/MM/yyyy 'às' HH:mm", Locale.getDefault()).format(Date(simulation.date)),
+                text = SimpleDateFormat("dd/MM/yyyy '$atText' HH:mm", Locale.getDefault()).format(Date(simulation.date)),
                 fontFamily = DmSansFont,
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -51,14 +54,22 @@ fun SimulationDetailModal(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            DetailItem(label = "Valor do Produto", value = "R$ ${String.format("%.2f", simulation.productPrice)}")
-            DetailItem(label = "Valor à Vista", value = "R$ ${String.format("%.2f", simulation.cashPrice)}")
-            DetailItem(label = "Parcelamento", value = "${simulation.installmentsCount}x de R$ ${String.format("%.2f", simulation.installmentValue)}")
+            DetailItem(label = stringResource(R.string.label_product_price), value = stringResource(R.string.label_currency_format, String.format("%.2f", simulation.productPrice)))
+            DetailItem(label = stringResource(R.string.label_cash_price), value = stringResource(R.string.label_currency_format, String.format("%.2f", simulation.cashPrice)))
+            DetailItem(
+                label = stringResource(R.string.label_installment_plan),
+                value = stringResource(
+                    R.string.label_installment_value_format,
+                    simulation.installmentsCount,
+                    String.format("%.2f", simulation.installmentValue)
+                )
+            )
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            val isInstallmentWinner = simulation.winner == "PARCELADO"
             Surface(
-                color = (if (simulation.winner == "PARCELADO") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
+                color = (if (isInstallmentWinner) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -67,24 +78,24 @@ fun SimulationDetailModal(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        if (simulation.winner == "PARCELADO") Icons.Default.TrendingUp else Icons.Default.Savings,
+                        if (isInstallmentWinner) Icons.Default.TrendingUp else Icons.Default.Savings,
                         contentDescription = null,
-                        tint = if (simulation.winner == "PARCELADO") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+                        tint = if (isInstallmentWinner) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            if (simulation.winner == "PARCELADO") "Melhor: Parcelado" else "Melhor: À Vista",
+                            if (isInstallmentWinner) stringResource(R.string.label_best_installment) else stringResource(R.string.label_best_cash),
                             fontWeight = FontWeight.Bold,
                             fontFamily = SoraFont,
                             fontSize = 14.sp,
-                            color = if (simulation.winner == "PARCELADO") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+                            color = if (isInstallmentWinner) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                         )
                         Text(
-                            "Vantagem de R$ ${String.format("%.2f", simulation.difference)}",
+                            stringResource(R.string.label_advantage_value, String.format("%.2f", simulation.difference)),
                             fontFamily = DmSansFont,
                             fontSize = 12.sp,
-                            color = if (simulation.winner == "PARCELADO") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+                            color = if (isInstallmentWinner) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -104,7 +115,7 @@ fun SimulationDetailModal(
             ) {
                 Icon(Icons.Default.Refresh, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Reutilizar Simulação", fontFamily = SoraFont, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.btn_reuse_simulation), fontFamily = SoraFont, fontWeight = FontWeight.Bold)
             }
         }
     }

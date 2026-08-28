@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.compose.ui.res.stringResource
 import com.montanhajr.calculejuros.feature.favorites.FavoritesScreen
 import com.montanhajr.calculejuros.feature.favorites.FavoritesViewModel
 import com.montanhajr.calculejuros.feature.history.HistoryScreen
@@ -54,10 +55,10 @@ class MainActivity : ComponentActivity() {
                                 contentColor = MaterialTheme.colorScheme.primary
                             ) {
                                 val items = listOf(
-                                    Triple("home", "Início", Icons.Default.Home),
-                                    Triple("simulator", "Simulações", Icons.Default.Calculate),
-                                    Triple("history", "Histórico", Icons.Default.History),
-                                    Triple("favorites", "Favoritos", Icons.Default.Star)
+                                    Triple("home", stringResource(R.string.nav_label_home), Icons.Default.Home),
+                                    Triple("simulator", stringResource(R.string.nav_label_simulator), Icons.Default.Calculate),
+                                    Triple("history", stringResource(R.string.nav_label_history), Icons.Default.History),
+                                    Triple("favorites", stringResource(R.string.nav_label_favorites), Icons.Default.Star)
                                 )
                                 items.forEach { (itemRoute, label, icon) ->
                                     val isSelected = currentDestination?.hierarchy?.any { 

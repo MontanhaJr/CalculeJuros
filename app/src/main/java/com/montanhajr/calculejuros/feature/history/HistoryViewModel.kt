@@ -1,12 +1,15 @@
 package com.montanhajr.calculejuros.feature.history
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.core.domain.usecase.DeleteSimulationUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.GetHistoryUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -47,7 +50,8 @@ data class HistoryUiState(
 class HistoryViewModel @Inject constructor(
     getHistoryUseCase: GetHistoryUseCase,
     private val deleteSimulationUseCase: DeleteSimulationUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
@@ -69,17 +73,20 @@ class HistoryViewModel @Inject constructor(
         val totalGain = simulations.sumOf { it.difference }
         HistoryUiState(
             totalSimulations = simulations.size.toString(),
-            potentialGain = "R$ ${String.format("%.2f", totalGain)}",
-            averageGain = if (simulations.isNotEmpty()) "R$ ${String.format("%.2f", totalGain / simulations.size)}" else "R$ 0,00",
+            totalSimulationsPeriod = context.getString(R.string.label_this_month),
+            potentialGain = context.getString(R.string.label_currency_format, String.format("%.2f", totalGain)),
+            potentialGainLabel = context.getString(R.string.label_in_total),
+            averageGain = if (simulations.isNotEmpty()) context.getString(R.string.label_currency_format, String.format("%.2f", totalGain / simulations.size)) else context.getString(R.string.label_currency_format, "0,00"),
+            averageGainLabel = context.getString(R.string.label_advantage),
             recentSimulations = filteredSimulations.map { entity ->
                 HistoryItem(
                     id = entity.id.toString(),
-                    title = entity.scenarioName ?: "Simulação",
-                    description = "${entity.inputInstallmentsCount}x no cartão",
+                    title = entity.scenarioName ?: context.getString(R.string.default_simulation_name),
+                    description = context.getString(R.string.label_installments_card, entity.inputInstallmentsCount),
                     timestamp = formatTimestamp(entity.date),
-                    resultType = if (entity.winner == "PARCELADO") "Parcelar" else "À vista",
-                    resultLabel = if (entity.winner == "PARCELADO") "Você ganha" else "Você economiza",
-                    resultValue = "R$ ${String.format("%.2f", entity.difference)}",
+                    resultType = if (entity.winner == "PARCELADO") context.getString(R.string.winner_installments) else context.getString(R.string.winner_cash),
+                    resultLabel = if (entity.winner == "PARCELADO") context.getString(R.string.label_you_gain) else context.getString(R.string.label_you_save),
+                    resultValue = context.getString(R.string.label_currency_format, String.format("%.2f", entity.difference)),
                     iconType = entity.iconType,
                     isFavorite = entity.isFavorite,
                     fullEntity = entity
@@ -136,8 +143,8 @@ class HistoryViewModel @Inject constructor(
         val simDate = Calendar.getInstance().apply { time = date }
         
         return when {
-            isSameDay(now, simDate) -> "Hoje, ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)}"
-            isYesterday(now, simDate) -> "Ontem, ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)}"
+            isSameDay(now, simDate) -> context.getString(R.string.label_today, SimpleDateFormat("HH:mm", Locale.getDefault()).format(date))
+            isYesterday(now, simDate) -> context.getString(R.string.label_yesterday, SimpleDateFormat("HH:mm", Locale.getDefault()).format(date))
             else -> SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault()).format(date)
         }
     }

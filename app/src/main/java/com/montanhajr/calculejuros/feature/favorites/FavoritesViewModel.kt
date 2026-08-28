@@ -1,11 +1,14 @@
 package com.montanhajr.calculejuros.feature.favorites
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -33,7 +36,8 @@ data class FavoritesUiState(
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     getFavoritesUseCase: GetFavoritesUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     
     private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
@@ -48,12 +52,15 @@ class FavoritesViewModel @Inject constructor(
             favoriteSimulations = simulations.map { entity ->
                 FavoriteItem(
                     id = entity.id.toString(),
-                    title = entity.scenarioName ?: "Simulação",
-                    description = "${entity.inputInstallmentsCount}x no cartão",
-                    creationDate = "Criado em ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(entity.date))}",
-                    resultType = if (entity.winner == "PARCELADO") "Parcelar" else "À vista",
-                    resultLabel = if (entity.winner == "PARCELADO") "Você ganha" else "Você economiza",
-                    resultValue = "R$ ${String.format("%.2f", entity.difference)}",
+                    title = entity.scenarioName ?: context.getString(R.string.default_simulation_name),
+                    description = context.getString(R.string.label_installments_card, entity.inputInstallmentsCount),
+                    creationDate = context.getString(
+                        R.string.label_created_at,
+                        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(entity.date))
+                    ),
+                    resultType = if (entity.winner == "PARCELADO") context.getString(R.string.winner_installments) else context.getString(R.string.winner_cash),
+                    resultLabel = if (entity.winner == "PARCELADO") context.getString(R.string.label_you_gain) else context.getString(R.string.label_you_save),
+                    resultValue = context.getString(R.string.label_currency_format, String.format("%.2f", entity.difference)),
                     iconType = entity.iconType,
                     fullEntity = entity
                 )

@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">CalculeJuros</string>
+
+    <!-- Navigation Labels -->
+    <string name="nav_label_home">Inicio</string>
+    <string name="nav_label_simulator">Simulaciones</string>
+    <string name="nav_label_history">Historial</string>
+    <string name="nav_label_favorites">Favoritos</string>
+
+    <!-- Simulator Screen -->
+    <string name="title_new_simulation">Nueva Simulación</string>
+    <string name="subtitle_new_simulation">Complete los datos para descubrir\nqué le conviene más.</string>
+    <string name="label_product_price">Precio del producto</string>
+    <string name="label_discount_percentage_mode">Descuento %</string>
+    <string name="label_cash_value_mode">Valor al contado</string>
+    <string name="label_discount_percentage">Porcentaje de Descuento</string>
+    <string name="helper_discount_percentage">Ingrese el descuento (0 a 100)</string>
+    <string name="label_cash_price">Valor del Precio al Contado</string>
+    <string name="helper_cash_price">Valor final con descuento aplicado</string>
+    <string name="label_monthly_rate_mode">Tasa mensual</string>
+    <string name="label_total_value_mode">Valor total</string>
+    <string name="label_card_tax_rate">Tasa de la tarjeta (al mes)</string>
+    <string name="helper_card_tax_rate">Ingrese la tasa de interés de su tarjeta</string>
+    <string name="label_total_installment_value">Valor total financiado</string>
+    <string name="helper_total_installment_value">Suma de todas las cuotas</string>
+    <string name="label_annual_rate_mode">Tasa Anual</string>
+    <string name="label_monthly_rate_mode_profitability">Tasa Mensual</string>
+    <string name="label_investment_annual_rate">Rentabilidad de la inversión (al año)</string>
+    <string name="helper_investment_annual_rate">Ingrese la rentabilidad (ej: 12,75)</string>
+    <string name="label_investment_monthly_rate">Rentabilidad de la inversión (al mes)</string>
+    <string name="helper_investment_monthly_rate">Ingrese la rentabilidad mensual</string>
+    <string name="section_how_it_works_title">¿Cómo funciona?</string>
+    <string name="section_how_it_works_desc">Comparamos el rendimiento de su inversión con el costo de pagar en cuotas para ayudarle a decidir la mejor opción.</string>
+    <string name="btn_calculate">Calcular</string>
+    <string name="btn_clear_fields">Limpiar campos</string>
+    <string name="status_saved_favorite">Guardado en favoritos</string>
+    <string name="status_add_favorite">Añadir a favoritos</string>
+    <string name="dialog_save_favorite_title">Guardar en favoritos</string>
+    <string name="dialog_save_favorite_desc">Asigne un nombre a esta simulación (opcional)</string>
+    <string name="dialog_save_favorite_hint">Ej: Laptop Gamer</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_cancel">Cancelar</string>
+
+    <!-- History Screen -->
+    <string name="title_history">Historial</string>
+    <string name="subtitle_history">Siga todas sus simulaciones</string>
+    <string name="btn_filter">Filtrar</string>
+    <string name="stat_total_simulations">Total de\nsimulaciones</string>
+    <string name="stat_potential_gain">Puede\nganar</string>
+    <string name="stat_average_gain">Promedio por\nsimulación</string>
+    <string name="filter_all">Todas las simulaciones</string>
+    <string name="filter_installments">Simulaciones (Cuotas)</string>
+    <string name="filter_cash">Simulaciones (Al contado)</string>
+    <string name="empty_history">No se encontraron simulaciones</string>
+    <string name="banner_continue_simulating">¡Siga simulando y\ntome siempre la mejor decisión!</string>
+    <string name="btn_new_simulation">Nueva simulación</string>
+    <string name="dialog_delete_title">¿Eliminar simulación?</string>
+    <string name="dialog_delete_desc">Esta acción no se puede deshacer. La simulación se eliminará permanentemente de su historial.</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="dialog_filter_title">Filtrar por</string>
+    <string name="filter_all_label">Todos</string>
+    <string name="filter_best_installment">Mejor en cuotas</string>
+    <string name="filter_best_cash">Mejor al contado</string>
+    <string name="content_desc_remove_favorite">Eliminar de favoritos</string>
+    <string name="content_desc_add_favorite">Añadir a favoritos</string>
+
+    <!-- Favorites Screen -->
+    <string name="title_favorites">Favoritos</string>
+    <string name="subtitle_favorites">Sus simulaciones favoritas para\nseguir siempre 💜</string>
+    <string name="title_my_favorites">Mis simulaciones favoritas</string>
+    <string name="btn_edit">Editar</string>
+    <string name="card_quick_access_title">Acceso rápido</string>
+    <string name="card_quick_access_desc">Guarde sus simulaciones favoritas\ny compare cuando quiera.</string>
+    <string name="card_tip_title">Consejo</string>
+    <string name="card_tip_desc">¡Compare sus simulaciones favoritas cada vez que cambien los intereses o descuentos!</string>
+    <string name="dialog_unfavorite_title">¿Eliminar de favoritos?</string>
+    <string name="dialog_unfavorite_desc">Esta simulación ya no aparecerá en esta pantalla, pero permanecerá en su historial.</string>
+    <string name="btn_remove">Eliminar</string>
+
+    <!-- Result Card -->
+    <string name="result_cash_better">¡PAGAR AL CONTADO CONVIENE MÁS!</string>
+    <string name="result_installment_better">¡CUOTAS E INVERTIR CONVIENE MÁS!</string>
+    <string name="result_tie">PRÁCTICAMENTE EMPATE</string>
+    <string name="label_gain_cash">Ganancia al contado:</string>
+    <string name="label_gain_installment">Ganancia en cuotas:</string>
+    <string name="label_difference">Diferencia de %s</string>
+
+    <!-- Simulation Detail Modal -->
+    <string name="simulation_details">Detalles de la Simulación</string>
+    <string name="label_installment_plan">Financiación</string>
+    <string name="label_installment_value_format">%1$dx de $ %2$s</string>
+    <string name="label_best_installment">Mejor: Cuotas</string>
+    <string name="label_best_cash">Mejor: Al Contado</string>
+    <string name="label_advantage_value">Ventaja de $ %s</string>
+    <string name="btn_reuse_simulation">Reutilizar Simulación</string>
+    <string name="date_at">a las</string>
+
+    <!-- ViewModels & Data -->
+    <string name="label_this_month">este mes</string>
+    <string name="label_in_total">en total</string>
+    <string name="label_advantage">de ventaja</string>
+    <string name="default_simulation_name">Simulación</string>
+    <string name="label_installments_card">%dx con tarjeta</string>
+    <string name="winner_installments">Cuotas</string>
+    <string name="winner_cash">Al contado</string>
+    <string name="label_you_gain">Usted gana</string>
+    <string name="label_you_save">Usted ahorra</string>
+    <string name="label_today">Hoy, %s</string>
+    <string name="label_yesterday">Ayer, %s</string>
+    <string name="label_created_at">Creado el %s</string>
+
+    <!-- Components -->
+    <string name="label_currency">$</string>
+    <string name="label_currency_format">$ %s</string>
+    <string name="label_installments_count">Número de cuotas</string>
+
+    <!-- Home Screen -->
+    <string name="home_title_part1">¿Cuotas\n</string>
+    <string name="home_title_part2">o Invertir?</string>
+    <string name="home_subtitle">Descubra lo que realmente vale más la pena</string>
+    <string name="home_card_new_sim_title">Nueva Simulación</string>
+    <string name="home_card_new_sim_desc">Compare al contado vs cuotas\ny vea lo mejor para usted</string>
+    <string name="home_suggested_result_label">Resultado sugerido</string>
+    <string name="home_worth_it_prefix">Vale la pena </string>
+    <string name="home_worth_it_installment">¡CUOTAS!</string>
+    <string name="home_worth_it_cash">¡AL CONTADO!</string>
+    <string name="home_view_details">Ver detalles</string>
+    <string name="home_action_recent_title">Simulaciones\nRecientes</string>
+    <string name="home_action_recent_desc">Continúe donde\nlo dejó</string>
+    <string name="home_action_scenarios_title">Escenarios\nListos</string>
+    <string name="home_action_scenarios_desc">Ejemplos para\nayudarte</string>
+    <string name="home_action_learn_title">Aprende\nMás</string>
+    <string name="home_action_learn_desc">Entiende los\nconceptos</string>
+    <string name="home_recent_header">Simulaciones recientes</string>
+    <string name="home_view_all">Ver todas ></string>
+
+    <!-- Home ViewModel / Suggested -->
+    <string name="home_suggested_title_format">Vale la pena %s</string>
+    <string name="home_suggested_details">Puedes ganar hasta</string>
+    <string name="home_suggested_yield">invirtiendo lo que dejarías de pagar al contado.</string>
+    <string name="home_recent_yield_format">Rentabilidad: %1$.1f%% anual</string>
+</resources>

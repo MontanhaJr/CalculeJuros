@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">CalculeJuros</string>
+
+    <!-- Navigation Labels -->
+    <string name="nav_label_home">Home</string>
+    <string name="nav_label_simulator">Simulators</string>
+    <string name="nav_label_history">History</string>
+    <string name="nav_label_favorites">Favorites</string>
+
+    <!-- Simulator Screen -->
+    <string name="title_new_simulation">New Simulation</string>
+    <string name="subtitle_new_simulation">Fill in the data to find out\nwhat is better for you.</string>
+    <string name="label_product_price">Product price</string>
+    <string name="label_discount_percentage_mode">Discount %</string>
+    <string name="label_cash_value_mode">Cash value</string>
+    <string name="label_discount_percentage">Discount Percentage</string>
+    <string name="helper_discount_percentage">Enter the discount (0 to 100)</string>
+    <string name="label_cash_price">Cash Price Value</string>
+    <string name="helper_cash_price">Final value with discount applied</string>
+    <string name="label_monthly_rate_mode">Monthly rate</string>
+    <string name="label_total_value_mode">Total value</string>
+    <string name="label_card_tax_rate">Card tax (per month)</string>
+    <string name="helper_card_tax_rate">Enter your card\'s interest rate</string>
+    <string name="label_total_installment_value">Total installment value</string>
+    <string name="helper_total_installment_value">Sum of all installments</string>
+    <string name="label_annual_rate_mode">Annual Rate</string>
+    <string name="label_monthly_rate_mode_profitability">Monthly Rate</string>
+    <string name="label_investment_annual_rate">Investment yield (per year)</string>
+    <string name="helper_investment_annual_rate">Enter the yield (e.g., 12.75)</string>
+    <string name="label_investment_monthly_rate">Investment yield (per month)</string>
+    <string name="helper_investment_monthly_rate">Enter the monthly yield</string>
+    <string name="section_how_it_works_title">How it works?</string>
+    <string name="section_how_it_works_desc">We compare your investment yield with the cost of paying in installments to help you decide the best option.</string>
+    <string name="btn_calculate">Calculate</string>
+    <string name="btn_clear_fields">Clear fields</string>
+    <string name="status_saved_favorite">Saved to favorites</string>
+    <string name="status_add_favorite">Add to favorites</string>
+    <string name="dialog_save_favorite_title">Save to favorites</string>
+    <string name="dialog_save_favorite_desc">Name this simulation (optional)</string>
+    <string name="dialog_save_favorite_hint">Ex: Gaming Laptop</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- History Screen -->
+    <string name="title_history">History</string>
+    <string name="subtitle_history">Track all your simulations</string>
+    <string name="btn_filter">Filter</string>
+    <string name="stat_total_simulations">Total\nsimulations</string>
+    <string name="stat_potential_gain">You can\ngain</string>
+    <string name="stat_average_gain">Average per\nsimulation</string>
+    <string name="filter_all">All simulations</string>
+    <string name="filter_installments">Simulations (Installments)</string>
+    <string name="filter_cash">Simulations (Cash)</string>
+    <string name="empty_history">No simulations found</string>
+    <string name="banner_continue_simulating">Keep simulating and\nalways make the best choice!</string>
+    <string name="btn_new_simulation">New simulation</string>
+    <string name="dialog_delete_title">Delete simulation?</string>
+    <string name="dialog_delete_desc">This action cannot be undone. The simulation will be permanently removed from your history.</string>
+    <string name="btn_delete">Delete</string>
+    <string name="dialog_filter_title">Filter by</string>
+    <string name="filter_all_label">All</string>
+    <string name="filter_best_installment">Best in installments</string>
+    <string name="filter_best_cash">Best in cash</string>
+    <string name="content_desc_remove_favorite">Remove from favorites</string>
+    <string name="content_desc_add_favorite">Add to favorites</string>
+
+    <!-- Favorites Screen -->
+    <string name="title_favorites">Favorites</string>
+    <string name="subtitle_favorites">Your favorite simulations to\nalways keep track of 💜</string>
+    <string name="title_my_favorites">My favorite simulations</string>
+    <string name="btn_edit">Edit</string>
+    <string name="card_quick_access_title">Quick Access</string>
+    <string name="card_quick_access_desc">Save your favorite simulations\nand compare whenever you want.</string>
+    <string name="card_tip_title">Tip</string>
+    <string name="card_tip_desc">Compare your favorite simulations whenever interest rates or discounts change!</string>
+    <string name="dialog_unfavorite_title">Remove from favorites?</string>
+    <string name="dialog_unfavorite_desc">This simulation will no longer appear on this screen, but it will remain in your history.</string>
+    <string name="btn_remove">Remove</string>
+
+    <!-- Result Card -->
+    <string name="result_cash_better">PAYING IN CASH IS BETTER!</string>
+    <string name="result_installment_better">INSTALLMENTS AND INVESTING IS BETTER!</string>
+    <string name="result_tie">PRACTICALLY A TIE</string>
+    <string name="label_gain_cash">Cash gain:</string>
+    <string name="label_gain_installment">Installment gain:</string>
+    <string name="label_difference">Difference of %s</string>
+
+    <!-- Simulation Detail Modal -->
+    <string name="simulation_details">Simulation Details</string>
+    <string name="label_installment_plan">Installment Plan</string>
+    <string name="label_installment_value_format">%1$dx of $ %2$s</string>
+    <string name="label_best_installment">Best: Installments</string>
+    <string name="label_best_cash">Best: Cash</string>
+    <string name="label_advantage_value">Advantage of $ %s</string>
+    <string name="btn_reuse_simulation">Reuse Simulation</string>
+    <string name="date_at">at</string>
+
+    <!-- ViewModels & Data -->
+    <string name="label_this_month">this month</string>
+    <string name="label_in_total">in total</string>
+    <string name="label_advantage">advantage</string>
+    <string name="default_simulation_name">Simulation</string>
+    <string name="label_installments_card">%dx on card</string>
+    <string name="winner_installments">Installments</string>
+    <string name="winner_cash">Cash</string>
+    <string name="label_you_gain">You gain</string>
+    <string name="label_you_save">You save</string>
+    <string name="label_today">Today, %s</string>
+    <string name="label_yesterday">Yesterday, %s</string>
+    <string name="label_created_at">Created on %s</string>
+
+    <!-- Components -->
+    <string name="label_currency">$</string>
+    <string name="label_currency_format">$ %s</string>
+    <string name="label_installments_count">Number of installments</string>
+
+    <!-- Home Screen -->
+    <string name="home_title_part1">Installment\n</string>
+    <string name="home_title_part2">or Invest?</string>
+    <string name="home_subtitle">Find out what is really worth more</string>
+    <string name="home_card_new_sim_title">New Simulation</string>
+    <string name="home_card_new_sim_desc">Compare cash vs installments\nand see the best for you</string>
+    <string name="home_suggested_result_label">Suggested result</string>
+    <string name="home_worth_it_prefix">It\'s worth it </string>
+    <string name="home_worth_it_installment">INSTALL!</string>
+    <string name="home_worth_it_cash">CASH!</string>
+    <string name="home_view_details">View details</string>
+    <string name="home_action_recent_title">Recent\nSimulations</string>
+    <string name="home_action_recent_desc">Continue where\nyou left off</string>
+    <string name="home_action_scenarios_title">Ready\nScenarios</string>
+    <string name="home_action_scenarios_desc">Examples to\nhelp you</string>
+    <string name="home_action_learn_title">Learn\nMore</string>
+    <string name="home_action_learn_desc">Understand the\nconcepts</string>
+    <string name="home_recent_header">Recent simulations</string>
+    <string name="home_view_all">View all ></string>
+
+    <!-- Home ViewModel / Suggested -->
+    <string name="home_suggested_title_format">It\'s worth it %s</string>
+    <string name="home_suggested_details">You can gain up to</string>
+    <string name="home_suggested_yield">investing what you would stop paying in cash.</string>
+    <string name="home_recent_yield_format">Yield: %1$.1f%% p.a.</string>
+</resources>

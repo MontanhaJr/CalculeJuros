@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import com.montanhajr.calculejuros.ui.theme.SoraFont
 
@@ -64,9 +66,10 @@ fun SimulatorInputField(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        val currencyLabel = stringResource(R.string.label_currency)
                         val (visualPrefix, visualSuffix) = when {
                             suffix == null -> "" to ""
-                            suffix == "R$" -> "R$ " to ""
+                            suffix == currencyLabel -> "$currencyLabel " to ""
                             else -> "" to " $suffix"
                         }
                         BasicTextField(
@@ -243,7 +246,7 @@ fun InstallmentSelector(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Número de parcelas", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
+                    Text(stringResource(R.string.label_installments_count), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
                     BasicTextField(
                         value = if (value == 0) "" else value.toString(),
                         onValueChange = onTextChange,

@@ -25,6 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import java.util.Locale
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.ui.theme.*
 
 @Composable
@@ -87,17 +90,17 @@ fun HomeHeader() {
             Text(
                 buildAnnotatedString {
                     withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.onSurface)) {
-                        append("Parcelar\n")
+                        append(stringResource(R.string.home_title_part1))
                     }
                     withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.primary)) {
-                        append("ou Investir?")
+                        append(stringResource(R.string.home_title_part2))
                     }
                 },
                 lineHeight = 40.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "Descubra o que realmente vale mais a pena",
+                stringResource(R.string.home_subtitle),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
@@ -149,14 +152,14 @@ fun NewSimulationCard(onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Nova Simulação",
+                    stringResource(R.string.home_card_new_sim_title),
                     fontFamily = SoraFont,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
                 Text(
-                    "Compare à vista vs parcelado\ne veja o melhor para você",
+                    stringResource(R.string.home_card_new_sim_desc),
                     fontFamily = DmSansFont,
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                     fontSize = 13.sp,
@@ -211,7 +214,7 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            "Resultado sugerido",
+                            stringResource(R.string.home_suggested_result_label),
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             color = MaterialTheme.colorScheme.secondary,
                             fontSize = 11.sp,
@@ -220,9 +223,10 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                     }
                     Text(
                         buildAnnotatedString {
-                            append("Vale a pena ")
+                            append(stringResource(R.string.home_worth_it_prefix))
+                            val resultLabel = if (result.type == "Parcelar") stringResource(R.string.home_worth_it_installment) else stringResource(R.string.home_worth_it_cash)
                             withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Bold, color = if (result.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)) {
-                                append(if (result.type == "Parcelar") "PARCELAR!" else "À VISTA!")
+                                append(resultLabel)
                             }
                         },
                         fontFamily = SoraFont,
@@ -239,7 +243,7 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Ver detalhes", fontSize = 11.sp)
+                        Text(stringResource(R.string.home_view_details), fontSize = 11.sp)
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, modifier = Modifier.size(14.dp))
                     }
                 }
@@ -249,9 +253,9 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
             
             Row(verticalAlignment = Alignment.Bottom) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(result.details, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
-                    Text(result.value, fontFamily = SoraFont, color = MaterialTheme.colorScheme.secondary, fontSize = 28.sp, fontWeight = FontWeight.Black)
-                    Text(result.yield, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                    Text(stringResource(R.string.home_suggested_details), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+                    Text(stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", result.difference)), fontFamily = SoraFont, color = MaterialTheme.colorScheme.secondary, fontSize = 28.sp, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.home_suggested_yield), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
                 }
                 // Placeholder for piggy bank illustration
                 Icon(
@@ -275,22 +279,22 @@ fun QuickActionsGrid(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         QuickActionItem(
-            title = "Simulações\nRecentes",
-            subtitle = "Continue de onde\nparou",
+            title = stringResource(R.string.home_action_recent_title),
+            subtitle = stringResource(R.string.home_action_recent_desc),
             icon = Icons.Default.Refresh,
             modifier = Modifier.weight(1f),
             onClick = onRecentClick
         )
         QuickActionItem(
-            title = "Cenários\nProntos",
-            subtitle = "Exemplos para\nte ajudar",
+            title = stringResource(R.string.home_action_scenarios_title),
+            subtitle = stringResource(R.string.home_action_scenarios_desc),
             icon = Icons.AutoMirrored.Filled.List,
             modifier = Modifier.weight(1f),
             onClick = onScenariosClick
         )
         QuickActionItem(
-            title = "Aprenda\nMais",
-            subtitle = "Entenda os\nconceitos",
+            title = stringResource(R.string.home_action_learn_title),
+            subtitle = stringResource(R.string.home_action_learn_desc),
             icon = Icons.Default.Book,
             modifier = Modifier.weight(1f),
             onClick = { /* TODO: Open Learn More */ }
@@ -345,10 +349,10 @@ fun RecentSimulationsHeader(onViewAllClick: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Simulações recentes", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(stringResource(R.string.home_recent_header), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
         TextButton(onClick = onViewAllClick) {
-            Text("Ver todas >", fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.home_view_all), fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -375,17 +379,19 @@ fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(simulation.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(simulation.details, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
-                Text(simulation.yield, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                val displayTitle = if (simulation.title.isEmpty() || simulation.title == "Simulação") stringResource(R.string.default_simulation_name) else simulation.title
+                Text(displayTitle, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(stringResource(R.string.label_installments_card, simulation.installmentsCount), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                Text(stringResource(R.string.home_recent_yield_format, simulation.annualProfitability), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
             }
             Column(horizontalAlignment = Alignment.End) {
+                val typeLabel = if (simulation.type == "Parcelar") stringResource(R.string.winner_installments) else stringResource(R.string.winner_cash)
                 Surface(
                     color = (if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        simulation.type,
+                        typeLabel,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                         fontFamily = SoraFont,
                         color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
@@ -393,7 +399,7 @@ fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
                         fontWeight = FontWeight.Bold
                     )
                 }
-                Text(simulation.value, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", simulation.difference)), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)
             }
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
         }

@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
 
@@ -56,9 +58,9 @@ fun HistoryScreen(
             ) {
                 Text(
                     text = when(uiState.activeFilter) {
-                        HistoryFilter.ALL -> "Todas as simulações"
-                        HistoryFilter.INSTALLMENTS -> "Simulações (Parcelar)"
-                        HistoryFilter.CASH -> "Simulações (À vista)"
+                        HistoryFilter.ALL -> stringResource(R.string.filter_all)
+                        HistoryFilter.INSTALLMENTS -> stringResource(R.string.filter_installments)
+                        HistoryFilter.CASH -> stringResource(R.string.filter_cash)
                     },
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
@@ -70,7 +72,7 @@ fun HistoryScreen(
             
             if (uiState.recentSimulations.isEmpty()) {
                 Box(modifier = Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
-                    Text("Nenhuma simulação encontrada", fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.empty_history), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 uiState.recentSimulations.forEach { item ->
@@ -113,16 +115,16 @@ fun HistoryScreen(
         uiState.pendingDelete?.let { _ ->
             AlertDialog(
                 onDismissRequest = viewModel::dismissDeleteDialog,
-                title = { Text("Excluir simulação?", fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
-                text = { Text("Esta ação não pode ser desfeita. A simulação será removida permanentemente do seu histórico.", fontFamily = DmSansFont) },
+                title = { Text(stringResource(R.string.dialog_delete_title), fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.dialog_delete_desc), fontFamily = DmSansFont) },
                 confirmButton = {
                     TextButton(onClick = viewModel::confirmDelete) {
-                        Text("Excluir", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_delete), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = viewModel::dismissDeleteDialog) {
-                        Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             )
@@ -148,16 +150,16 @@ fun FilterBottomSheet(
                 .padding(bottom = 48.dp, start = 24.dp, end = 24.dp)
         ) {
             Text(
-                "Filtrar por",
+                stringResource(R.string.dialog_filter_title),
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
             
-            FilterOption("Todos", currentFilter == HistoryFilter.ALL) { onFilterSelected(HistoryFilter.ALL) }
-            FilterOption("Melhor parcelar", currentFilter == HistoryFilter.INSTALLMENTS) { onFilterSelected(HistoryFilter.INSTALLMENTS) }
-            FilterOption("Melhor à vista", currentFilter == HistoryFilter.CASH) { onFilterSelected(HistoryFilter.CASH) }
+            FilterOption(stringResource(R.string.filter_all_label), currentFilter == HistoryFilter.ALL) { onFilterSelected(HistoryFilter.ALL) }
+            FilterOption(stringResource(R.string.filter_best_installment), currentFilter == HistoryFilter.INSTALLMENTS) { onFilterSelected(HistoryFilter.INSTALLMENTS) }
+            FilterOption(stringResource(R.string.filter_best_cash), currentFilter == HistoryFilter.CASH) { onFilterSelected(HistoryFilter.CASH) }
         }
     }
 }
@@ -194,14 +196,14 @@ fun HistoryHeader(onFilterClick: () -> Unit) {
     ) {
         Column {
             Text(
-                "Histórico",
+                stringResource(R.string.title_history),
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                "Acompanhe todas as suas simulações",
+                stringResource(R.string.subtitle_history),
                 fontFamily = DmSansFont,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
@@ -216,7 +218,7 @@ fun HistoryHeader(onFilterClick: () -> Unit) {
         ) {
             Icon(Icons.Default.FilterList, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Filtrar", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
+            Text(stringResource(R.string.btn_filter), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
         }
     }
 }
@@ -231,7 +233,7 @@ fun StatsRow(uiState: HistoryUiState) {
             icon = Icons.AutoMirrored.Filled.TrendingUp,
             iconColor = MaterialTheme.colorScheme.primary,
             iconBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-            label = "Total de\nsimulações",
+            label = stringResource(R.string.stat_total_simulations),
             value = uiState.totalSimulations,
             period = uiState.totalSimulationsPeriod,
             modifier = Modifier.weight(1f)
@@ -240,7 +242,7 @@ fun StatsRow(uiState: HistoryUiState) {
             icon = Icons.AutoMirrored.Filled.TrendingUp,
             iconColor = MaterialTheme.colorScheme.secondary,
             iconBg = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
-            label = "Você pode\nganhar",
+            label = stringResource(R.string.stat_potential_gain),
             value = uiState.potentialGain,
             period = uiState.potentialGainLabel,
             modifier = Modifier.weight(1.3f)
@@ -249,7 +251,7 @@ fun StatsRow(uiState: HistoryUiState) {
             icon = Icons.Default.Hexagon, // Placeholder for poly icon
             iconColor = MaterialTheme.colorScheme.tertiary,
             iconBg = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
-            label = "Média por\nsimulação",
+            label = stringResource(R.string.stat_average_gain),
             value = uiState.averageGain,
             period = uiState.averageGainLabel,
             modifier = Modifier.weight(1f)
@@ -344,14 +346,14 @@ fun HistoryListItem(
             Column(horizontalAlignment = Alignment.End) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = (if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
+                        color = (if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             item.resultType,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             fontFamily = SoraFont,
-                            color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                            color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -360,7 +362,7 @@ fun HistoryListItem(
                     IconButton(onClick = onToggleFavorite, modifier = Modifier.size(24.dp)) {
                         Icon(
                             imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                            contentDescription = if (item.isFavorite) "Remover dos favoritos" else "Adicionar aos favoritos",
+                            contentDescription = if (item.isFavorite) stringResource(R.string.content_desc_remove_favorite) else stringResource(R.string.content_desc_add_favorite),
                             tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                             modifier = Modifier.size(18.dp)
                         )
@@ -373,14 +375,14 @@ fun HistoryListItem(
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = if (item.resultType == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+                    color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                 )
             }
             
             Spacer(modifier = Modifier.width(4.dp))
             
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                Icon(Icons.Default.DeleteOutline, contentDescription = "Excluir", tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.DeleteOutline, contentDescription = stringResource(R.string.btn_delete), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
             }
         }
     }
@@ -411,7 +413,7 @@ fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Continue simulando e\nfaça sempre a melhor escolha!",
+                    stringResource(R.string.banner_continue_simulating),
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 12.sp,
                     fontFamily = DmSansFont,
@@ -425,7 +427,7 @@ fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                Text("Nova simulação", color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontFamily = SoraFont, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.btn_new_simulation), color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontFamily = SoraFont, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(Icons.Default.AddCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
             }

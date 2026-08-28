@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.ResultCard
 import com.montanhajr.calculejuros.feature.simulator.components.*
 import com.montanhajr.calculejuros.ui.theme.*
@@ -43,42 +45,47 @@ fun SimulatorScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
+            val currencyLabel = stringResource(R.string.label_currency)
             SimulatorInputField(
-                label = "Valor do produto",
+                label = stringResource(R.string.label_product_price),
                 value = uiState.productPrice,
                 onValueChange = viewModel::onProductPriceChange,
                 icon = Icons.Default.ShoppingBag,
-                suffix = "R$",
+                suffix = currencyLabel,
                 trailingIcon = Icons.Default.Edit
             )
             
             Spacer(modifier = Modifier.height(16.dp))
 
+            val discountOptions = listOf(
+                stringResource(R.string.label_discount_percentage_mode),
+                stringResource(R.string.label_cash_value_mode)
+            )
             ModeSelector(
-                options = listOf("Desconto %", "Valor à vista"),
-                selectedOption = if (uiState.useDiscount) "Desconto %" else "Valor à vista",
-                onOptionSelected = { viewModel.onUseDiscountToggle(it == "Desconto %") }
+                options = discountOptions,
+                selectedOption = if (uiState.useDiscount) discountOptions[0] else discountOptions[1],
+                onOptionSelected = { viewModel.onUseDiscountToggle(it == discountOptions[0]) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             if (uiState.useDiscount) {
                 SimulatorInputField(
-                    label = "Porcentagem de Desconto",
+                    label = stringResource(R.string.label_discount_percentage),
                     value = uiState.discountPercentage,
                     onValueChange = viewModel::onDiscountChange,
                     icon = Icons.Default.LocalOffer,
                     suffix = "%",
-                    helperText = "Informe o desconto (0 a 100)"
+                    helperText = stringResource(R.string.helper_discount_percentage)
                 )
             } else {
                 SimulatorInputField(
-                    label = "Valor do Preço à Vista",
+                    label = stringResource(R.string.label_cash_price),
                     value = uiState.cashPrice,
                     onValueChange = viewModel::onCashPriceChange,
                     icon = Icons.Default.LocalOffer,
-                    suffix = "R$",
-                    helperText = "Valor final com desconto aplicado"
+                    suffix = currencyLabel,
+                    helperText = stringResource(R.string.helper_cash_price)
                 )
             }
             
@@ -92,61 +99,69 @@ fun SimulatorScreen(
             
             Spacer(modifier = Modifier.height(16.dp))
 
+            val cardRateOptions = listOf(
+                stringResource(R.string.label_monthly_rate_mode),
+                stringResource(R.string.label_total_value_mode)
+            )
             ModeSelector(
-                options = listOf("Taxa mensal", "Valor total"),
-                selectedOption = if (uiState.useMonthlyRate) "Taxa mensal" else "Valor total",
-                onOptionSelected = { viewModel.onUseMonthlyRateToggle(it == "Taxa mensal") }
+                options = cardRateOptions,
+                selectedOption = if (uiState.useMonthlyRate) cardRateOptions[0] else cardRateOptions[1],
+                onOptionSelected = { viewModel.onUseMonthlyRateToggle(it == cardRateOptions[0]) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             if (uiState.useMonthlyRate) {
                 SimulatorInputField(
-                    label = "Taxa do cartão (ao mês)",
+                    label = stringResource(R.string.label_card_tax_rate),
                     value = uiState.cardTaxRate,
                     onValueChange = viewModel::onCardTaxChange,
                     icon = Icons.Default.CreditCard,
                     suffix = "% a.m.",
-                    helperText = "Informe a taxa de juros do seu cartão"
+                    helperText = stringResource(R.string.helper_card_tax_rate)
                 )
             } else {
                 SimulatorInputField(
-                    label = "Valor total parcelado",
+                    label = stringResource(R.string.label_total_installment_value),
                     value = uiState.totalInstallmentValue,
                     onValueChange = viewModel::onTotalInstallmentValueChange,
                     icon = Icons.Default.CreditCard,
-                    suffix = "R$",
-                    helperText = "Soma de todas as parcelas"
+                    suffix = currencyLabel,
+                    helperText = stringResource(R.string.helper_total_installment_value)
                 )
             }
             
             Spacer(modifier = Modifier.height(16.dp))
 
+            val profitabilityOptions = listOf(
+                stringResource(R.string.label_annual_rate_mode),
+                stringResource(R.string.label_monthly_rate_mode_profitability)
+            )
             ModeSelector(
-                options = listOf("Taxa Anual", "Taxa Mensal"),
-                selectedOption = if (uiState.useAnnualProfitability) "Taxa Anual" else "Taxa Mensal",
-                onOptionSelected = { viewModel.onUseAnnualProfitabilityToggle(it == "Taxa Anual") }
+                options = profitabilityOptions,
+                selectedOption = if (uiState.useAnnualProfitability) profitabilityOptions[0] else profitabilityOptions[1],
+                onOptionSelected = { viewModel.onUseAnnualProfitabilityToggle(it == profitabilityOptions[0]) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             if (uiState.useAnnualProfitability) {
                 SimulatorInputField(
-                    label = "Rentabilidade do investimento (ao ano)",
+                    label = stringResource(R.string.label_investment_annual_rate),
                     value = uiState.investmentAnnualRate,
                     onValueChange = viewModel::onInvestmentAnnualRateChange,
                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                     suffix = "% a.a.",
-                    helperText = "Digite a rentabilidade (ex: 12,75)"
+                    helperText = stringResource(R.string.helper_investment_annual_rate)
                 )
             } else {
                 SimulatorInputField(
-                    label = "Rentabilidade do investimento (ao mês)",
+                    label = stringResource(R.string.label_investment_monthly_rate),
                     value = uiState.investmentMonthlyRate,
                     onValueChange = viewModel::onInvestmentMonthlyRateChange,
                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                     suffix = "% a.m.",
-                    helperText = "Digite a rentabilidade mensal"
+                    helperText = stringResource(R.string.helper_investment_monthly_rate)
                 )
             }
             
@@ -169,7 +184,7 @@ fun SimulatorScreen(
             ) {
                 Icon(Icons.Default.Calculate, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Calcular", fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.btn_calculate), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
             
             TextButton(
@@ -178,7 +193,7 @@ fun SimulatorScreen(
             ) {
                 Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Limpar campos", color = MaterialTheme.colorScheme.primary, fontFamily = DmSansFont)
+                Text(stringResource(R.string.btn_clear_fields), color = MaterialTheme.colorScheme.primary, fontFamily = DmSansFont)
             }
             
             uiState.simulationResult?.let { result ->
@@ -221,18 +236,18 @@ fun SimulatorHeader(onBack: () -> Unit) {
                     .size(40.dp)
                     .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = MaterialTheme.colorScheme.primary)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_cancel), tint = MaterialTheme.colorScheme.primary)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "Nova Simulação",
+                stringResource(R.string.title_new_simulation),
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Black,
                 fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                "Preencha os dados para descobrir o\nque vale mais a pena para você.",
+                stringResource(R.string.subtitle_new_simulation),
                 fontFamily = DmSansFont,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
@@ -276,7 +291,7 @@ fun FavoriteOption(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = if (isFavorite) "Salvo nos favoritos" else "Adicionar aos favoritos",
+            text = if (isFavorite) stringResource(R.string.status_saved_favorite) else stringResource(R.string.status_add_favorite),
             fontFamily = SoraFont,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
@@ -296,7 +311,7 @@ fun SaveFavoriteDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "Salvar nos favoritos",
+                stringResource(R.string.dialog_save_favorite_title),
                 fontFamily = SoraFont,
                 fontWeight = FontWeight.Bold
             )
@@ -304,7 +319,7 @@ fun SaveFavoriteDialog(
         text = {
             Column {
                 Text(
-                    "Dê um nome para esta simulação (opcional)",
+                    stringResource(R.string.dialog_save_favorite_desc),
                     fontFamily = DmSansFont,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -313,7 +328,7 @@ fun SaveFavoriteDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    placeholder = { Text("Ex: Notebook Gamer", fontFamily = DmSansFont) },
+                    placeholder = { Text(stringResource(R.string.dialog_save_favorite_hint), fontFamily = DmSansFont) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -324,12 +339,12 @@ fun SaveFavoriteDialog(
                 onClick = { onConfirm(name) },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Salvar", fontFamily = SoraFont, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.btn_save), fontFamily = SoraFont, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", fontFamily = SoraFont)
+                Text(stringResource(R.string.btn_cancel), fontFamily = SoraFont)
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
@@ -357,9 +372,9 @@ fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Como funciona?", fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
+                    Text(stringResource(R.string.section_how_it_works_title), fontWeight = FontWeight.Bold, fontFamily = SoraFont, fontSize = 14.sp)
                     Text(
-                        "Comparamos o rendimento do seu investimento com o custo de parcelar para você decidir a melhor opção.",
+                        stringResource(R.string.section_how_it_works_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                         fontFamily = DmSansFont,
