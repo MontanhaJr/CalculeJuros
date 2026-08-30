@@ -27,7 +27,8 @@ import com.montanhajr.calculejuros.ui.theme.*
 @Composable
 fun FavoritesScreen(
     viewModel: FavoritesViewModel,
-    onNavigateToSimulator: (Long?) -> Unit
+    onNavigateToSimulator: (Long?) -> Unit,
+    onNavigateToResult: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -86,7 +87,8 @@ fun FavoritesScreen(
             SimulationDetailModal(
                 simulation = simulation,
                 onDismissRequest = viewModel::onDismissModal,
-                onReuse = { id -> onNavigateToSimulator(id) }
+                onReuse = { id -> onNavigateToSimulator(id) },
+                onViewResult = { id -> onNavigateToResult(id) }
             )
         }
 

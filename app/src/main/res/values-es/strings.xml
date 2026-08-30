@@ -85,6 +85,24 @@
     <string name="label_gain_installment">Ganancia en cuotas:</string>
     <string name="label_difference">Diferencia de %s</string>
 
+    <!-- Result Screen -->
+    <string name="title_simulation_result">Resultado de la Simulación</string>
+    <string name="label_patrimonial_evolution">Evolución Patrimonial</string>
+    <string name="rec_title">La mejor opción es:</string>
+    <string name="rec_label_cash">Pagar al Contado</string>
+    <string name="rec_label_installment">Cuotas e Invertir</string>
+    <string name="rec_label_tie">Da igual</string>
+    <string name="rec_savings_desc">Ventaja de %s al final</string>
+    <string name="summary_card_cash">Al Contado</string>
+    <string name="summary_card_installment">En Cuotas</string>
+    <string name="summary_sub_interest">Intereses ganados: %s</string>
+    <string name="summary_sub_installments">%d cuotas mensuales</string>
+    <string name="legend_cash">Estrategia al Contado</string>
+    <string name="legend_installment">Estrategia en Cuotas</string>
+    <string name="table_month">Mes</string>
+    <string name="table_balance">Saldo</string>
+    <string name="table_yield">Rendimiento</string>
+
     <!-- Simulation Detail Modal -->
     <string name="simulation_details">Detalles de la Simulación</string>
     <string name="label_installment_plan">Financiación</string>

@@ -85,6 +85,24 @@
     <string name="label_gain_installment">Installment gain:</string>
     <string name="label_difference">Difference of %s</string>
 
+    <!-- Result Screen -->
+    <string name="title_simulation_result">Simulation Result</string>
+    <string name="label_patrimonial_evolution">Wealth Evolution</string>
+    <string name="rec_title">The best choice is:</string>
+    <string name="rec_label_cash">Pay in Cash</string>
+    <string name="rec_label_installment">Installments and Invest</string>
+    <string name="rec_label_tie">Either way</string>
+    <string name="rec_savings_desc">Advantage of %s at the end</string>
+    <string name="summary_card_cash">In Cash</string>
+    <string name="summary_card_installment">Installments</string>
+    <string name="summary_sub_interest">Interest earned: %s</string>
+    <string name="summary_sub_installments">%d monthly installments</string>
+    <string name="legend_cash">Cash Strategy</string>
+    <string name="legend_installment">Installment Strategy</string>
+    <string name="table_month">Month</string>
+    <string name="table_balance">Balance</string>
+    <string name="table_yield">Yield</string>
+
     <!-- Simulation Detail Modal -->
     <string name="simulation_details">Simulation Details</string>
     <string name="label_installment_plan">Installment Plan</string>

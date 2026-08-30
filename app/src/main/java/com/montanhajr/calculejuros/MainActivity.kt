@@ -27,6 +27,8 @@ import com.montanhajr.calculejuros.feature.history.HistoryScreen
 import com.montanhajr.calculejuros.feature.history.HistoryViewModel
 import com.montanhajr.calculejuros.feature.home.HomeScreen
 import com.montanhajr.calculejuros.feature.home.HomeViewModel
+import com.montanhajr.calculejuros.feature.simulator.ResultScreen
+import com.montanhajr.calculejuros.feature.simulator.ResultViewModel
 import com.montanhajr.calculejuros.feature.simulator.SimulatorScreen
 import com.montanhajr.calculejuros.feature.simulator.SimulatorViewModel
 import com.montanhajr.calculejuros.ui.components.AdBanner
@@ -160,6 +162,24 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: SimulatorViewModel = hiltViewModel()
                                 SimulatorScreen(
                                     viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToResult = { id ->
+                                        navController.navigate("simulation_result?simulationId=$id")
+                                    }
+                                )
+                            }
+                            composable(
+                                route = "simulation_result?simulationId={simulationId}",
+                                arguments = listOf(
+                                    navArgument("simulationId") {
+                                        type = NavType.LongType
+                                        defaultValue = -1L
+                                    }
+                                )
+                            ) {
+                                val viewModel: ResultViewModel = hiltViewModel()
+                                ResultScreen(
+                                    viewModel = viewModel,
                                     onNavigateBack = { navController.popBackStack() }
                                 )
                             }
@@ -176,6 +196,9 @@ class MainActivity : ComponentActivity() {
                                             launchSingleTop = true
                                             restoreState = id == null
                                         }
+                                    },
+                                    onNavigateToResult = { id ->
+                                        navController.navigate("simulation_result?simulationId=$id")
                                     }
                                 )
                             }
@@ -192,6 +215,9 @@ class MainActivity : ComponentActivity() {
                                             launchSingleTop = true
                                             restoreState = id == null
                                         }
+                                    },
+                                    onNavigateToResult = { id ->
+                                        navController.navigate("simulation_result?simulationId=$id")
                                     }
                                 )
                             }

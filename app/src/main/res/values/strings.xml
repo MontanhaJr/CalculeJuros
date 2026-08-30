@@ -85,6 +85,24 @@
     <string name="label_gain_installment">Ganho parcelado:</string>
     <string name="label_difference">Diferença de %s</string>
 
+    <!-- Result Screen -->
+    <string name="title_simulation_result">Resultado da Simulação</string>
+    <string name="label_patrimonial_evolution">Evolução Patrimonial</string>
+    <string name="rec_title">A melhor escolha é:</string>
+    <string name="rec_label_cash">Pagar à Vista</string>
+    <string name="rec_label_installment">Parcelar e Investir</string>
+    <string name="rec_label_tie">Tanto faz</string>
+    <string name="rec_savings_desc">Vantagem de %s ao final</string>
+    <string name="summary_card_cash">À Vista</string>
+    <string name="summary_card_installment">Parcelado</string>
+    <string name="summary_sub_interest">Juros ganhos: %s</string>
+    <string name="summary_sub_installments">%d parcelas mensais</string>
+    <string name="legend_cash">Estratégia À Vista</string>
+    <string name="legend_installment">Estratégia Parcelada</string>
+    <string name="table_month">Mês</string>
+    <string name="table_balance">Saldo</string>
+    <string name="table_yield">Rendimento</string>
+
     <!-- Simulation Detail Modal -->
     <string name="simulation_details">Detalhes da Simulação</string>
     <string name="label_installment_plan">Parcelamento</string>

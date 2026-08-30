@@ -17,7 +17,8 @@ data class SimulationResult(
     val interestGainedCash: Double,
     val netGainInstallment: Double,
     val difference: Double,
-    val recommendation: RecommendationType
+    val recommendation: RecommendationType,
+    val monthlyDetails: List<MonthlyDetail> = emptyList()
 )
 
 enum class RecommendationType {
@@ -28,7 +29,9 @@ enum class RecommendationType {
 
 data class MonthlyDetail(
     val month: Int,
-    val balance: Double,
-    val installment: Double,
-    val yield: Double
+    val installmentBalance: Double,
+    val cashBalance: Double,
+    val installmentPaid: Double,
+    val yieldInstallment: Double,
+    val yieldCash: Double
 )

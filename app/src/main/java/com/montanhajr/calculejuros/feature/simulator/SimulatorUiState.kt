@@ -22,5 +22,6 @@ data class SimulatorUiState(
     val isLoading: Boolean = false,
     val showSaveDialog: Boolean = false,
     val isSavedAsFavorite: Boolean = false,
-    val currentSimulationId: Long? = null
+    val currentSimulationId: Long? = null,
+    val navigateToResultId: Long? = null
 )

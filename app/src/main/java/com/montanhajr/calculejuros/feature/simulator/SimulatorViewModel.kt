@@ -282,8 +282,15 @@ class SimulatorViewModel @Inject constructor(
                 scenarioName = null,
                 isFavorite = false
             )
-            _uiState.update { it.copy(currentSimulationId = id) }
+            _uiState.update { it.copy(
+                currentSimulationId = id,
+                navigateToResultId = id
+            ) }
         }
+    }
+
+    fun onNavigatedToResult() {
+        _uiState.update { it.copy(navigateToResultId = null) }
     }
 
     private fun calculateImplicitRate(principal: Double, installment: Double, n: Int): Double {

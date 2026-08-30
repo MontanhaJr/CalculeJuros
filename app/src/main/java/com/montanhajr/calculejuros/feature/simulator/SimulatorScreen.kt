@@ -25,10 +25,18 @@ import com.montanhajr.calculejuros.ui.theme.*
 @Composable
 fun SimulatorScreen(
     viewModel: SimulatorViewModel,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToResult: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(uiState.navigateToResultId) {
+        uiState.navigateToResultId?.let { id ->
+            onNavigateToResult(id)
+            viewModel.onNavigatedToResult()
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -196,18 +204,6 @@ fun SimulatorScreen(
                 Text(stringResource(R.string.btn_clear_fields), color = MaterialTheme.colorScheme.primary, fontFamily = DmSansFont)
             }
             
-            uiState.simulationResult?.let { result ->
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                FavoriteOption(
-                    isFavorite = uiState.isSavedAsFavorite,
-                    onClick = viewModel::onFavoriteClick
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                ResultCard(result = result)
-            }
-
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -268,88 +264,6 @@ fun SimulatorHeader(onBack: () -> Unit) {
             )
         }
     }
-}
-
-@Composable
-fun FavoriteOption(
-    isFavorite: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = if (isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-            contentDescription = null,
-            tint = if (isFavorite) Color(0xFFFFB800) else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = if (isFavorite) stringResource(R.string.status_saved_favorite) else stringResource(R.string.status_add_favorite),
-            fontFamily = SoraFont,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = if (isFavorite) Color(0xFFFFB800) else MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-fun SaveFavoriteDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
-) {
-    var name by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                stringResource(R.string.dialog_save_favorite_title),
-                fontFamily = SoraFont,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
-            Column {
-                Text(
-                    stringResource(R.string.dialog_save_favorite_desc),
-                    fontFamily = DmSansFont,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    placeholder = { Text(stringResource(R.string.dialog_save_favorite_hint), fontFamily = DmSansFont) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { onConfirm(name) },
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(stringResource(R.string.btn_save), fontFamily = SoraFont, fontWeight = FontWeight.Bold)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.btn_cancel), fontFamily = SoraFont)
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(24.dp)
-    )
 }
 
 @Composable

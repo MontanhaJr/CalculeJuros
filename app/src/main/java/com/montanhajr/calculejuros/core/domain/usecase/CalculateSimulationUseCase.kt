@@ -55,22 +55,51 @@ class CalculateSimulationUseCase @Inject constructor() {
             mensal to anual
         }
 
-        // Step 4: Net Gain for each strategy
+        // Step 4: Net Gain for each strategy (calculated via loop for consistency with table)
         val im = rentabilidadeMensal
         val n = installmentsCount
 
-        // Cash Strategy
-        val ganhoLiquidoAVista = valorDesconto * (1 + im).pow(n)
-        val jurosGanhosAVista = ganhoLiquidoAVista - valorDesconto
+        val monthlyDetails = mutableListOf<MonthlyDetail>()
+        var balanceAVista = valorDesconto
+        var balanceParcelado = productPrice
 
-        // Installment Strategy
-        val valorFuturoProduto = productPrice * (1 + im).pow(n)
-        val valorFuturoParcelas = if (im == 0.0) {
-            valorParcela * n
-        } else {
-            valorParcela * (((1 + im).pow(n) - 1) / im)
+        // Month 0 (Initial State)
+        monthlyDetails.add(
+            MonthlyDetail(
+                month = 0,
+                installmentBalance = balanceParcelado,
+                cashBalance = balanceAVista,
+                installmentPaid = 0.0,
+                yieldInstallment = 0.0,
+                yieldCash = 0.0
+            )
+        )
+
+        for (month in 1..n) {
+            // Installment Strategy Evolution
+            // Yield is 0 if balance is negative (you can't earn interest on debt in this model)
+            val yieldParcelado = maxOf(0.0, balanceParcelado * im)
+            balanceParcelado = balanceParcelado + yieldParcelado - valorParcela
+
+            // Cash Strategy Evolution
+            val yieldAVista = maxOf(0.0, balanceAVista * im)
+            balanceAVista = balanceAVista + yieldAVista
+            
+            monthlyDetails.add(
+                MonthlyDetail(
+                    month = month,
+                    installmentBalance = balanceParcelado,
+                    cashBalance = balanceAVista,
+                    installmentPaid = valorParcela,
+                    yieldInstallment = yieldParcelado,
+                    yieldCash = yieldAVista
+                )
+            )
         }
-        val ganhoLiquidoParcelado = valorFuturoProduto - valorFuturoParcelas
+
+        val ganhoLiquidoAVista = balanceAVista
+        val ganhoLiquidoParcelado = balanceParcelado
+        val jurosGanhosAVista = ganhoLiquidoAVista - valorDesconto
 
         // Step 5: Final comparison and recommendation
         val diferenca = ganhoLiquidoParcelado - ganhoLiquidoAVista
@@ -97,7 +126,8 @@ class CalculateSimulationUseCase @Inject constructor() {
             interestGainedCash = maxOf(0.0, jurosGanhosAVista),
             netGainInstallment = ganhoLiquidoParcelado,
             difference = kotlin.math.abs(diferenca),
-            recommendation = recomendacao
+            recommendation = recomendacao,
+            monthlyDetails = monthlyDetails
         )
     }
 

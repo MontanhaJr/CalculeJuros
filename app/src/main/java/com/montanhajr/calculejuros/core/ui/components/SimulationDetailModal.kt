@@ -24,7 +24,8 @@ import java.util.*
 fun SimulationDetailModal(
     simulation: SimulationEntity,
     onDismissRequest: () -> Unit,
-    onReuse: (Long) -> Unit
+    onReuse: (Long) -> Unit,
+    onViewResult: (Long) -> Unit = {}
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -104,6 +105,24 @@ fun SimulationDetailModal(
             Spacer(modifier = Modifier.height(32.dp))
             
             Button(
+                onClick = { 
+                    onDismissRequest()
+                    onViewResult(simulation.id)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Icon(Icons.Default.BarChart, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.home_view_details), fontFamily = SoraFont, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedButton(
                 onClick = { 
                     onDismissRequest()
                     onReuse(simulation.id)
