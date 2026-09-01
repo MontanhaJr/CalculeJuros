@@ -33,5 +33,6 @@ data class SimulationEntity(
     // UI/Metadata
     val isFavorite: Boolean = false,
     val scenarioName: String? = null,
-    val iconType: String = "default"
+    val iconType: String = "default",
+    val favoriteOrder: Int = 0
 )

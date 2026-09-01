@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CalculeJuros</string>
+    <string name="app_name">Cash or Installments</string>
 
     <!-- Navigation Labels -->
     <string name="nav_label_home">Home</string>
@@ -69,6 +69,7 @@
     <string name="subtitle_favorites">Your favorite simulations to\nalways keep track of 💜</string>
     <string name="title_my_favorites">My favorite simulations</string>
     <string name="btn_edit">Edit</string>
+    <string name="btn_done">Done</string>
     <string name="card_quick_access_title">Quick Access</string>
     <string name="card_quick_access_desc">Save your favorite simulations\nand compare whenever you want.</string>
     <string name="card_tip_title">Tip</string>
@@ -133,8 +134,8 @@
     <string name="label_installments_count">Number of installments</string>
 
     <!-- Home Screen -->
-    <string name="home_title_part1">Installment\n</string>
-    <string name="home_title_part2">or Invest?</string>
+    <string name="home_title_part1">Cash\n</string>
+    <string name="home_title_part2">or Installments?</string>
     <string name="home_subtitle">Find out what is really worth more</string>
     <string name="home_card_new_sim_title">New Simulation</string>
     <string name="home_card_new_sim_desc">Compare cash vs installments\nand see the best for you</string>

@@ -1,29 +1,36 @@
 package com.montanhajr.calculejuros.feature.favorites
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.zIndex
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
+import kotlin.math.roundToInt
 
 @Composable
 fun FavoritesScreen(
@@ -33,6 +40,12 @@ fun FavoritesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.saveAndExitEditMode()
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -58,23 +71,104 @@ fun FavoritesScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(R.string.title_my_favorites), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                TextButton(onClick = { /* TODO */ }) {
-                    Text(stringResource(R.string.btn_edit), fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                Text(
+                    stringResource(R.string.title_my_favorites),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                
+                if (uiState.favoriteSimulations.isNotEmpty()) {
+                    TextButton(onClick = viewModel::toggleEditMode) {
+                        Text(
+                            stringResource(if (uiState.isEditMode) R.string.btn_done else R.string.btn_edit),
+                            fontFamily = SoraFont,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = if (uiState.isEditMode) Icons.Default.Check else Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
-            
-            uiState.favoriteSimulations.forEach { item ->
-                FavoriteListItem(
-                    item = item,
-                    onClick = { viewModel.onSimulationClick(item.fullEntity) },
-                    onToggleFavorite = { viewModel.requestUnfavorite(item.fullEntity) }
-                )
-                Spacer(modifier = Modifier.height(12.dp))
+
+            var activeDraggingIndex by remember { mutableStateOf<Int?>(null) }
+            var dragOffsetY by remember { mutableFloatStateOf(0f) }
+            val density = LocalDensity.current
+            val itemSlotHeightPx = with(density) { (80.dp + 12.dp).toPx() }
+            val totalItems = uiState.favoriteSimulations.size
+
+            uiState.favoriteSimulations.forEachIndexed { index, item ->
+                key(item.id) {
+                    val isBeingDragged = activeDraggingIndex == index
+
+                    val targetTranslationY = when {
+                        isBeingDragged -> dragOffsetY
+                        activeDraggingIndex != null -> {
+                            val fromIndex = activeDraggingIndex!!
+                            val calculatedTargetIndex = (fromIndex + (dragOffsetY / itemSlotHeightPx).roundToInt())
+                                .coerceIn(0, totalItems - 1)
+                            when {
+                                fromIndex < calculatedTargetIndex && index in (fromIndex + 1)..calculatedTargetIndex -> -itemSlotHeightPx
+                                fromIndex > calculatedTargetIndex && index in calculatedTargetIndex until fromIndex -> itemSlotHeightPx
+                                else -> 0f
+                            }
+                        }
+                        else -> 0f
+                    }
+
+                    val animatedTranslationY by animateFloatAsState(
+                        targetValue = if (activeDraggingIndex != null) targetTranslationY else 0f,
+                        animationSpec = if (activeDraggingIndex != null) androidx.compose.animation.core.tween(150) else androidx.compose.animation.core.snap(),
+                        label = "itemTranslationY"
+                    )
+
+                    val effectiveTranslationY = when {
+                        activeDraggingIndex == null -> 0f
+                        isBeingDragged -> dragOffsetY
+                        else -> animatedTranslationY
+                    }
+
+                    FavoriteListItem(
+                        item = item,
+                        index = index,
+                        totalItems = totalItems,
+                        isEditMode = uiState.isEditMode,
+                        isBeingDragged = isBeingDragged,
+                        translationY = effectiveTranslationY,
+                        onDragStart = {
+                            activeDraggingIndex = index
+                            dragOffsetY = 0f
+                        },
+                        onDrag = { dragAmountY ->
+                            dragOffsetY += dragAmountY
+                        },
+                        onDragEnd = {
+                            if (activeDraggingIndex != null) {
+                                val fromIndex = activeDraggingIndex!!
+                                val finalTargetIndex = (fromIndex + (dragOffsetY / itemSlotHeightPx).roundToInt())
+                                    .coerceIn(0, totalItems - 1)
+                                activeDraggingIndex = null
+                                dragOffsetY = 0f
+                                if (fromIndex != finalTargetIndex) {
+                                    viewModel.onMoveItem(fromIndex, finalTargetIndex)
+                                }
+                            }
+                        },
+                        onClick = { viewModel.onSimulationClick(item.fullEntity) },
+                        onToggleFavorite = { viewModel.requestUnfavorite(item.fullEntity) },
+                        onMoveItem = { fromIndex, toIndex -> viewModel.onMoveItem(fromIndex, toIndex) }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -206,18 +300,108 @@ fun QuickAccessCard() {
 }
 
 @Composable
-fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit, onToggleFavorite: () -> Unit) {
+fun FavoriteListItem(
+    item: FavoriteItem,
+    index: Int,
+    totalItems: Int,
+    isEditMode: Boolean,
+    isBeingDragged: Boolean,
+    translationY: Float,
+    onDragStart: () -> Unit,
+    onDrag: (dragAmountY: Float) -> Unit,
+    onDragEnd: () -> Unit,
+    onClick: () -> Unit,
+    onToggleFavorite: () -> Unit,
+    onMoveItem: (fromIndex: Int, toIndex: Int) -> Unit
+) {
     Surface(
-        onClick = onClick,
-        color = MaterialTheme.colorScheme.surface,
+        onClick = { if (!isEditMode) onClick() },
+        color = if (isBeingDragged) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.fillMaxWidth()
+        border = BorderStroke(
+            1.dp,
+            if (isBeingDragged || isEditMode) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.outlineVariant
+        ),
+        shadowElevation = if (isBeingDragged) 8.dp else 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .zIndex(if (isBeingDragged) 10f else 0f)
+            .graphicsLayer {
+                this.translationY = translationY
+                scaleX = if (isBeingDragged) 1.02f else 1f
+                scaleY = if (isBeingDragged) 1.02f else 1f
+            }
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            AnimatedVisibility(
+                visible = isEditMode,
+                enter = fadeIn() + expandHorizontally(),
+                exit = fadeOut() + shrinkHorizontally()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .pointerInput(isEditMode, index, totalItems) {
+                                if (!isEditMode) return@pointerInput
+                                detectDragGestures(
+                                    onDragStart = { onDragStart() },
+                                    onDragEnd = { onDragEnd() },
+                                    onDragCancel = { onDragEnd() },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        onDrag(dragAmount.y)
+                                    }
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Reorder,
+                            contentDescription = "Reordenar",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Column {
+                        if (index > 0) {
+                            IconButton(
+                                onClick = { onMoveItem(index, index - 1) },
+                                modifier = Modifier.size(20.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowUp,
+                                    contentDescription = "Mover para cima",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                        if (index < totalItems - 1) {
+                            IconButton(
+                                onClick = { onMoveItem(index, index + 1) },
+                                modifier = Modifier.size(20.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Mover para baixo",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             Surface(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                 shape = RoundedCornerShape(12.dp),
@@ -238,7 +422,7 @@ fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit, onToggleFavorite: 
                 )
             }
             
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
@@ -277,9 +461,10 @@ fun FavoriteListItem(item: FavoriteItem, onClick: () -> Unit, onToggleFavorite: 
                 )
             }
             
-            Spacer(modifier = Modifier.width(4.dp))
-            
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+            if (!isEditMode) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+            }
         }
     }
 }
@@ -316,7 +501,6 @@ fun TipCard() {
                 )
             }
             
-            // Placeholder for chart icon
             Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(48.dp))
         }
     }

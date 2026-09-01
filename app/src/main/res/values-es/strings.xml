@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CalculeJuros</string>
+    <string name="app_name">Al Contado o En Cuotas</string>
 
     <!-- Navigation Labels -->
     <string name="nav_label_home">Inicio</string>
@@ -69,6 +69,7 @@
     <string name="subtitle_favorites">Sus simulaciones favoritas para\nseguir siempre 💜</string>
     <string name="title_my_favorites">Mis simulaciones favoritas</string>
     <string name="btn_edit">Editar</string>
+    <string name="btn_done">Hecho</string>
     <string name="card_quick_access_title">Acceso rápido</string>
     <string name="card_quick_access_desc">Guarde sus simulaciones favoritas\ny compare cuando quiera.</string>
     <string name="card_tip_title">Consejo</string>
@@ -133,8 +134,8 @@
     <string name="label_installments_count">Número de cuotas</string>
 
     <!-- Home Screen -->
-    <string name="home_title_part1">¿Cuotas\n</string>
-    <string name="home_title_part2">o Invertir?</string>
+    <string name="home_title_part1">¿Al Contado\n</string>
+    <string name="home_title_part2">o en Cuotas?</string>
     <string name="home_subtitle">Descubra lo que realmente vale más la pena</string>
     <string name="home_card_new_sim_title">Nueva Simulación</string>
     <string name="home_card_new_sim_desc">Compare al contado vs cuotas\ny vea lo mejor para usted</string>

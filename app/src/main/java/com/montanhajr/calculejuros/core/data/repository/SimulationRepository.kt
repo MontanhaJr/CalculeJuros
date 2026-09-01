@@ -11,6 +11,7 @@ interface SimulationRepository {
     fun getFavoriteSimulations(): Flow<List<SimulationEntity>>
     suspend fun getSimulationById(id: Long): SimulationEntity?
     suspend fun insertSimulation(simulation: SimulationEntity): Long
+    suspend fun updateSimulations(simulations: List<SimulationEntity>)
     suspend fun deleteSimulation(simulation: SimulationEntity)
 }
 
@@ -33,6 +34,10 @@ class SimulationRepositoryImpl @Inject constructor(
 
     override suspend fun insertSimulation(simulation: SimulationEntity): Long {
         return simulationDao.insertSimulation(simulation)
+    }
+
+    override suspend fun updateSimulations(simulations: List<SimulationEntity>) {
+        simulationDao.updateSimulations(simulations)
     }
 
     override suspend fun deleteSimulation(simulation: SimulationEntity) {

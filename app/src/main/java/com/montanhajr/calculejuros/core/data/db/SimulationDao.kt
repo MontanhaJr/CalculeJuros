@@ -8,7 +8,7 @@ interface SimulationDao {
     @Query("SELECT * FROM simulations ORDER BY date DESC")
     fun getAllSimulations(): Flow<List<SimulationEntity>>
 
-    @Query("SELECT * FROM simulations WHERE isFavorite = 1 ORDER BY date DESC")
+    @Query("SELECT * FROM simulations WHERE isFavorite = 1 ORDER BY favoriteOrder ASC, date DESC")
     fun getFavoriteSimulations(): Flow<List<SimulationEntity>>
 
     @Query("SELECT * FROM simulations WHERE id = :id")
@@ -16,6 +16,9 @@ interface SimulationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSimulation(simulation: SimulationEntity): Long
+
+    @Update
+    suspend fun updateSimulations(simulations: List<SimulationEntity>)
 
     @Delete
     suspend fun deleteSimulation(simulation: SimulationEntity)

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CalculeJuros</string>
+    <string name="app_name">À Vista ou Parcelado</string>
 
     <!-- Navigation Labels -->
     <string name="nav_label_home">Início</string>
@@ -69,6 +69,7 @@
     <string name="subtitle_favorites">Suas simulações favoritas para\nacompanhar sempre 💜</string>
     <string name="title_my_favorites">Minhas simulações favoritas</string>
     <string name="btn_edit">Editar</string>
+    <string name="btn_done">Concluído</string>
     <string name="card_quick_access_title">Acesso rápido</string>
     <string name="card_quick_access_desc">Salve suas simulações favoritas\ne compare sempre que quiser.</string>
     <string name="card_tip_title">Dica</string>
@@ -133,8 +134,8 @@
     <string name="label_installments_count">Número de parcelas</string>
 
     <!-- Home Screen -->
-    <string name="home_title_part1">Parcelar\n</string>
-    <string name="home_title_part2">ou Investir?</string>
+    <string name="home_title_part1">À Vista\n</string>
+    <string name="home_title_part2">ou Parcelado?</string>
     <string name="home_subtitle">Descubra o que realmente vale mais a pena</string>
     <string name="home_card_new_sim_title">Nova Simulação</string>
     <string name="home_card_new_sim_desc">Compare à vista vs parcelado\ne veja o melhor para você</string>
