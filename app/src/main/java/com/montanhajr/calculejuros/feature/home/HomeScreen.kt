@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
 import androidx.compose.ui.res.stringResource
 import java.util.Locale
 import com.montanhajr.calculejuros.R
@@ -51,9 +53,21 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
-            HomeHeader()
-            Spacer(modifier = Modifier.height(24.dp))
-            NewSimulationCard(onClick = onNavigateToSimulator)
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Column {
+                    HomeHeader()
+                    Spacer(modifier = Modifier.height(24.dp))
+                    NewSimulationCard(onClick = onNavigateToSimulator)
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.calc_coin_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = 10.dp, y = 10.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
             SuggestedResultCard(
                 result = uiState.suggestedResult,
@@ -86,7 +100,7 @@ fun HomeHeader() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f).padding(end = 80.dp)) {
             Text(
                 buildAnnotatedString {
                     withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.onSurface)) {
@@ -103,21 +117,6 @@ fun HomeHeader() {
                 stringResource(R.string.home_subtitle),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
-            )
-        }
-        // Placeholder for Calculator Illustration
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.Transparent),
-            contentAlignment = Alignment.Center
-        ) {
-             Icon(
-                Icons.Default.Build, // Placeholder for calculator icon
-                contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             )
         }
     }
@@ -186,6 +185,9 @@ fun NewSimulationCard(onClick: () -> Unit) {
 fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
     if (result == null) return
     
+    val isInstallment = result.type == "Parcelar"
+    val accentColor = if (isInstallment) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+    
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
@@ -194,77 +196,99 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
         shadowElevation = 2.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(8.dp)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(20.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.TrendingUp,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(4.dp).size(24.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
                     Surface(
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(12.dp)
+                        color = accentColor,
+                        shape = CircleShape,
+                        modifier = Modifier.size(48.dp)
                     ) {
-                        Text(
-                            stringResource(R.string.home_suggested_result_label),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
+                        Icon(
+                            Icons.AutoMirrored.Filled.TrendingUp,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.padding(10.dp).size(24.dp)
                         )
                     }
-                    Text(
-                        buildAnnotatedString {
-                            append(stringResource(R.string.home_worth_it_prefix))
-                            val resultLabel = if (result.type == "Parcelar") stringResource(R.string.home_worth_it_installment) else stringResource(R.string.home_worth_it_cash)
-                            withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Bold, color = if (result.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)) {
-                                append(resultLabel)
-                            }
-                        },
-                        fontFamily = SoraFont,
-                        fontSize = 16.sp
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                Surface(
-                    color = Color.Transparent,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Surface(
+                            color = accentColor.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.home_suggested_result_label),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                color = accentColor,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            buildAnnotatedString {
+                                val prefix = stringResource(R.string.home_worth_it_prefix)
+                                append(prefix)
+                                if (!prefix.endsWith(" ")) append(" ")
+                                val resultLabel = if (isInstallment) stringResource(R.string.home_worth_it_installment) else stringResource(R.string.home_worth_it_cash)
+                                withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Bold, color = accentColor)) {
+                                    append(resultLabel)
+                                }
+                            },
+                            fontFamily = SoraFont,
+                            fontSize = 16.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        color = Color.Transparent,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text(stringResource(R.string.home_view_details), fontSize = 11.sp)
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(stringResource(R.string.home_view_details), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, modifier = Modifier.size(14.dp))
+                        }
                     }
                 }
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Row(verticalAlignment = Alignment.Bottom) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.home_suggested_details), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
-                    Text(stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", result.difference)), fontFamily = SoraFont, color = MaterialTheme.colorScheme.secondary, fontSize = 28.sp, fontWeight = FontWeight.Black)
-                    Text(stringResource(R.string.home_suggested_yield), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.home_suggested_details), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
+                    Text(
+                        stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", result.difference)),
+                        fontFamily = SoraFont,
+                        color = accentColor,
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        stringResource(R.string.home_suggested_yield),
+                        fontFamily = DmSansFont,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp,
+                        modifier = Modifier.padding(top = 4.dp).widthIn(max = 200.dp)
+                    )
                 }
-                // Placeholder for piggy bank illustration
-                Icon(
-                    Icons.Default.ShoppingCart, // Placeholder
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp),
-                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
-                )
             }
+            
+            Image(
+                painter = painterResource(id = R.drawable.cash_icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(140.dp)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = (-5).dp, y = 25.dp)
+            )
         }
     }
 }

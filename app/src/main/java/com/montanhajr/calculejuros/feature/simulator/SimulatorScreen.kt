@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
 import androidx.compose.ui.res.stringResource
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.ResultCard
@@ -218,14 +220,8 @@ fun SimulatorScreen(
 
 @Composable
 fun SimulatorHeader(onBack: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
+    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             IconButton(
                 onClick = onBack,
                 modifier = Modifier
@@ -235,34 +231,30 @@ fun SimulatorHeader(onBack: () -> Unit) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_cancel), tint = MaterialTheme.colorScheme.primary)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                stringResource(R.string.title_new_simulation),
-                fontFamily = SoraFont,
-                fontWeight = FontWeight.Black,
-                fontSize = 32.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                stringResource(R.string.subtitle_new_simulation),
-                fontFamily = DmSansFont,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
-            )
+            Column(modifier = Modifier.padding(end = 100.dp)) {
+                Text(
+                    stringResource(R.string.title_new_simulation),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 32.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    stringResource(R.string.subtitle_new_simulation),
+                    fontFamily = DmSansFont,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp
+                )
+            }
         }
-        // Illustration Placeholder
-        Box(
+        Image(
+            painter = painterResource(id = R.drawable.calc_coin_icon),
+            contentDescription = null,
             modifier = Modifier
-                .size(120.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Default.Build, // Placeholder for calculator 3D
-                contentDescription = null,
-                modifier = Modifier.size(100.dp),
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-            )
-        }
+                .size(130.dp)
+                .align(Alignment.BottomEnd)
+                .offset(x = 10.dp, y = 20.dp)
+        )
     }
 }
 

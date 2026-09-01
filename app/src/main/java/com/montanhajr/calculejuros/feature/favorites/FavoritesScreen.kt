@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
@@ -195,15 +196,11 @@ fun QuickAccessCard() {
                 )
             }
             
-            // Placeholder for folder/star illustration
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.FolderSpecial, contentDescription = null, tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), modifier = Modifier.size(64.dp))
-            }
+            Image(
+                painter = painterResource(id = R.drawable.fav_file_icon),
+                contentDescription = null,
+                modifier = Modifier.size(80.dp)
+            )
         }
     }
 }
