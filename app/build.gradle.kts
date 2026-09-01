@@ -106,7 +106,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:23.6.0")
 
     // Google Play Billing
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.android.billingclient:billing-ktx:8.0.0")
 
     // Charts (Vico)
     implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-alpha.22")
