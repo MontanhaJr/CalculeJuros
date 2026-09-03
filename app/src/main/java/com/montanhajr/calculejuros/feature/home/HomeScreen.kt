@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import java.util.Locale
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.ui.theme.*
@@ -63,9 +64,9 @@ fun HomeScreen(
                     painter = painterResource(id = R.drawable.calc_coin_icon),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(150.dp)
+                        .size(130.dp)
                         .align(Alignment.TopEnd)
-                        .offset(x = 10.dp, y = 10.dp)
+                        .offset(x = 10.dp, y = (-5).dp)
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -94,31 +95,32 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeader() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+fun HomeHeader(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(end = 125.dp)
     ) {
-        Column(modifier = Modifier.weight(1f).padding(end = 80.dp)) {
-            Text(
-                buildAnnotatedString {
-                    withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.onSurface)) {
-                        append(stringResource(R.string.home_title_part1))
-                    }
-                    withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 36.sp, color = MaterialTheme.colorScheme.primary)) {
-                        append(stringResource(R.string.home_title_part2))
-                    }
-                },
-                lineHeight = 40.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                stringResource(R.string.home_subtitle),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
-            )
-        }
+        Text(
+            buildAnnotatedString {
+                withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 28.sp, color = MaterialTheme.colorScheme.onSurface)) {
+                    append(stringResource(R.string.home_title_part1))
+                }
+                withStyle(SpanStyle(fontFamily = SoraFont, fontWeight = FontWeight.Black, fontSize = 28.sp, color = MaterialTheme.colorScheme.primary)) {
+                    append(stringResource(R.string.home_title_part2))
+                }
+            },
+            lineHeight = 34.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.home_subtitle),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 13.sp,
+            lineHeight = 18.sp
+        )
     }
 }
 
@@ -262,13 +264,13 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.fillMaxWidth().padding(end = 100.dp)) {
                     Text(stringResource(R.string.home_suggested_details), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                     Text(
                         stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", result.difference)),
                         fontFamily = SoraFont,
                         color = accentColor,
-                        fontSize = 36.sp,
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Black
                     )
                     Text(
@@ -276,7 +278,8 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                         fontFamily = DmSansFont,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 11.sp,
-                        modifier = Modifier.padding(top = 4.dp).widthIn(max = 200.dp)
+                        lineHeight = 15.sp,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
@@ -285,9 +288,9 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                 painter = painterResource(id = R.drawable.cash_icon),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(140.dp)
+                    .size(110.dp)
                     .align(Alignment.BottomEnd)
-                    .offset(x = (-5).dp, y = 25.dp)
+                    .offset(x = 10.dp, y = 15.dp)
             )
         }
     }
@@ -426,6 +429,44 @@ fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
                 Text(stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", simulation.difference)), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)
             }
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0F0F1A, locale = "pt")
+@Composable
+fun HomeHeaderPreviewPt() {
+    CashWiseTheme(darkTheme = true) {
+        Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+            HomeHeader()
+            Image(
+                painter = painterResource(id = R.drawable.calc_coin_icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(130.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 10.dp, y = (-5).dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0F0F1A, locale = "pt")
+@Composable
+fun SuggestedResultCardPreview() {
+    CashWiseTheme(darkTheme = true) {
+        Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+            SuggestedResultCard(
+                result = RecentSimulation(
+                    id = "1",
+                    title = "MacBook Pro",
+                    installmentsCount = 12,
+                    annualProfitability = 12.75,
+                    type = "À vista",
+                    difference = 4.50
+                ),
+                onClick = {}
+            )
         }
     }
 }

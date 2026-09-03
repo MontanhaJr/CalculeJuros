@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
@@ -196,7 +197,11 @@ fun HistoryHeader(onFilterClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 12.dp)
+        ) {
             Text(
                 stringResource(R.string.title_history),
                 fontFamily = SoraFont,
@@ -219,8 +224,14 @@ fun HistoryHeader(onFilterClick: () -> Unit) {
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Icon(Icons.Default.FilterList, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.btn_filter), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                stringResource(R.string.btn_filter),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 12.sp,
+                fontFamily = DmSansFont,
+                maxLines = 1
+            )
         }
     }
 }
@@ -433,6 +444,16 @@ fun ContinueSimulatingBanner(onNavigateToSimulator: () -> Unit) {
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(Icons.Default.AddCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0F0F1A, locale = "pt")
+@Composable
+fun HistoryHeaderPreview() {
+    CashWiseTheme(darkTheme = true) {
+        Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+            HistoryHeader(onFilterClick = {})
         }
     }
 }
