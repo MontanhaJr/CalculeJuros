@@ -158,4 +158,11 @@
     <string name="home_suggested_details">You can gain up to</string>
     <string name="home_suggested_yield">investing what you would stop paying in cash.</string>
     <string name="home_recent_yield_format">Yield: %1$.1f%% p.a.</string>
+
+    <!-- Learn to Invest Dialog -->
+    <string name="dialog_learn_to_invest_title">Want to learn how to invest?</string>
+    <string name="dialog_learn_to_invest_message">Since paying in installments and investing is more advantageous in this simulation, discover how to make your money grow even more with our exclusive training.</string>
+    <string name="dialog_btn_learn_to_invest">Learn to invest</string>
+    <string name="dialog_btn_close">Close</string>
+    <string name="content_desc_learn_to_invest_info">Learn more about investments</string>
 </resources>

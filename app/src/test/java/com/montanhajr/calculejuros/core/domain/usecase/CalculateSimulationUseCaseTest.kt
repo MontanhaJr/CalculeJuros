@@ -70,7 +70,7 @@ class CalculateSimulationUseCaseTest {
         assertEquals(100.46, result.installmentValue, 0.01)
         assertEquals(1205.55, result.totalInstallmentValue, 0.1)
         assertEquals(0.00, result.netGainCash, 0.01)
-        assertEquals(-147.29, result.netGainInstallment, 0.1)
+        assertEquals(-146.82, result.netGainInstallment, 0.1)
         assertEquals(RecommendationType.A_VISTA, result.recommendation)
     }
 

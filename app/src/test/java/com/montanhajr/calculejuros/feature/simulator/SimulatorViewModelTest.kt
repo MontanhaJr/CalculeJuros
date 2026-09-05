@@ -1,9 +1,16 @@
 package com.montanhajr.calculejuros.feature.simulator
 
+import androidx.lifecycle.SavedStateHandle
+import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
 import com.montanhajr.calculejuros.core.domain.model.RecommendationType
 import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.GetSimulationByIdUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.SaveSimulationUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -14,13 +21,24 @@ import org.junit.Test
 class SimulatorViewModelTest {
 
     private lateinit var viewModel: SimulatorViewModel
-    private val useCase = CalculateSimulationUseCase()
+    private val calculateUseCase = CalculateSimulationUseCase()
+    private val fakeRepository = object : SimulationRepository {
+        override fun getAllSimulations(): Flow<List<SimulationEntity>> = emptyFlow()
+        override fun getFavoriteSimulations(): Flow<List<SimulationEntity>> = emptyFlow()
+        override suspend fun getSimulationById(id: Long): SimulationEntity? = null
+        override suspend fun insertSimulation(simulation: SimulationEntity): Long = 1L
+        override suspend fun updateSimulations(simulations: List<SimulationEntity>) {}
+        override suspend fun deleteSimulation(simulation: SimulationEntity) {}
+    }
+    private val saveUseCase = SaveSimulationUseCase(fakeRepository)
+    private val getByIdUseCase = GetSimulationByIdUseCase(fakeRepository)
+    private val savedStateHandle = SavedStateHandle()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = SimulatorViewModel(useCase)
+        viewModel = SimulatorViewModel(calculateUseCase, saveUseCase, getByIdUseCase, savedStateHandle)
     }
 
     @After

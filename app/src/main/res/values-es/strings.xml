@@ -158,4 +158,11 @@
     <string name="home_suggested_details">Puedes ganar hasta</string>
     <string name="home_suggested_yield">invirtiendo lo que dejarías de pagar al contado.</string>
     <string name="home_recent_yield_format">Rentabilidad: %1$.1f%% anual</string>
+
+    <!-- Learn to Invest Dialog -->
+    <string name="dialog_learn_to_invest_title">¿Quieres aprender a invertir?</string>
+    <string name="dialog_learn_to_invest_message">Como pagar en cuotas e invertir conviene más en esta simulación, descubre cómo hacer que tu dinero rinda aún más con nuestro entrenamiento exclusivo.</string>
+    <string name="dialog_btn_learn_to_invest">Quiero aprender a invertir</string>
+    <string name="dialog_btn_close">Cerrar</string>
+    <string name="content_desc_learn_to_invest_info">Saber más sobre inversiones</string>
 </resources>

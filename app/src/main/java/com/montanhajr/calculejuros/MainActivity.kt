@@ -186,7 +186,11 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: ResultViewModel = hiltViewModel()
                                 ResultScreen(
                                     viewModel = viewModel,
-                                    onNavigateBack = { navController.popBackStack() }
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onLearnToInvestClick = {
+                                        val intent = Intent(Intent.ACTION_VIEW, "https://kiwify.app/6Qk6810?afid=o0Ox0dKX".toUri())
+                                        startActivity(intent)
+                                    }
                                 )
                             }
                             composable("history") {
