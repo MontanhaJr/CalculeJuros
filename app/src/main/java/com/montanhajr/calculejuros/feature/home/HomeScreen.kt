@@ -39,7 +39,8 @@ fun HomeScreen(
     onNavigateToSimulator: () -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToFavorites: () -> Unit,
-    onNavigateToSimulationDetail: (String) -> Unit
+    onNavigateToSimulationDetail: (String) -> Unit,
+    onLearnToInvestClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -77,7 +78,8 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
             QuickActionsGrid(
                 onRecentClick = onNavigateToHistory,
-                onScenariosClick = onNavigateToFavorites
+                onScenariosClick = onNavigateToFavorites,
+                onLearnClick = onLearnToInvestClick
             )
             Spacer(modifier = Modifier.height(24.dp))
             RecentSimulationsHeader(onViewAllClick = onNavigateToHistory)
@@ -299,7 +301,8 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
 @Composable
 fun QuickActionsGrid(
     onRecentClick: () -> Unit,
-    onScenariosClick: () -> Unit
+    onScenariosClick: () -> Unit,
+    onLearnClick: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -324,7 +327,7 @@ fun QuickActionsGrid(
             subtitle = stringResource(R.string.home_action_learn_desc),
             icon = Icons.Default.Book,
             modifier = Modifier.weight(1f),
-            onClick = { /* TODO: Open Learn More */ }
+            onClick = onLearnClick
         )
     }
 }
@@ -345,23 +348,42 @@ fun QuickActionItem(
         modifier = modifier.height(160.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Center
         ) {
              Surface(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 shape = CircleShape,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(44.dp)
             ) {
-                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(8.dp))
+                Icon(
+                    icon, 
+                    contentDescription = null, 
+                    tint = MaterialTheme.colorScheme.primary, 
+                    modifier = Modifier.padding(10.dp)
+                )
             }
+            Spacer(modifier = Modifier.height(10.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                Text(
+                    title, 
+                    fontFamily = SoraFont, 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 13.sp, 
+                    lineHeight = 16.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(subtitle, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 9.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                Text(
+                    subtitle, 
+                    fontFamily = DmSansFont, 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                    fontSize = 10.sp, 
+                    lineHeight = 12.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(16.dp))
         }
     }
 }

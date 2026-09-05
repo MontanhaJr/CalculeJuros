@@ -1,5 +1,7 @@
 package com.montanhajr.calculejuros
 
+import android.content.Intent
+import androidx.core.net.toUri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -147,6 +149,10 @@ class MainActivity : ComponentActivity() {
                                             launchSingleTop = true
                                             restoreState = false
                                         }
+                                    },
+                                    onLearnToInvestClick = {
+                                        val intent = Intent(Intent.ACTION_VIEW, "https://kiwify.app/6Qk6810?afid=o0Ox0dKX".toUri())
+                                        startActivity(intent)
                                     }
                                 )
                             }
