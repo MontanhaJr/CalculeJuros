@@ -165,4 +165,17 @@
     <string name="dialog_btn_learn_to_invest">Quiero aprender a invertir</string>
     <string name="dialog_btn_close">Cerrar</string>
     <string name="content_desc_learn_to_invest_info">Saber más sobre inversiones</string>
+
+    <!-- Currency Selection -->
+    <string name="dialog_choose_currency_title">Elegir Moneda</string>
+    <string name="dialog_choose_currency_desc">Seleccione el formato de moneda deseado para visualizaciones y cálculos:</string>
+    <string name="currency_brl">R$ (BRL)</string>
+    <string name="currency_usd">USD ($)</string>
+    <string name="currency_eur">EUR (€)</string>
+    <string name="currency_gbp">GBP (£)</string>
+    <string name="name_brl">Real Brasileño</string>
+    <string name="name_usd">Dólar Estadounidense</string>
+    <string name="name_eur">Euro</string>
+    <string name="name_gbp">Libra Esterlina</string>
+    <string name="currency_label_format">Moneda: %s</string>
 </resources>

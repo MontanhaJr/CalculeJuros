@@ -23,5 +23,6 @@ data class SimulatorUiState(
     val showSaveDialog: Boolean = false,
     val isSavedAsFavorite: Boolean = false,
     val currentSimulationId: Long? = null,
-    val navigateToResultId: Long? = null
+    val navigateToResultId: Long? = null,
+    val currencySymbol: String = "R$"
 )

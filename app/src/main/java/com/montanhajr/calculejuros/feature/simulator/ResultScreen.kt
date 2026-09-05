@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.domain.model.RecommendationType
 import com.montanhajr.calculejuros.core.domain.model.SimulationResult
+import com.montanhajr.calculejuros.core.util.toCurrency
 import com.montanhajr.calculejuros.feature.simulator.components.FavoriteOption
 import com.montanhajr.calculejuros.feature.simulator.components.SaveFavoriteDialog
 import com.montanhajr.calculejuros.ui.theme.*
@@ -74,7 +75,7 @@ fun ResultScreen(
                         .verticalScroll(scrollState)
                         .padding(16.dp)
                 ) {
-                    RecommendationHeader(result, onLearnToInvestClick)
+                    RecommendationHeader(result, uiState.currencySymbol, onLearnToInvestClick)
                     
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -85,7 +86,7 @@ fun ResultScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     
-                    ComparisonCards(result)
+                    ComparisonCards(result, uiState.currencySymbol)
                     
                     Spacer(modifier = Modifier.height(24.dp))
                     
@@ -101,7 +102,7 @@ fun ResultScreen(
                     
                     Spacer(modifier = Modifier.height(24.dp))
                     
-                    DetailedTable(result)
+                    DetailedTable(result, uiState.currencySymbol)
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -122,7 +123,7 @@ fun ResultScreen(
 }
 
 @Composable
-fun RecommendationHeader(result: SimulationResult, onLearnToInvestClick: () -> Unit) {
+fun RecommendationHeader(result: SimulationResult, currencySymbol: String, onLearnToInvestClick: () -> Unit) {
     val bgColor = when (result.recommendation) {
         RecommendationType.A_VISTA -> Color(0xFFE8F5E9)
         RecommendationType.PARCELADO -> Color(0xFFE3F2FD)
@@ -170,7 +171,7 @@ fun RecommendationHeader(result: SimulationResult, onLearnToInvestClick: () -> U
             if (result.recommendation != RecommendationType.EMPATE) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.rec_savings_desc, result.difference.toCurrency()),
+                    text = stringResource(R.string.rec_savings_desc, result.difference.toCurrency(currencySymbol)),
                     fontFamily = DmSansFont,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
@@ -254,19 +255,19 @@ fun LearnToInvestDialog(
 }
 
 @Composable
-fun ComparisonCards(result: SimulationResult) {
+fun ComparisonCards(result: SimulationResult, currencySymbol: String) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         SummaryCard(
             modifier = Modifier.weight(1f),
             title = stringResource(R.string.summary_card_cash),
-            value = result.netGainCash.toCurrency(),
-            subValue = stringResource(R.string.summary_sub_interest, result.interestGainedCash.toCurrency()),
+            value = result.netGainCash.toCurrency(currencySymbol),
+            subValue = stringResource(R.string.summary_sub_interest, result.interestGainedCash.toCurrency(currencySymbol)),
             color = Color(0xFF2E7D32)
         )
         SummaryCard(
             modifier = Modifier.weight(1f),
             title = stringResource(R.string.summary_card_installment),
-            value = result.netGainInstallment.toCurrency(),
+            value = result.netGainInstallment.toCurrency(currencySymbol),
             subValue = stringResource(R.string.summary_sub_installments, result.installmentsCount),
             color = Color(0xFF1565C0)
         )
@@ -354,7 +355,7 @@ fun LegendItem(color: Color, label: String) {
 }
 
 @Composable
-fun DetailedTable(result: SimulationResult) {
+fun DetailedTable(result: SimulationResult, currencySymbol: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -383,14 +384,14 @@ fun DetailedTable(result: SimulationResult) {
             ) {
                 Text(detail.month.toString(), modifier = Modifier.weight(1f), fontSize = 12.sp)
                 Text(
-                    text = detail.cashBalance.toCurrency(),
+                    text = detail.cashBalance.toCurrency(currencySymbol),
                     modifier = Modifier.weight(2f),
                     fontSize = 12.sp,
                     textAlign = TextAlign.End,
                     color = if (!isCurrentWinnerParcelado) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = detail.installmentBalance.toCurrency(),
+                    text = detail.installmentBalance.toCurrency(currencySymbol),
                     modifier = Modifier.weight(2f),
                     fontSize = 12.sp,
                     textAlign = TextAlign.End,
@@ -399,10 +400,6 @@ fun DetailedTable(result: SimulationResult) {
             }
         }
     }
-}
-
-fun Double.toCurrency(): String {
-    return NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(this)
 }
 
 fun Double.toCompactCurrency(): String {

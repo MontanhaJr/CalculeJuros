@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.usecase.DeleteSimulationUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.GetHistoryUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
+import com.montanhajr.calculejuros.core.util.toCurrency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
@@ -51,6 +53,7 @@ class HistoryViewModel @Inject constructor(
     getHistoryUseCase: GetHistoryUseCase,
     private val deleteSimulationUseCase: DeleteSimulationUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    currencyPreferencesRepository: CurrencyPreferencesRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -60,10 +63,11 @@ class HistoryViewModel @Inject constructor(
 
     val uiState: StateFlow<HistoryUiState> = combine(
         getHistoryUseCase(),
+        currencyPreferencesRepository.currencySymbol,
         _selectedSimulation,
         _activeFilter,
         _pendingDelete
-    ) { simulations, selected, filter, pendingDelete ->
+    ) { simulations, currencySymbol, selected, filter, pendingDelete ->
         val filteredSimulations = when (filter) {
             HistoryFilter.ALL -> simulations
             HistoryFilter.INSTALLMENTS -> simulations.filter { it.winner == "PARCELADO" }
@@ -74,9 +78,9 @@ class HistoryViewModel @Inject constructor(
         HistoryUiState(
             totalSimulations = simulations.size.toString(),
             totalSimulationsPeriod = context.getString(R.string.label_this_month),
-            potentialGain = context.getString(R.string.label_currency_format, String.format("%.2f", totalGain)),
+            potentialGain = totalGain.toCurrency(currencySymbol),
             potentialGainLabel = context.getString(R.string.label_in_total),
-            averageGain = if (simulations.isNotEmpty()) context.getString(R.string.label_currency_format, String.format("%.2f", totalGain / simulations.size)) else context.getString(R.string.label_currency_format, "0,00"),
+            averageGain = if (simulations.isNotEmpty()) (totalGain / simulations.size).toCurrency(currencySymbol) else 0.0.toCurrency(currencySymbol),
             averageGainLabel = context.getString(R.string.label_advantage),
             recentSimulations = filteredSimulations.map { entity ->
                 HistoryItem(
@@ -86,7 +90,7 @@ class HistoryViewModel @Inject constructor(
                     timestamp = formatTimestamp(entity.date),
                     resultType = if (entity.winner == "PARCELADO") context.getString(R.string.winner_installments) else context.getString(R.string.winner_cash),
                     resultLabel = if (entity.winner == "PARCELADO") context.getString(R.string.label_you_gain) else context.getString(R.string.label_you_save),
-                    resultValue = context.getString(R.string.label_currency_format, String.format("%.2f", entity.difference)),
+                    resultValue = entity.difference.toCurrency(currencySymbol),
                     iconType = entity.iconType,
                     isFavorite = entity.isFavorite,
                     fullEntity = entity

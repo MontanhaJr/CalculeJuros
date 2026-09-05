@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
 import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
+import com.montanhajr.calculejuros.core.util.toCurrency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
@@ -40,6 +42,7 @@ class FavoritesViewModel @Inject constructor(
     getFavoritesUseCase: GetFavoritesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val repository: SimulationRepository,
+    currencyPreferencesRepository: CurrencyPreferencesRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -50,11 +53,10 @@ class FavoritesViewModel @Inject constructor(
 
     val uiState: StateFlow<FavoritesUiState> = combine(
         getFavoritesUseCase(),
-        _selectedSimulation,
-        _pendingUnfavorite,
-        _isEditMode,
+        currencyPreferencesRepository.currencySymbol,
+        combine(_selectedSimulation, _pendingUnfavorite, _isEditMode) { sel, pen, edit -> Triple(sel, pen, edit) },
         _reorderedList
-    ) { dbSimulations, selected, pending, isEdit, customList ->
+    ) { dbSimulations, currencySymbol, (selected, pending, isEdit), customList ->
         val dbIds = dbSimulations.map { it.id }.toSet()
         val simulations = if (customList != null) {
             val filteredCustom = customList.filter { it.id in dbIds }
@@ -76,7 +78,7 @@ class FavoritesViewModel @Inject constructor(
                     ),
                     resultType = if (entity.winner == "PARCELADO") context.getString(R.string.winner_installments) else context.getString(R.string.winner_cash),
                     resultLabel = if (entity.winner == "PARCELADO") context.getString(R.string.label_you_gain) else context.getString(R.string.label_you_save),
-                    resultValue = context.getString(R.string.label_currency_format, String.format("%.2f", entity.difference)),
+                    resultValue = entity.difference.toCurrency(currencySymbol),
                     iconType = entity.iconType,
                     fullEntity = entity
                 )

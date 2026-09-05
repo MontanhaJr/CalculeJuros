@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.model.InvestmentType
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
 import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
@@ -20,6 +21,7 @@ class SimulatorViewModel @Inject constructor(
     private val calculateSimulationUseCase: CalculateSimulationUseCase,
     private val saveSimulationUseCase: SaveSimulationUseCase,
     private val getSimulationByIdUseCase: GetSimulationByIdUseCase,
+    private val currencyPreferencesRepository: CurrencyPreferencesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -27,6 +29,12 @@ class SimulatorViewModel @Inject constructor(
     val uiState: StateFlow<SimulatorUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            currencyPreferencesRepository.currencySymbol.collect { symbol ->
+                _uiState.update { it.copy(currencySymbol = symbol) }
+            }
+        }
+
         savedStateHandle.getStateFlow<Long>("simulationId", -1L)
             .onEach { id ->
                 if (id != -1L) {
@@ -34,6 +42,12 @@ class SimulatorViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    fun setCurrencySymbol(symbol: String) {
+        viewModelScope.launch {
+            currencyPreferencesRepository.saveCurrencySymbol(symbol)
+        }
     }
 
     private fun loadSimulation(id: Long) {

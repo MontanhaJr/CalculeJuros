@@ -9,9 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import java.util.Locale
 import com.montanhajr.calculejuros.R
+import com.montanhajr.calculejuros.core.util.toCurrency
 import com.montanhajr.calculejuros.ui.theme.*
 
 @Composable
@@ -73,6 +72,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SuggestedResultCard(
                 result = uiState.suggestedResult,
+                currencySymbol = uiState.currencySymbol,
                 onClick = { uiState.suggestedResult?.id?.let(onNavigateToSimulationDetail) }
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -87,6 +87,7 @@ fun HomeScreen(
             uiState.recentSimulations.forEach { simulation ->
                 RecentSimulationItem(
                     simulation = simulation,
+                    currencySymbol = uiState.currencySymbol,
                     onClick = { onNavigateToSimulationDetail(simulation.id) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -186,7 +187,7 @@ fun NewSimulationCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
+fun SuggestedResultCard(result: RecentSimulation?, currencySymbol: String, onClick: () -> Unit) {
     if (result == null) return
     
     val isInstallment = result.type == "Parcelar"
@@ -215,7 +216,9 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                             Icons.AutoMirrored.Filled.TrendingUp,
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.padding(10.dp).size(24.dp)
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .size(24.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
@@ -269,7 +272,7 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                 Column(modifier = Modifier.fillMaxWidth().padding(end = 100.dp)) {
                     Text(stringResource(R.string.home_suggested_details), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                     Text(
-                        stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", result.difference)),
+                        result.difference.toCurrency(currencySymbol),
                         fontFamily = SoraFont,
                         color = accentColor,
                         fontSize = 32.sp,
@@ -292,7 +295,7 @@ fun SuggestedResultCard(result: RecentSimulation?, onClick: () -> Unit) {
                 modifier = Modifier
                     .size(110.dp)
                     .align(Alignment.BottomEnd)
-                    .offset(x = 10.dp, y = 15.dp)
+                    .offset(x = 10.dp, y = 10.dp)
             )
         }
     }
@@ -308,24 +311,27 @@ fun QuickActionsGrid(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        QuickActionItem(
+        QuickActionCard(
+            icon = Icons.Default.History,
             title = stringResource(R.string.home_action_recent_title),
             subtitle = stringResource(R.string.home_action_recent_desc),
-            icon = Icons.Default.Refresh,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f),
             onClick = onRecentClick
         )
-        QuickActionItem(
+        QuickActionCard(
+            icon = Icons.Default.Star,
             title = stringResource(R.string.home_action_scenarios_title),
             subtitle = stringResource(R.string.home_action_scenarios_desc),
-            icon = Icons.AutoMirrored.Filled.List,
+            color = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.weight(1f),
             onClick = onScenariosClick
         )
-        QuickActionItem(
+        QuickActionCard(
+            icon = Icons.Default.School,
             title = stringResource(R.string.home_action_learn_title),
             subtitle = stringResource(R.string.home_action_learn_desc),
-            icon = Icons.Default.Book,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.weight(1f),
             onClick = onLearnClick
         )
@@ -333,56 +339,37 @@ fun QuickActionsGrid(
 }
 
 @Composable
-fun QuickActionItem(
+fun QuickActionCard(
+    icon: ImageVector,
     title: String,
     subtitle: String,
-    icon: ImageVector,
+    color: Color,
     modifier: Modifier,
     onClick: () -> Unit
 ) {
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = modifier.height(160.dp)
+        modifier = modifier.height(140.dp)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-             Surface(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            Surface(
+                color = color.copy(alpha = 0.1f),
                 shape = CircleShape,
-                modifier = Modifier.size(44.dp)
+                modifier = Modifier.size(36.dp)
             ) {
-                Icon(
-                    icon, 
-                    contentDescription = null, 
-                    tint = MaterialTheme.colorScheme.primary, 
-                    modifier = Modifier.padding(10.dp)
-                )
+                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.padding(8.dp))
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    title, 
-                    fontFamily = SoraFont, 
-                    fontWeight = FontWeight.Bold, 
-                    fontSize = 13.sp, 
-                    lineHeight = 16.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    subtitle, 
-                    fontFamily = DmSansFont, 
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, 
-                    fontSize = 10.sp, 
-                    lineHeight = 12.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
+            
+            Column {
+                Text(title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(subtitle, fontFamily = DmSansFont, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 13.sp)
             }
         }
     }
@@ -395,19 +382,21 @@ fun RecentSimulationsHeader(onViewAllClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.home_recent_header), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        }
+        Text(
+            stringResource(R.string.home_recent_header),
+            fontFamily = SoraFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         TextButton(onClick = onViewAllClick) {
-            Text(stringResource(R.string.home_view_all), fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.home_view_all), fontFamily = SoraFont, color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
         }
     }
 }
 
 @Composable
-fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
+fun RecentSimulationItem(simulation: RecentSimulation, currencySymbol: String, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
@@ -416,17 +405,24 @@ fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.size(48.dp)
+                color = (if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.size(44.dp)
             ) {
-                Icon(Icons.Default.DesktopMac, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(8.dp))
+                Icon(
+                    if (simulation.type == "Parcelar") Icons.AutoMirrored.Filled.TrendingUp else Icons.Default.Savings,
+                    contentDescription = null,
+                    tint = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(10.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
             Column(modifier = Modifier.weight(1f)) {
                 val displayTitle = if (simulation.title.isEmpty() || simulation.title == "Simulação") stringResource(R.string.default_simulation_name) else simulation.title
                 Text(displayTitle, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
@@ -448,47 +444,9 @@ fun RecentSimulationItem(simulation: RecentSimulation, onClick: () -> Unit) {
                         fontWeight = FontWeight.Bold
                     )
                 }
-                Text(stringResource(R.string.label_currency_format, String.format(Locale.getDefault(), "%.2f", simulation.difference)), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)
+                Text(simulation.difference.toCurrency(currencySymbol), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = if (simulation.type == "Parcelar") MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error)
             }
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F0F1A, locale = "pt")
-@Composable
-fun HomeHeaderPreviewPt() {
-    CashWiseTheme(darkTheme = true) {
-        Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-            HomeHeader()
-            Image(
-                painter = painterResource(id = R.drawable.calc_coin_icon),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(130.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = 10.dp, y = (-5).dp)
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF0F0F1A, locale = "pt")
-@Composable
-fun SuggestedResultCardPreview() {
-    CashWiseTheme(darkTheme = true) {
-        Box(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-            SuggestedResultCard(
-                result = RecentSimulation(
-                    id = "1",
-                    title = "MacBook Pro",
-                    installmentsCount = 12,
-                    annualProfitability = 12.75,
-                    type = "À vista",
-                    difference = 4.50
-                ),
-                onClick = {}
-            )
         }
     }
 }

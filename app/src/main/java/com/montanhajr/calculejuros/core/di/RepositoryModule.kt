@@ -1,5 +1,7 @@
 package com.montanhajr.calculejuros.core.di
 
+import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepositoryImpl
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepositoryImpl
 import dagger.Binds
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindSimulationRepository(
         simulationRepositoryImpl: SimulationRepositoryImpl
     ): SimulationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCurrencyPreferencesRepository(
+        currencyPreferencesRepositoryImpl: CurrencyPreferencesRepositoryImpl
+    ): CurrencyPreferencesRepository
 }

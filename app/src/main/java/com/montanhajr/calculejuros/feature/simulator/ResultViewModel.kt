@@ -3,6 +3,7 @@ package com.montanhajr.calculejuros.feature.simulator
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
 import com.montanhajr.calculejuros.core.domain.model.SimulationResult
 import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
@@ -18,7 +19,8 @@ data class ResultUiState(
     val scenarioName: String? = null,
     val isFavorite: Boolean = false,
     val showSaveDialog: Boolean = false,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val currencySymbol: String = "R$"
 )
 
 @HiltViewModel
@@ -26,6 +28,7 @@ class ResultViewModel @Inject constructor(
     private val getSimulationByIdUseCase: GetSimulationByIdUseCase,
     private val calculateSimulationUseCase: CalculateSimulationUseCase,
     private val saveSimulationUseCase: SaveSimulationUseCase,
+    private val currencyPreferencesRepository: CurrencyPreferencesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -37,6 +40,13 @@ class ResultViewModel @Inject constructor(
 
     init {
         simulationId = savedStateHandle.get<Long>("simulationId") ?: -1L
+
+        viewModelScope.launch {
+            currencyPreferencesRepository.currencySymbol.collect { symbol ->
+                _uiState.update { it.copy(currencySymbol = symbol) }
+            }
+        }
+
         if (simulationId != -1L) {
             loadSimulation(simulationId)
         }

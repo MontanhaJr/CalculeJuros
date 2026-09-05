@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.stringResource
 import com.montanhajr.calculejuros.R
+import com.montanhajr.calculejuros.core.ui.components.CurrencySelectionDialog
 import com.montanhajr.calculejuros.core.ui.components.ResultCard
 import com.montanhajr.calculejuros.feature.simulator.components.*
 import com.montanhajr.calculejuros.ui.theme.*
@@ -32,6 +33,18 @@ fun SimulatorScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    var showCurrencyDialog by remember { mutableStateOf(false) }
+
+    if (showCurrencyDialog) {
+        CurrencySelectionDialog(
+            currentSymbol = uiState.currencySymbol,
+            onCurrencySelected = { symbol ->
+                viewModel.setCurrencySymbol(symbol)
+                showCurrencyDialog = false
+            },
+            onDismiss = { showCurrencyDialog = false }
+        )
+    }
 
     LaunchedEffect(uiState.navigateToResultId) {
         uiState.navigateToResultId?.let { id ->
@@ -51,7 +64,11 @@ fun SimulatorScreen(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
-            SimulatorHeader(onNavigateBack)
+            SimulatorHeader(
+                currencySymbol = uiState.currencySymbol,
+                onCurrencyClick = { showCurrencyDialog = true },
+                onBack = onNavigateBack
+            )
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -126,8 +143,8 @@ fun SimulatorScreen(
                     label = stringResource(R.string.label_card_tax_rate),
                     value = uiState.cardTaxRate,
                     onValueChange = viewModel::onCardTaxChange,
-                    icon = Icons.Default.CreditCard,
-                    suffix = "% a.m.",
+                    icon = Icons.Default.Percent,
+                    suffix = "% ao mês",
                     helperText = stringResource(R.string.helper_card_tax_rate)
                 )
             } else {
@@ -135,7 +152,7 @@ fun SimulatorScreen(
                     label = stringResource(R.string.label_total_installment_value),
                     value = uiState.totalInstallmentValue,
                     onValueChange = viewModel::onTotalInstallmentValueChange,
-                    icon = Icons.Default.CreditCard,
+                    icon = Icons.Default.AttachMoney,
                     suffix = currencyLabel,
                     helperText = stringResource(R.string.helper_total_installment_value)
                 )
@@ -143,14 +160,14 @@ fun SimulatorScreen(
             
             Spacer(modifier = Modifier.height(16.dp))
 
-            val profitabilityOptions = listOf(
+            val investmentRateOptions = listOf(
                 stringResource(R.string.label_annual_rate_mode),
                 stringResource(R.string.label_monthly_rate_mode_profitability)
             )
             ModeSelector(
-                options = profitabilityOptions,
-                selectedOption = if (uiState.useAnnualProfitability) profitabilityOptions[0] else profitabilityOptions[1],
-                onOptionSelected = { viewModel.onUseAnnualProfitabilityToggle(it == profitabilityOptions[0]) }
+                options = investmentRateOptions,
+                selectedOption = if (uiState.useAnnualProfitability) investmentRateOptions[0] else investmentRateOptions[1],
+                onOptionSelected = { viewModel.onUseAnnualProfitabilityToggle(it == investmentRateOptions[0]) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -160,7 +177,7 @@ fun SimulatorScreen(
                     label = stringResource(R.string.label_investment_annual_rate),
                     value = uiState.investmentAnnualRate,
                     onValueChange = viewModel::onInvestmentAnnualRateChange,
-                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                    icon = Icons.Default.TrendingUp,
                     suffix = "% a.a.",
                     helperText = stringResource(R.string.helper_investment_annual_rate)
                 )
@@ -169,33 +186,38 @@ fun SimulatorScreen(
                     label = stringResource(R.string.label_investment_monthly_rate),
                     value = uiState.investmentMonthlyRate,
                     onValueChange = viewModel::onInvestmentMonthlyRateChange,
-                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                    icon = Icons.Default.TrendingUp,
                     suffix = "% a.m.",
                     helperText = stringResource(R.string.helper_investment_monthly_rate)
                 )
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             HowItWorksSection(
                 expanded = uiState.isHowItWorksExpanded,
                 onToggle = viewModel::toggleHowItWorks
             )
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             
             Button(
                 onClick = viewModel::onCalculate,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Icon(Icons.Default.Calculate, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.btn_calculate), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(
+                    stringResource(R.string.btn_calculate),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
             }
+            
+            Spacer(modifier = Modifier.height(16.dp))
             
             TextButton(
                 onClick = viewModel::onClearFields,
@@ -219,19 +241,55 @@ fun SimulatorScreen(
 }
 
 @Composable
-fun SimulatorHeader(onBack: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
+fun SimulatorHeader(currencySymbol: String, onCurrencyClick: () -> Unit, onBack: () -> Unit) {
+    val currencyText = when (currencySymbol) {
+        "R$" -> stringResource(R.string.currency_brl)
+        "$" -> stringResource(R.string.currency_usd)
+        "€" -> stringResource(R.string.currency_eur)
+        "£" -> stringResource(R.string.currency_gbp)
+        else -> currencySymbol
+    }
+    val currencyLabel = stringResource(R.string.currency_label_format, currencyText)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 28.dp, bottom = 4.dp)
+    ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(40.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_cancel), tint = MaterialTheme.colorScheme.primary)
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_cancel), tint = MaterialTheme.colorScheme.primary)
+                }
+
+                OutlinedButton(
+                    onClick = onCurrencyClick,
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(
+                        text = currencyLabel,
+                        fontFamily = SoraFont,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Column(modifier = Modifier.padding(end = 100.dp)) {
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Column(modifier = Modifier.padding(end = 110.dp)) {
                 Text(
                     stringResource(R.string.title_new_simulation),
                     fontFamily = SoraFont,
@@ -247,13 +305,14 @@ fun SimulatorHeader(onBack: () -> Unit) {
                 )
             }
         }
+
         Image(
             painter = painterResource(id = R.drawable.calc_coin_icon),
             contentDescription = null,
             modifier = Modifier
-                .size(130.dp)
-                .align(Alignment.BottomEnd)
-                .offset(x = 10.dp, y = 20.dp)
+                .size(120.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 10.dp, y = 52.dp)
         )
     }
 }
@@ -296,4 +355,3 @@ fun HowItWorksSection(expanded: Boolean, onToggle: () -> Unit) {
         }
     }
 }
-
