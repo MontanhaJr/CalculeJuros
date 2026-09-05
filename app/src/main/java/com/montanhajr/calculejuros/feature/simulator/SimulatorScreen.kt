@@ -72,7 +72,7 @@ fun SimulatorScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            val currencyLabel = stringResource(R.string.label_currency)
+            val currencyLabel = uiState.currencySymbol
             SimulatorInputField(
                 label = stringResource(R.string.label_product_price),
                 value = uiState.productPrice,

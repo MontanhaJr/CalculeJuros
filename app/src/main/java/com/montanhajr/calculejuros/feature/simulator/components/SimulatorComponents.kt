@@ -159,10 +159,10 @@ fun SimulatorInputField(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontFamily = DmSansFont)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        val currencyLabel = stringResource(R.string.label_currency)
+                        val currencySymbols = listOf("R$", "$", "€", "£")
                         val (visualPrefix, visualSuffix) = when {
                             suffix == null -> "" to ""
-                            suffix == currencyLabel -> "$currencyLabel " to ""
+                            suffix in currencySymbols -> "$suffix " to ""
                             else -> "" to " $suffix"
                         }
                         BasicTextField(
@@ -221,31 +221,21 @@ class DecimalVisualTransformation(
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 if (digits.isEmpty()) return prefix.length + 4
-                
-                // Calculate how many characters were added before the current offset
-                // This is tricky because of the comma and padding.
-                // Simpler approach: find the position of the digit in the formatted string.
-                
+                val formattedLength = formatted.length
+                val diff = formattedLength - digits.length
                 val transformedOffset = if (offset == 0) {
                     prefix.length
                 } else {
-                    // This is a rough estimation, but for simple decimal it often works.
-                    // However, we need precision.
-                    val formattedLength = formatted.length
-                    val diff = formattedLength - digits.length
                     prefix.length + offset + diff
                 }
-                
                 return transformedOffset.coerceIn(0, out.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
                 if (digits.isEmpty()) return 0
-                
                 val formattedLength = formatted.length
                 val diff = formattedLength - digits.length
                 val originalOffset = offset - prefix.length - diff
-                
                 return originalOffset.coerceIn(0, originalText.length)
             }
         }

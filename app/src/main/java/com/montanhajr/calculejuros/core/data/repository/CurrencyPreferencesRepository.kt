@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,9 +28,15 @@ class CurrencyPreferencesRepositoryImpl @Inject constructor(
         val CURRENCY_SYMBOL = stringPreferencesKey("currency_symbol")
     }
 
+    private val defaultCurrencySymbol: String
+        get() = when (Locale.getDefault().language) {
+            "pt" -> "R$"
+            else -> "$"
+        }
+
     override val currencySymbol: Flow<String> = context.currencyDataStore.data
         .map { preferences ->
-            preferences[PreferencesKeys.CURRENCY_SYMBOL] ?: "R$"
+            preferences[PreferencesKeys.CURRENCY_SYMBOL] ?: defaultCurrencySymbol
         }
 
     override suspend fun saveCurrencySymbol(symbol: String) {
