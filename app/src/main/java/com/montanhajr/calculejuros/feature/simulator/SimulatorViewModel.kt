@@ -65,6 +65,14 @@ class SimulatorViewModel @Inject constructor(
                     investmentAnnualRate = fromDoubleToDigits(entity.inputAnnualProfitability),
                     investmentMonthlyRate = fromDoubleToDigits(entity.inputMonthlyProfitability),
                     useAnnualProfitability = entity.inputUseAnnualProfitabilityToggle,
+                    useDownPayment = entity.inputUseDownPayment,
+                    downPayment = fromDoubleToDigits(entity.inputDownPayment),
+                    downPaymentPercentage = fromDoubleToDigits(entity.inputDownPaymentPercentage),
+                    downPaymentIsPercentage = entity.inputDownPaymentIsPercentage,
+                    usePrepaymentDiscount = entity.inputUsePrepaymentDiscount,
+                    prepaymentDiscountPercentage = fromDoubleToDigits(entity.inputPrepaymentDiscountPercentage),
+                    prepaymentDiscountValue = fromDoubleToDigits(entity.inputPrepaymentDiscountValue),
+                    prepaymentDiscountIsPercentage = entity.inputPrepaymentDiscountIsPercentage,
                     isSavedAsFavorite = entity.isFavorite,
                     scenarioName = entity.scenarioName ?: "",
                     simulationResult = null, // Do not show previous results
@@ -173,6 +181,38 @@ class SimulatorViewModel @Inject constructor(
         _uiState.update { it.copy(investmentMonthlyRate = value) }
     }
 
+    fun onUseDownPaymentToggle(use: Boolean) {
+        _uiState.update { it.copy(useDownPayment = use) }
+    }
+
+    fun onDownPaymentChange(value: String) {
+        _uiState.update { it.copy(downPayment = value) }
+    }
+
+    fun onDownPaymentPercentageChange(value: String) {
+        _uiState.update { it.copy(downPaymentPercentage = value) }
+    }
+
+    fun onDownPaymentTypeToggle(isPercentage: Boolean) {
+        _uiState.update { it.copy(downPaymentIsPercentage = isPercentage) }
+    }
+
+    fun onUsePrepaymentDiscountToggle(use: Boolean) {
+        _uiState.update { it.copy(usePrepaymentDiscount = use) }
+    }
+
+    fun onPrepaymentDiscountPercentageChange(value: String) {
+        _uiState.update { it.copy(prepaymentDiscountPercentage = value) }
+    }
+
+    fun onPrepaymentDiscountValueChange(value: String) {
+        _uiState.update { it.copy(prepaymentDiscountValue = value) }
+    }
+
+    fun onPrepaymentDiscountTypeToggle(isPercentage: Boolean) {
+        _uiState.update { it.copy(prepaymentDiscountIsPercentage = isPercentage) }
+    }
+
     private fun fromDoubleToDigits(value: Double): String {
         return kotlin.math.round(value * 100).toLong().toString()
     }
@@ -209,7 +249,15 @@ class SimulatorViewModel @Inject constructor(
                 useMonthlyRateToggle = state.useMonthlyRate,
                 annualProfitability = state.investmentAnnualRate.toBrazilDouble(),
                 monthlyProfitability = state.investmentMonthlyRate.toBrazilDouble(),
-                useAnnualProfitabilityToggle = state.useAnnualProfitability
+                useAnnualProfitabilityToggle = state.useAnnualProfitability,
+                downPayment = state.downPayment.toBrazilDouble(),
+                downPaymentPercentage = state.downPaymentPercentage.toBrazilDouble(),
+                downPaymentIsPercentage = state.downPaymentIsPercentage,
+                useDownPayment = state.useDownPayment,
+                prepaymentDiscountPercentage = state.prepaymentDiscountPercentage.toBrazilDouble(),
+                prepaymentDiscountValue = state.prepaymentDiscountValue.toBrazilDouble(),
+                usePrepaymentDiscount = state.usePrepaymentDiscount,
+                prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage
             )
 
             viewModelScope.launch {
@@ -249,7 +297,15 @@ class SimulatorViewModel @Inject constructor(
             useMonthlyRateToggle = state.useMonthlyRate,
             annualProfitability = state.investmentAnnualRate.toBrazilDouble(),
             monthlyProfitability = state.investmentMonthlyRate.toBrazilDouble(),
-            useAnnualProfitabilityToggle = state.useAnnualProfitability
+            useAnnualProfitabilityToggle = state.useAnnualProfitability,
+            downPayment = state.downPayment.toBrazilDouble(),
+            downPaymentPercentage = state.downPaymentPercentage.toBrazilDouble(),
+            downPaymentIsPercentage = state.downPaymentIsPercentage,
+            useDownPayment = state.useDownPayment,
+            prepaymentDiscountPercentage = state.prepaymentDiscountPercentage.toBrazilDouble(),
+            prepaymentDiscountValue = state.prepaymentDiscountValue.toBrazilDouble(),
+            usePrepaymentDiscount = state.usePrepaymentDiscount,
+            prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage
         )
 
         viewModelScope.launch {
@@ -282,7 +338,15 @@ class SimulatorViewModel @Inject constructor(
             useMonthlyRateToggle = state.useMonthlyRate,
             annualProfitability = state.investmentAnnualRate.toBrazilDouble(),
             monthlyProfitability = state.investmentMonthlyRate.toBrazilDouble(),
-            useAnnualProfitabilityToggle = state.useAnnualProfitability
+            useAnnualProfitabilityToggle = state.useAnnualProfitability,
+            downPayment = state.downPayment.toBrazilDouble(),
+            downPaymentPercentage = state.downPaymentPercentage.toBrazilDouble(),
+            downPaymentIsPercentage = state.downPaymentIsPercentage,
+            useDownPayment = state.useDownPayment,
+            prepaymentDiscountPercentage = state.prepaymentDiscountPercentage.toBrazilDouble(),
+            prepaymentDiscountValue = state.prepaymentDiscountValue.toBrazilDouble(),
+            usePrepaymentDiscount = state.usePrepaymentDiscount,
+            prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage
         )
         
         val result = calculateSimulationUseCase(input)

@@ -60,8 +60,21 @@ class CalculateSimulationUseCase @Inject constructor() {
         val n = installmentsCount
 
         val monthlyDetails = mutableListOf<MonthlyDetail>()
-        var balanceAVista = valorDesconto
-        var balanceParcelado = productPrice
+        
+        // Down Payment consideration
+        val downPayment = if (input.useDownPayment) {
+            if (input.downPaymentIsPercentage) {
+                productPrice * (input.downPaymentPercentage / 100.0)
+            } else {
+                input.downPayment
+            }
+        } else 0.0
+        
+        // Initial balances: we assume the user has the 'productPrice' available.
+        // If they pay cash: they pay valorAVista now.
+        // If they parcel: they pay downPayment now.
+        var balanceAVista = productPrice - valorAVista
+        var balanceParcelado = productPrice - downPayment
 
         // Month 0 (Initial State)
         monthlyDetails.add(
@@ -69,7 +82,7 @@ class CalculateSimulationUseCase @Inject constructor() {
                 month = 0,
                 installmentBalance = balanceParcelado,
                 cashBalance = balanceAVista,
-                installmentPaid = 0.0,
+                installmentPaid = downPayment,
                 yieldInstallment = 0.0,
                 yieldCash = 0.0
             )
@@ -77,7 +90,6 @@ class CalculateSimulationUseCase @Inject constructor() {
 
         for (month in 1..n) {
             // Installment Strategy Evolution
-            // Yield is 0 if balance is negative (you can't earn interest on debt in this model)
             val yieldParcelado = maxOf(0.0, balanceParcelado * im)
             balanceParcelado = balanceParcelado + yieldParcelado - valorParcela
 
@@ -97,9 +109,19 @@ class CalculateSimulationUseCase @Inject constructor() {
             )
         }
 
+        // Step 4.1: Prepayment Discount calculation (just as info or comparison)
+        val valorTotalRestante = valorTotalParcelado // This is the sum of installments after down payment
+        val prepaymentDiscountValue = if (input.usePrepaymentDiscount) {
+            if (input.prepaymentDiscountIsPercentage) {
+                valorTotalRestante * (input.prepaymentDiscountPercentage / 100.0)
+            } else {
+                input.prepaymentDiscountValue
+            }
+        } else 0.0
+
         val ganhoLiquidoAVista = balanceAVista
         val ganhoLiquidoParcelado = balanceParcelado
-        val jurosGanhosAVista = ganhoLiquidoAVista - valorDesconto
+        val jurosGanhosAVista = maxOf(0.0, ganhoLiquidoAVista - (productPrice - valorAVista))
 
         // Step 5: Final comparison and recommendation
         val diferenca = ganhoLiquidoParcelado - ganhoLiquidoAVista
@@ -123,10 +145,12 @@ class CalculateSimulationUseCase @Inject constructor() {
             monthlyProfitability = rentabilidadeMensal * 100.0,
             annualProfitability = rentabilidadeAnual * 100.0,
             netGainCash = maxOf(0.0, ganhoLiquidoAVista),
-            interestGainedCash = maxOf(0.0, jurosGanhosAVista),
+            interestGainedCash = jurosGanhosAVista,
             netGainInstallment = ganhoLiquidoParcelado,
             difference = kotlin.math.abs(diferenca),
             recommendation = recomendacao,
+            downPayment = downPayment,
+            prepaymentDiscountValue = prepaymentDiscountValue,
             monthlyDetails = monthlyDetails
         )
     }

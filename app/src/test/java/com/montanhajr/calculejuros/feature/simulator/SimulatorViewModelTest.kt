@@ -102,4 +102,37 @@ class SimulatorViewModelTest {
         
         assertEquals("1268", viewModel.uiState.value.investmentAnnualRate)
     }
+
+    @Test
+    fun `when useDownPayment as percentage is true, result should reflect downPayment`() {
+        viewModel.onProductPriceChange("100000") // 1000,00
+        viewModel.onDownPaymentPercentageChange("2000") // 20,00 %
+        viewModel.onDownPaymentTypeToggle(true)
+        viewModel.onUseDownPaymentToggle(true)
+        viewModel.onCalculate()
+        
+        val result = viewModel.uiState.value.simulationResult
+        // 20% of 1000 = 200
+        assertEquals(200.0, result?.downPayment ?: 0.0, 0.01)
+        // Initial balance should be 1000 - 200 = 800
+        assertEquals(800.0, result?.monthlyDetails?.get(0)?.installmentBalance ?: 0.0, 0.01)
+    }
+
+    @Test
+    fun `when prepaymentDiscount is used, it should be calculated correctly`() {
+        viewModel.onProductPriceChange("100000") // 1000,00
+        viewModel.onInstallmentsChange(12)
+        viewModel.onUseMonthlyRateToggle(true)
+        viewModel.onCardTaxChange("0") // 0% interest, so total remains 1000,00
+        
+        viewModel.onUsePrepaymentDiscountToggle(true)
+        viewModel.onPrepaymentDiscountPercentageChange("500") // 5,00 %
+        viewModel.onPrepaymentDiscountTypeToggle(true) // Percentage mode
+        
+        viewModel.onCalculate()
+        
+        val result = viewModel.uiState.value.simulationResult
+        // 5% of 1000 = 50
+        assertEquals(50.0, result?.prepaymentDiscountValue ?: 0.0, 0.01)
+    }
 }

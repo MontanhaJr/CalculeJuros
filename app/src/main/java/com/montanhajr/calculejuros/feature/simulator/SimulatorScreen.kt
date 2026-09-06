@@ -78,8 +78,7 @@ fun SimulatorScreen(
                 value = uiState.productPrice,
                 onValueChange = viewModel::onProductPriceChange,
                 icon = Icons.Default.ShoppingBag,
-                suffix = currencyLabel,
-                trailingIcon = Icons.Default.Edit
+                suffix = currencyLabel
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -124,6 +123,48 @@ fun SimulatorScreen(
                 onTextChange = viewModel::onInstallmentsTextChange
             )
             
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OptionalSection(
+                title = stringResource(R.string.label_down_payment),
+                checked = uiState.useDownPayment,
+                onCheckedChange = viewModel::onUseDownPaymentToggle
+            ) {
+                Column {
+                    val downPaymentOptions = listOf(
+                        stringResource(R.string.label_down_payment_percentage_mode),
+                        stringResource(R.string.label_down_payment_value_mode)
+                    )
+                    ModeSelector(
+                        options = downPaymentOptions,
+                        selectedOption = if (uiState.downPaymentIsPercentage) downPaymentOptions[0] else downPaymentOptions[1],
+                        onOptionSelected = { viewModel.onDownPaymentTypeToggle(it == downPaymentOptions[0]) }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    if (uiState.downPaymentIsPercentage) {
+                        SimulatorInputField(
+                            label = stringResource(R.string.label_down_payment),
+                            value = uiState.downPaymentPercentage,
+                            onValueChange = viewModel::onDownPaymentPercentageChange,
+                            icon = Icons.Default.Payments,
+                            suffix = "%",
+                            helperText = stringResource(R.string.helper_down_payment)
+                        )
+                    } else {
+                        SimulatorInputField(
+                            label = stringResource(R.string.label_down_payment),
+                            value = uiState.downPayment,
+                            onValueChange = viewModel::onDownPaymentChange,
+                            icon = Icons.Default.Payments,
+                            suffix = currencyLabel,
+                            helperText = stringResource(R.string.helper_down_payment)
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             val cardRateOptions = listOf(
@@ -192,6 +233,48 @@ fun SimulatorScreen(
                 )
             }
             
+            Spacer(modifier = Modifier.height(24.dp))
+
+            OptionalSection(
+                title = stringResource(R.string.label_prepayment_discount),
+                checked = uiState.usePrepaymentDiscount,
+                onCheckedChange = viewModel::onUsePrepaymentDiscountToggle
+            ) {
+                Column {
+                    val prepaymentOptions = listOf(
+                        stringResource(R.string.label_prepayment_discount_percentage_mode),
+                        stringResource(R.string.label_prepayment_discount_value_mode)
+                    )
+                    ModeSelector(
+                        options = prepaymentOptions,
+                        selectedOption = if (uiState.prepaymentDiscountIsPercentage) prepaymentOptions[0] else prepaymentOptions[1],
+                        onOptionSelected = { viewModel.onPrepaymentDiscountTypeToggle(it == prepaymentOptions[0]) }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    if (uiState.prepaymentDiscountIsPercentage) {
+                        SimulatorInputField(
+                            label = stringResource(R.string.label_prepayment_discount),
+                            value = uiState.prepaymentDiscountPercentage,
+                            onValueChange = viewModel::onPrepaymentDiscountPercentageChange,
+                            icon = Icons.Default.PriceCheck,
+                            suffix = "%",
+                            helperText = stringResource(R.string.helper_prepayment_discount)
+                        )
+                    } else {
+                        SimulatorInputField(
+                            label = stringResource(R.string.label_prepayment_discount),
+                            value = uiState.prepaymentDiscountValue,
+                            onValueChange = viewModel::onPrepaymentDiscountValueChange,
+                            icon = Icons.Default.PriceCheck,
+                            suffix = currencyLabel,
+                            helperText = stringResource(R.string.helper_prepayment_discount)
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
             
             HowItWorksSection(

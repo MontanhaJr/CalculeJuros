@@ -18,6 +18,8 @@ data class SimulationResult(
     val netGainInstallment: Double,
     val difference: Double,
     val recommendation: RecommendationType,
+    val downPayment: Double = 0.0,
+    val prepaymentDiscountValue: Double = 0.0,
     val monthlyDetails: List<MonthlyDetail> = emptyList()
 )
 

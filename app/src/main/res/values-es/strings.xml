@@ -29,6 +29,14 @@
     <string name="helper_investment_annual_rate">Ingrese la rentabilidad (ej: 12,75)</string>
     <string name="label_investment_monthly_rate">Rentabilidad de la inversión (al mes)</string>
     <string name="helper_investment_monthly_rate">Ingrese la rentabilidad mensual</string>
+    <string name="label_down_payment_percentage_mode">% Entrada</string>
+    <string name="label_down_payment_value_mode">Valor fijo</string>
+    <string name="label_down_payment">Valor de entrada</string>
+    <string name="helper_down_payment">Ingrese el monto pagado en el momento de la compra</string>
+    <string name="label_prepayment_discount">Descuento por anticipo</string>
+    <string name="helper_prepayment_discount">Ingrese el descuento ofrecido por la tarjeta al anticipar cuotas</string>
+    <string name="label_prepayment_discount_percentage_mode">% Descuento</string>
+    <string name="label_prepayment_discount_value_mode">Valor fijo</string>
     <string name="section_how_it_works_title">¿Cómo funciona?</string>
     <string name="section_how_it_works_desc">Comparamos el rendimiento de su inversión con el costo de pagar en cuotas para ayudarle a decidir la mejor opción.</string>
     <string name="btn_calculate">Calcular</string>

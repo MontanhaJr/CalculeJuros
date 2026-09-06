@@ -11,5 +11,13 @@ data class SimulationInput(
     val useMonthlyRateToggle: Boolean = true,
     val annualProfitability: Double = 0.0,
     val monthlyProfitability: Double = 0.0,
-    val useAnnualProfitabilityToggle: Boolean = true
+    val useAnnualProfitabilityToggle: Boolean = true,
+    val downPayment: Double = 0.0,
+    val useDownPayment: Boolean = false,
+    val prepaymentDiscountPercentage: Double = 0.0,
+    val prepaymentDiscountValue: Double = 0.0,
+    val usePrepaymentDiscount: Boolean = false,
+    val prepaymentDiscountIsPercentage: Boolean = true,
+    val downPaymentPercentage: Double = 0.0,
+    val downPaymentIsPercentage: Boolean = false
 )

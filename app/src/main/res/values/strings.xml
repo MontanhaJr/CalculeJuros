@@ -29,6 +29,14 @@
     <string name="helper_investment_annual_rate">Digite a rentabilidade (ex: 12,75)</string>
     <string name="label_investment_monthly_rate">Rentabilidade do investimento (ao mês)</string>
     <string name="helper_investment_monthly_rate">Digite a rentabilidade mensal</string>
+    <string name="label_down_payment_percentage_mode">% Entrada</string>
+    <string name="label_down_payment_value_mode">Valor fixo</string>
+    <string name="label_down_payment">Valor de entrada</string>
+    <string name="helper_down_payment">Informe o valor pago no ato da compra</string>
+    <string name="label_prepayment_discount">Desconto ao antecipar</string>
+    <string name="helper_prepayment_discount">Informe o desconto oferecido pelo cartão ao antecipar parcelas</string>
+    <string name="label_prepayment_discount_percentage_mode">% Desconto</string>
+    <string name="label_prepayment_discount_value_mode">Valor fixo</string>
     <string name="section_how_it_works_title">Como funciona?</string>
     <string name="section_how_it_works_desc">Comparamos o rendimento do seu investimento com o custo de parcelar para você decidir a melhor opção.</string>
     <string name="btn_calculate">Calcular</string>

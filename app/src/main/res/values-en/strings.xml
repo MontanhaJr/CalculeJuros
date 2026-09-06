@@ -29,6 +29,14 @@
     <string name="helper_investment_annual_rate">Enter the yield (e.g., 12.75)</string>
     <string name="label_investment_monthly_rate">Investment yield (per month)</string>
     <string name="helper_investment_monthly_rate">Enter the monthly yield</string>
+    <string name="label_down_payment_percentage_mode">% Down payment</string>
+    <string name="label_down_payment_value_mode">Fixed value</string>
+    <string name="label_down_payment">Down payment value</string>
+    <string name="helper_down_payment">Enter the amount paid at the time of purchase</string>
+    <string name="label_prepayment_discount">Prepayment discount</string>
+    <string name="helper_prepayment_discount">Enter the discount offered by the card when anticipating installments</string>
+    <string name="label_prepayment_discount_percentage_mode">% Discount</string>
+    <string name="label_prepayment_discount_value_mode">Fixed value</string>
     <string name="section_how_it_works_title">How it works?</string>
     <string name="section_how_it_works_desc">We compare your investment yield with the cost of paying in installments to help you decide the best option.</string>
     <string name="btn_calculate">Calculate</string>

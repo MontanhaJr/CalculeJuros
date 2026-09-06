@@ -34,6 +34,14 @@ class SaveSimulationUseCase @Inject constructor(
             inputAnnualProfitability = input.annualProfitability,
             inputMonthlyProfitability = input.monthlyProfitability,
             inputUseAnnualProfitabilityToggle = input.useAnnualProfitabilityToggle,
+            inputDownPayment = input.downPayment,
+            inputUseDownPayment = input.useDownPayment,
+            inputPrepaymentDiscountPercentage = input.prepaymentDiscountPercentage,
+            inputPrepaymentDiscountValue = input.prepaymentDiscountValue,
+            inputUsePrepaymentDiscount = input.usePrepaymentDiscount,
+            inputPrepaymentDiscountIsPercentage = input.prepaymentDiscountIsPercentage,
+            inputDownPaymentPercentage = input.downPaymentPercentage,
+            inputDownPaymentIsPercentage = input.downPaymentIsPercentage,
             
             // Results
             productPrice = result.productPrice,

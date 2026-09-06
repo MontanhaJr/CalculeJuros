@@ -21,6 +21,14 @@ data class SimulationEntity(
     val inputAnnualProfitability: Double,
     val inputMonthlyProfitability: Double,
     val inputUseAnnualProfitabilityToggle: Boolean,
+    val inputDownPayment: Double = 0.0,
+    val inputUseDownPayment: Boolean = false,
+    val inputPrepaymentDiscountPercentage: Double = 0.0,
+    val inputPrepaymentDiscountValue: Double = 0.0,
+    val inputUsePrepaymentDiscount: Boolean = false,
+    val inputPrepaymentDiscountIsPercentage: Boolean = true,
+    val inputDownPaymentPercentage: Double = 0.0,
+    val inputDownPaymentIsPercentage: Boolean = false,
     
     // Results (Summary)
     val productPrice: Double,
