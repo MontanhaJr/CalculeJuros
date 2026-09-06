@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
 import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
@@ -43,6 +44,7 @@ class FavoritesViewModel @Inject constructor(
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val repository: SimulationRepository,
     currencyPreferencesRepository: CurrencyPreferencesRepository,
+    private val adsPreferencesRepository: AdsPreferencesRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -159,5 +161,12 @@ class FavoritesViewModel @Inject constructor(
 
     fun dismissUnfavoriteDialog() {
         _pendingUnfavorite.value = null
+    }
+
+    fun toggleAdsVisibility() {
+        viewModelScope.launch {
+            val current = adsPreferencesRepository.showAds.first()
+            adsPreferencesRepository.setAdsVisible(!current)
+        }
     }
 }

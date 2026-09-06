@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.montanhajr.calculejuros.BuildConfig
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
 import com.montanhajr.calculejuros.ui.theme.*
@@ -174,7 +175,9 @@ fun FavoritesScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            TipCard()
+            TipCard(
+                onTripleClick = viewModel::toggleAdsVisibility
+            )
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -472,12 +475,34 @@ fun FavoriteListItem(
 }
 
 @Composable
-fun TipCard() {
+fun TipCard(onTripleClick: () -> Unit = {}) {
+    var lastClickTime by remember { mutableLongStateOf(0L) }
+    var clickCount by remember { mutableIntStateOf(0) }
+
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (BuildConfig.DEBUG) {
+                    Modifier.clickable {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastClickTime < 500) {
+                            clickCount++
+                        } else {
+                            clickCount = 1
+                        }
+                        lastClickTime = currentTime
+
+                        if (clickCount >= 3) {
+                            onTripleClick()
+                            clickCount = 0
+                        }
+                    }
+                } else Modifier
+            )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
