@@ -50,17 +50,8 @@ fun ResultScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.title_simulation_result), fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
-        }
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -73,8 +64,38 @@ fun ResultScreen(
                         .padding(padding)
                         .fillMaxSize()
                         .verticalScroll(scrollState)
-                        .padding(16.dp)
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
                 ) {
+                    Spacer(modifier = Modifier.statusBarsPadding())
+                    // Custom Header
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = onNavigateBack,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            stringResource(R.string.title_simulation_result),
+                            fontFamily = SoraFont,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
                     RecommendationHeader(result, uiState.currencySymbol, onLearnToInvestClick)
                     
                     Spacer(modifier = Modifier.height(16.dp))

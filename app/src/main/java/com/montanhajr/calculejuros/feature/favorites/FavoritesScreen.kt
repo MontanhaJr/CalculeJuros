@@ -48,16 +48,17 @@ fun FavoritesScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .statusBarsPadding()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
+            Spacer(modifier = Modifier.statusBarsPadding())
             FavoritesHeader { onNavigateToSimulator(null) }
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -212,7 +213,7 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .padding(top = 8.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {

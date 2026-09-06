@@ -54,16 +54,17 @@ fun SimulatorScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .statusBarsPadding()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
+            Spacer(modifier = Modifier.statusBarsPadding())
             SimulatorHeader(
                 currencySymbol = uiState.currencySymbol,
                 onCurrencyClick = { showCurrencyDialog = true },
@@ -340,7 +341,7 @@ fun SimulatorHeader(currencySymbol: String, onCurrencyClick: () -> Unit, onBack:
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 28.dp, bottom = 4.dp)
+            .padding(top = 8.dp, bottom = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
