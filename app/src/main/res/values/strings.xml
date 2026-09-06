@@ -9,7 +9,7 @@
 
     <!-- Simulator Screen -->
     <string name="title_new_simulation">Nova Simulação</string>
-    <string name="subtitle_new_simulation">Preencha os dados para descobrir o\nque vale mais a pena para você.</string>
+    <string name="subtitle_new_simulation">Preencha os dados para descobrir o que vale mais a pena para você.</string>
     <string name="section_cash_payment">Pagamento à Vista</string>
     <string name="section_installment_payment">Pagamento a Prazo</string>
     <string name="label_product_price">Valor do produto</string>
@@ -55,14 +55,14 @@
     <string name="title_history">Histórico</string>
     <string name="subtitle_history">Acompanhe todas as suas simulações</string>
     <string name="btn_filter">Filtrar</string>
-    <string name="stat_total_simulations">Total de\nsimulações</string>
-    <string name="stat_potential_gain">Você pode\nganhar</string>
-    <string name="stat_average_gain">Média por\nsimulação</string>
+    <string name="stat_total_simulations">Total de simulações</string>
+    <string name="stat_potential_gain">Você pode ganhar</string>
+    <string name="stat_average_gain">Média por simulação</string>
     <string name="filter_all">Todas as simulações</string>
     <string name="filter_installments">Simulações (Parcelar)</string>
     <string name="filter_cash">Simulações (À vista)</string>
     <string name="empty_history">Nenhuma simulação encontrada</string>
-    <string name="banner_continue_simulating">Continue simulando e\nfaça sempre a melhor escolha!</string>
+    <string name="banner_continue_simulating">Continue simulando e faça sempre a melhor escolha!</string>
     <string name="btn_new_simulation">Nova simulação</string>
     <string name="dialog_delete_title">Excluir simulação?</string>
     <string name="dialog_delete_desc">Esta ação não pode ser desfeita. A simulação será removida permanentemente do seu histórico.</string>
@@ -76,12 +76,12 @@
 
     <!-- Favorites Screen -->
     <string name="title_favorites">Favoritos</string>
-    <string name="subtitle_favorites">Suas simulações favoritas para\nacompanhar sempre 💜</string>
+    <string name="subtitle_favorites">Suas simulações favoritas para acompanhar sempre 💜</string>
     <string name="title_my_favorites">Minhas simulações favoritas</string>
     <string name="btn_edit">Editar</string>
     <string name="btn_done">Concluído</string>
     <string name="card_quick_access_title">Acesso rápido</string>
-    <string name="card_quick_access_desc">Salve suas simulações favoritas\ne compare sempre que quiser.</string>
+    <string name="card_quick_access_desc">Salve suas simulações favoritas e compare sempre que quiser.</string>
     <string name="card_tip_title">Dica</string>
     <string name="card_tip_desc">Compare suas simulações favoritas sempre que houver mudança nos juros ou descontos!</string>
     <string name="dialog_unfavorite_title">Remover dos favoritos?</string>
@@ -148,18 +148,18 @@
     <string name="home_title_part2">ou Parcelado?</string>
     <string name="home_subtitle">Descubra o que realmente vale mais a pena</string>
     <string name="home_card_new_sim_title">Nova Simulação</string>
-    <string name="home_card_new_sim_desc">Compare à vista vs parcelado\ne veja o melhor para você</string>
+    <string name="home_card_new_sim_desc">Compare à vista vs parcelado e veja o melhor para você</string>
     <string name="home_suggested_result_label">Resultado sugerido</string>
     <string name="home_worth_it_prefix">Vale a pena </string>
     <string name="home_worth_it_installment">PARCELAR!</string>
     <string name="home_worth_it_cash">À VISTA!</string>
     <string name="home_view_details">Ver detalhes</string>
-    <string name="home_action_recent_title">Simulações\nRecentes</string>
-    <string name="home_action_recent_desc">Continue de onde\nparou</string>
-    <string name="home_action_scenarios_title">Cenários\nProntos</string>
-    <string name="home_action_scenarios_desc">Exemplos para\nte ajudar</string>
-    <string name="home_action_learn_title">Aprenda a\nInvestir</string>
-    <string name="home_action_learn_desc">Clique e\ncomece já</string>
+    <string name="home_action_recent_title">Simulações Recentes</string>
+    <string name="home_action_recent_desc">Continue de onde parou</string>
+    <string name="home_action_scenarios_title">Cenários Prontos</string>
+    <string name="home_action_scenarios_desc">Exemplos para te ajudar</string>
+    <string name="home_action_learn_title">Aprenda a Investir</string>
+    <string name="home_action_learn_desc">Clique e comece já</string>
     <string name="home_recent_header">Simulações recentes</string>
     <string name="home_view_all">Ver todas ></string>
 

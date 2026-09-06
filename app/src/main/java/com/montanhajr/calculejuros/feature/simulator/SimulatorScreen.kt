@@ -376,7 +376,7 @@ fun SimulatorHeader(currencySymbol: String, onCurrencyClick: () -> Unit, onBack:
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Column(modifier = Modifier.padding(end = 110.dp)) {
+            Column(modifier = Modifier.padding(end = 130.dp)) {
                 Text(
                     stringResource(R.string.title_new_simulation),
                     fontFamily = SoraFont,

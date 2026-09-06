@@ -106,7 +106,7 @@ fun HomeHeader(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(end = 125.dp)
+            .padding(end = 145.dp)
     ) {
         Text(
             buildAnnotatedString {
@@ -357,21 +357,38 @@ fun QuickActionCard(
         modifier = modifier.height(140.dp)
     ) {
         Column(
-            modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Surface(
                 color = color.copy(alpha = 0.1f),
                 shape = CircleShape,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(40.dp)
             ) {
-                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.padding(8.dp))
+                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.padding(10.dp))
             }
             
-            Column {
-                Text(title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(subtitle, fontFamily = DmSansFont, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 13.sp)
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = title,
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle,
+                    fontFamily = DmSansFont,
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 13.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
         }
     }

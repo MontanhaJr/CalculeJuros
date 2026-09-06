@@ -9,7 +9,7 @@
 
     <!-- Simulator Screen -->
     <string name="title_new_simulation">Nueva Simulación</string>
-    <string name="subtitle_new_simulation">Complete los datos para descubrir\nqué le conviene más.</string>
+    <string name="subtitle_new_simulation">Complete los datos para descubrir qué le conviene más.</string>
     <string name="section_cash_payment">Pago al Contado</string>
     <string name="section_installment_payment">Pago a Plazos</string>
     <string name="label_product_price">Precio del producto</string>
@@ -55,14 +55,14 @@
     <string name="title_history">Historial</string>
     <string name="subtitle_history">Siga todas sus simulaciones</string>
     <string name="btn_filter">Filtrar</string>
-    <string name="stat_total_simulations">Total de\nsimulaciones</string>
-    <string name="stat_potential_gain">Puede\nganar</string>
-    <string name="stat_average_gain">Promedio por\nsimulación</string>
+    <string name="stat_total_simulations">Total de simulaciones</string>
+    <string name="stat_potential_gain">Puede ganar</string>
+    <string name="stat_average_gain">Promedio por simulación</string>
     <string name="filter_all">Todas las simulaciones</string>
     <string name="filter_installments">Simulaciones (Cuotas)</string>
     <string name="filter_cash">Simulaciones (Al contado)</string>
     <string name="empty_history">No se encontraron simulaciones</string>
-    <string name="banner_continue_simulating">¡Siga simulando y\ntome siempre la mejor decisión!</string>
+    <string name="banner_continue_simulating">¡Siga simulando y tome siempre la mejor decisión!</string>
     <string name="btn_new_simulation">Nueva simulación</string>
     <string name="dialog_delete_title">¿Eliminar simulación?</string>
     <string name="dialog_delete_desc">Esta acción no se puede deshacer. La simulación se eliminará permanentemente de su historial.</string>
@@ -76,12 +76,12 @@
 
     <!-- Favorites Screen -->
     <string name="title_favorites">Favoritos</string>
-    <string name="subtitle_favorites">Sus simulaciones favoritas para\nseguir siempre 💜</string>
+    <string name="subtitle_favorites">Sus simulaciones favoritas para seguir siempre 💜</string>
     <string name="title_my_favorites">Mis simulaciones favoritas</string>
     <string name="btn_edit">Editar</string>
     <string name="btn_done">Hecho</string>
     <string name="card_quick_access_title">Acceso rápido</string>
-    <string name="card_quick_access_desc">Guarde sus simulaciones favoritas\ny compare cuando quiera.</string>
+    <string name="card_quick_access_desc">Guarde sus simulaciones favoritas y compare cuando quiera.</string>
     <string name="card_tip_title">Consejo</string>
     <string name="card_tip_desc">¡Compare sus simulaciones favoritas cada vez que cambien los intereses o descuentos!</string>
     <string name="dialog_unfavorite_title">¿Eliminar de favoritos?</string>
@@ -148,18 +148,18 @@
     <string name="home_title_part2">o en Cuotas?</string>
     <string name="home_subtitle">Descubra lo que realmente vale más la pena</string>
     <string name="home_card_new_sim_title">Nueva Simulación</string>
-    <string name="home_card_new_sim_desc">Compare al contado vs cuotas\ny vea lo mejor para usted</string>
+    <string name="home_card_new_sim_desc">Compare al contado vs cuotas y vea lo mejor para usted</string>
     <string name="home_suggested_result_label">Resultado sugerido</string>
     <string name="home_worth_it_prefix">Vale la pena </string>
     <string name="home_worth_it_installment">¡CUOTAS!</string>
     <string name="home_worth_it_cash">¡AL CONTADO!</string>
     <string name="home_view_details">Ver detalles</string>
-    <string name="home_action_recent_title">Simulaciones\nRecientes</string>
-    <string name="home_action_recent_desc">Continúe donde\nlo dejó</string>
-    <string name="home_action_scenarios_title">Escenarios\nListos</string>
-    <string name="home_action_scenarios_desc">Ejemplos para\nayudarte</string>
-    <string name="home_action_learn_title">Aprenda a\nInvertir</string>
-    <string name="home_action_learn_desc">Comienza\nahora</string>
+    <string name="home_action_recent_title">Simulaciones Recientes</string>
+    <string name="home_action_recent_desc">Continúe donde lo dejó</string>
+    <string name="home_action_scenarios_title">Escenarios Listos</string>
+    <string name="home_action_scenarios_desc">Ejemplos para ayudarte</string>
+    <string name="home_action_learn_title">Aprenda a Invertir</string>
+    <string name="home_action_learn_desc">Comienza ahora</string>
     <string name="home_recent_header">Simulaciones recientes</string>
     <string name="home_view_all">Ver todas ></string>
 
@@ -170,9 +170,9 @@
     <string name="home_recent_yield_format">Rentabilidad: %1$.1f%% anual</string>
 
     <!-- Learn to Invest Dialog -->
-    <string name="dialog_learn_to_invest_title">¿Quieres aprender a invertir?</string>
-    <string name="dialog_learn_to_invest_message">Como pagar en cuotas e invertir conviene más en esta simulación, descubre cómo hacer que tu dinero rinda aún más con nuestro entrenamiento exclusivo.</string>
-    <string name="dialog_btn_learn_to_invest">Quiero aprender a invertir</string>
+    <string name="dialog_learn_to_invest_title">¿Quieres aprender a investir?</string>
+    <string name="dialog_learn_to_invest_message">Como pagar en cuotas e invertir conviene más en esta simulación, descubre cómo hacer que tu dinheiro rinda aún más con nuestro entrenamiento exclusivo.</string>
+    <string name="dialog_btn_learn_to_invest">Quiero aprender a investir</string>
     <string name="dialog_btn_close">Cerrar</string>
     <string name="content_desc_learn_to_invest_info">Saber más sobre inversiones</string>
 

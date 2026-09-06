@@ -201,7 +201,7 @@ fun HistoryHeader(onFilterClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 12.dp)
+                .padding(end = 24.dp)
         ) {
             Text(
                 stringResource(R.string.title_history),
@@ -292,7 +292,7 @@ fun StatCard(
         Column(
             modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Center
         ) {
             Surface(
                 color = iconBg,
@@ -302,10 +302,34 @@ fun StatCard(
                 Icon(icon, contentDescription = null, tint = iconColor, modifier = Modifier.padding(6.dp))
             }
             
+            Spacer(modifier = Modifier.height(12.dp))
+            
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(label, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = DmSansFont, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-                Text(value, fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = SoraFont, color = if (label.contains("ganhar")) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface)
-                Text(period, fontSize = 9.sp, color = if (label.contains("simulações")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = DmSansFont)
+                Text(
+                    text = label,
+                    fontSize = 9.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = DmSansFont,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    lineHeight = 12.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = value,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Black,
+                    fontFamily = SoraFont,
+                    color = if (label.contains("ganhar") || label.contains("gain")) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = period,
+                    fontSize = 9.sp,
+                    color = if (label.contains("simulações") || label.contains("simulations")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = DmSansFont,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
         }
     }

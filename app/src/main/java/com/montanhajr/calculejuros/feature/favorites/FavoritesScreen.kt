@@ -217,7 +217,7 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f).padding(end = 24.dp)) {
             Text(
                 stringResource(R.string.title_favorites),
                 fontFamily = SoraFont,
@@ -247,12 +247,13 @@ fun FavoritesHeader(onNavigateToSimulator: () -> Unit) {
                 Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    stringResource(R.string.btn_new_simulation).replace(" ", "\n"),
+                    stringResource(R.string.btn_new_simulation),
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 10.sp,
                     fontFamily = SoraFont,
                     fontWeight = FontWeight.Bold,
-                    lineHeight = 12.sp
+                    lineHeight = 12.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }
         }
