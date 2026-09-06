@@ -10,6 +10,8 @@
     <!-- Simulator Screen -->
     <string name="title_new_simulation">Nova Simulação</string>
     <string name="subtitle_new_simulation">Preencha os dados para descobrir o\nque vale mais a pena para você.</string>
+    <string name="section_cash_payment">Pagamento à Vista</string>
+    <string name="section_installment_payment">Pagamento a Prazo</string>
     <string name="label_product_price">Valor do produto</string>
     <string name="label_discount_percentage_mode">Desconto %</string>
     <string name="label_cash_value_mode">Valor à vista</string>

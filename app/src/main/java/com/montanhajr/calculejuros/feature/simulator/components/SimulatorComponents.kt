@@ -439,6 +439,36 @@ fun OptionalSection(
     }
 }
 
+@Composable
+fun SimulatorSection(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = title.uppercase(),
+            fontFamily = SoraFont,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.primary,
+            letterSpacing = 1.sp
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            content = content
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun SimulatorInputFieldCurrencyPreview() {
@@ -461,6 +491,20 @@ fun SimulatorInputFieldPercentagePreview() {
         icon = Icons.Default.LocalOffer,
         suffix = "%"
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SimulatorSectionPreview() {
+    SimulatorSection(title = "Pagamento à Vista") {
+        SimulatorInputField(
+            label = "Desconto",
+            value = "1000",
+            onValueChange = {},
+            icon = Icons.Default.LocalOffer,
+            suffix = "%"
+        )
+    }
 }
 
 @Preview(showBackground = true)

@@ -10,6 +10,8 @@
     <!-- Simulator Screen -->
     <string name="title_new_simulation">Nueva Simulación</string>
     <string name="subtitle_new_simulation">Complete los datos para descubrir\nqué le conviene más.</string>
+    <string name="section_cash_payment">Pago al Contado</string>
+    <string name="section_installment_payment">Pago a Plazos</string>
     <string name="label_product_price">Precio del producto</string>
     <string name="label_discount_percentage_mode">Descuento %</string>
     <string name="label_cash_value_mode">Valor al contado</string>

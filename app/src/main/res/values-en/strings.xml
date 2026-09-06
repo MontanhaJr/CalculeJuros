@@ -10,6 +10,8 @@
     <!-- Simulator Screen -->
     <string name="title_new_simulation">New Simulation</string>
     <string name="subtitle_new_simulation">Fill in the data to find out\nwhat is better for you.</string>
+    <string name="section_cash_payment">Cash Payment</string>
+    <string name="section_installment_payment">Installment Payment</string>
     <string name="label_product_price">Product price</string>
     <string name="label_discount_percentage_mode">Discount %</string>
     <string name="label_cash_value_mode">Cash value</string>
