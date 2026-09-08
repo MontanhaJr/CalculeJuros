@@ -39,6 +39,8 @@
     <string name="helper_prepayment_discount">Informe o desconto oferecido pelo cartão ao antecipar parcelas</string>
     <string name="label_prepayment_discount_percentage_mode">% Desconto</string>
     <string name="label_prepayment_discount_value_mode">Valor fixo</string>
+    <string name="label_prepaid_installments_count">Parcelas antecipadas</string>
+    <string name="helper_prepaid_installments_count">Quantas parcelas você deseja pagar agora com desconto? (Máximo: %d)</string>
     <string name="section_how_it_works_title">Como funciona?</string>
     <string name="section_how_it_works_desc">Comparamos o rendimento do seu investimento com o custo de parcelar para você decidir a melhor opção.</string>
     <string name="btn_calculate">Calcular</string>
@@ -91,9 +93,22 @@
     <!-- Result Card -->
     <string name="result_cash_better">PAGAR À VISTA COMPENSA MAIS!</string>
     <string name="result_installment_better">PARCELAR E INVESTIR COMPENSA MAIS!</string>
+    <string name="result_installment_prepayment_better">PARCELAR E ANTECIPAR COMPENSA MAIS!</string>
     <string name="result_tie">PRATICAMENTE EMPATE</string>
     <string name="label_gain_cash">Ganho à vista:</string>
     <string name="label_gain_installment">Ganho parcelado:</string>
+    <string name="label_standard_installment_gain">Parcelado (sem antecipar):</string>
+    <string name="label_prepayment_benefit">Bônus por antecipação:</string>
+    <string name="label_prepayment_loss">Perda por antecipação:</string>
+    <string name="desc_prepayment_analysis_positive">Antecipar é vantajoso! O desconto oferecido supera o rendimento que você teria investindo esse valor.</string>
+    <string name="desc_prepayment_analysis_negative">Não vale a pena antecipar. O seu dinheiro renderá mais investido do que o desconto oferecido pelo cartão.</string>
+    <string name="title_prepayment_positive">Antecipação Vantajosa</string>
+    <string name="title_prepayment_negative">Atenção: Antecipação Desvantajosa</string>
+    <string name="label_prepayment_section_title">Benefício da Antecipação</string>
+    <string name="label_total_prepayment_gain">Ganho Final com Antecipação:</string>
+    <string name="label_standard_short">Padrão</string>
+    <string name="label_prepayment_short">Antecip.</string>
+    <string name="label_prepayment_legend">Antecipado</string>
     <string name="label_difference">Diferença de %s</string>
 
     <!-- Result Screen -->

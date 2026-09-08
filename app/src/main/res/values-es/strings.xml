@@ -18,8 +18,8 @@
     <string name="label_discount_percentage">Porcentaje de Descuento</string>
     <string name="helper_discount_percentage">Ingrese el descuento (0 a 100)</string>
     <string name="label_cash_price">Valor del Precio al Contado</string>
-    <string name="helper_cash_price">Valor final con descuento aplicado</string>
-    <string name="label_monthly_rate_mode">Tasa mensual</string>
+    <string name="helper_cash_price">Valor final com descuento aplicado</string>
+    <string name="label_monthly_rate_mode">Tasa mensal</string>
     <string name="label_total_value_mode">Valor total</string>
     <string name="label_card_tax_rate">Tasa de la tarjeta (al mes)</string>
     <string name="helper_card_tax_rate">Ingrese la tasa de interés de su tarjeta</string>
@@ -27,10 +27,10 @@
     <string name="helper_total_installment_value">Suma de todas las cuotas</string>
     <string name="label_annual_rate_mode">Tasa Anual</string>
     <string name="label_monthly_rate_mode_profitability">Tasa Mensual</string>
-    <string name="label_investment_annual_rate">Rentabilidad de la inversión (al año)</string>
-    <string name="helper_investment_annual_rate">Ingrese la rentabilidad (ej: 12,75)</string>
-    <string name="label_investment_monthly_rate">Rentabilidad de la inversión (al mes)</string>
-    <string name="helper_investment_monthly_rate">Ingrese la rentabilidad mensual</string>
+    <string name="label_investment_annual_rate">Rentabilidade de la inversión (al año)</string>
+    <string name="helper_investment_annual_rate">Ingrese la rentabilidade (ej: 12,75)</string>
+    <string name="label_investment_monthly_rate">Rentabilidade de la inversión (al mes)</string>
+    <string name="helper_investment_monthly_rate">Ingrese la rentabilidade mensal</string>
     <string name="label_down_payment_percentage_mode">% Entrada</string>
     <string name="label_down_payment_value_mode">Valor fijo</string>
     <string name="label_down_payment">Valor de entrada</string>
@@ -39,6 +39,8 @@
     <string name="helper_prepayment_discount">Ingrese el descuento ofrecido por la tarjeta al anticipar cuotas</string>
     <string name="label_prepayment_discount_percentage_mode">% Descuento</string>
     <string name="label_prepayment_discount_value_mode">Valor fijo</string>
+    <string name="label_prepaid_installments_count">Cuotas anticipadas</string>
+    <string name="helper_prepaid_installments_count">¿Cuántas cuotas desea pagar ahora con descuento? (Máx: %d)</string>
     <string name="section_how_it_works_title">¿Cómo funciona?</string>
     <string name="section_how_it_works_desc">Comparamos el rendimiento de su inversión con el costo de pagar en cuotas para ayudarle a decidir la mejor opción.</string>
     <string name="btn_calculate">Calcular</string>
@@ -91,9 +93,22 @@
     <!-- Result Card -->
     <string name="result_cash_better">¡PAGAR AL CONTADO CONVIENE MÁS!</string>
     <string name="result_installment_better">¡CUOTAS E INVERTIR CONVIENE MÁS!</string>
+    <string name="result_installment_prepayment_better">¡CUOTAS Y ANTICIPAR CONVIENE MÁS!</string>
     <string name="result_tie">PRÁCTICAMENTE EMPATE</string>
     <string name="label_gain_cash">Ganancia al contado:</string>
     <string name="label_gain_installment">Ganancia en cuotas:</string>
+    <string name="label_standard_installment_gain">En cuotas (sin anticipar):</string>
+    <string name="label_prepayment_benefit">Bono por anticipo:</string>
+    <string name="label_prepayment_loss">Pérdida por anticipo:</string>
+    <string name="desc_prepayment_analysis_positive">¡Anticipar es ventajoso! El descuento ofrecido supera el rendimiento que obtendría invirtiendo esa cantidad.</string>
+    <string name="desc_prepayment_analysis_negative">No vale la pena anticipar. Su dinero rendirá más invertido que el descuento ofrecido por la tarjeta.</string>
+    <string name="title_prepayment_positive">Anticipo Ventajoso</string>
+    <string name="title_prepayment_negative">Atención: Anticipo Desventajoso</string>
+    <string name="label_prepayment_section_title">Beneficio por Anticipo</string>
+    <string name="label_total_prepayment_gain">Ganancia Final con Anticipo:</string>
+    <string name="label_standard_short">Estándar</string>
+    <string name="label_prepayment_short">Anticip.</string>
+    <string name="label_prepayment_legend">Anticipado</string>
     <string name="label_difference">Diferencia de %s</string>
 
     <!-- Result Screen -->

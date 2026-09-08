@@ -139,7 +139,8 @@ fun SimulatorInputField(
     suffix: String? = null,
     helperText: String? = null,
     keyboardType: KeyboardType = KeyboardType.Number,
-    trailingIcon: ImageVector? = null
+    trailingIcon: ImageVector? = null,
+    isDecimal: Boolean = true
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -179,10 +180,14 @@ fun SimulatorInputField(
                                 color = MaterialTheme.colorScheme.onSurface
                             ),
                             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-                            visualTransformation = DecimalVisualTransformation(
-                                prefix = visualPrefix,
-                                suffix = visualSuffix
-                            ),
+                            visualTransformation = if (isDecimal) {
+                                DecimalVisualTransformation(
+                                    prefix = visualPrefix,
+                                    suffix = visualSuffix
+                                )
+                            } else {
+                                SuffixVisualTransformation(visualSuffix)
+                            },
                             modifier = Modifier.weight(1f)
                         )
                     }

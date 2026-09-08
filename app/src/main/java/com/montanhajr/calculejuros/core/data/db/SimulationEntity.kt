@@ -29,6 +29,7 @@ data class SimulationEntity(
     val inputPrepaymentDiscountIsPercentage: Boolean = true,
     val inputDownPaymentPercentage: Double = 0.0,
     val inputDownPaymentIsPercentage: Boolean = false,
+    val inputPrepaidInstallmentsCount: Int = 0,
     
     // Results (Summary)
     val productPrice: Double,

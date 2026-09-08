@@ -19,5 +19,6 @@ data class SimulationInput(
     val usePrepaymentDiscount: Boolean = false,
     val prepaymentDiscountIsPercentage: Boolean = true,
     val downPaymentPercentage: Double = 0.0,
-    val downPaymentIsPercentage: Boolean = false
+    val downPaymentIsPercentage: Boolean = false,
+    val prepaidInstallmentsCount: Int = 0
 )

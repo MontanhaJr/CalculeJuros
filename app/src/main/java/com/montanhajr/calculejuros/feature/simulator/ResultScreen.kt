@@ -109,6 +109,11 @@ fun ResultScreen(
                     
                     ComparisonCards(result, uiState.currencySymbol)
                     
+                    if (result.prepaidInstallmentsCount > 0 && result.prepaymentDiscountValue > 0) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        PrepaymentBenefitSection(result, uiState.currencySymbol)
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     Text(
@@ -157,7 +162,14 @@ fun RecommendationHeader(result: SimulationResult, currencySymbol: String, onLea
     }
     val label = when (result.recommendation) {
         RecommendationType.A_VISTA -> stringResource(R.string.rec_label_cash)
-        RecommendationType.PARCELADO -> stringResource(R.string.rec_label_installment)
+        RecommendationType.PARCELADO -> {
+            val isPrepaymentBetter = result.netGainInstallment > result.netGainStandardInstallment + 0.005
+            if (result.prepaidInstallmentsCount > 0 && result.prepaymentDiscountValue > 0 && isPrepaymentBetter) {
+                stringResource(R.string.result_installment_prepayment_better)
+            } else {
+                stringResource(R.string.rec_label_installment)
+            }
+        }
         RecommendationType.EMPATE -> stringResource(R.string.rec_label_tie)
     }
 
@@ -288,10 +300,131 @@ fun ComparisonCards(result: SimulationResult, currencySymbol: String) {
         SummaryCard(
             modifier = Modifier.weight(1f),
             title = stringResource(R.string.summary_card_installment),
-            value = result.netGainInstallment.toCurrency(currencySymbol),
+            value = result.netGainStandardInstallment.toCurrency(currencySymbol),
             subValue = stringResource(R.string.summary_sub_installments, result.installmentsCount),
             color = Color(0xFF1565C0)
         )
+    }
+}
+
+@Composable
+fun PrepaymentBenefitSection(result: SimulationResult, currencySymbol: String) {
+    val benefit = result.netGainPrepaidInstallment - result.netGainStandardInstallment
+    val isPositive = benefit > 0.005
+    val containerColor = if (isPositive) {
+        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
+    } else {
+        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
+    }
+    val contentColor = if (isPositive) {
+        MaterialTheme.colorScheme.secondary
+    } else {
+        MaterialTheme.colorScheme.error
+    }
+
+    Surface(
+        color = containerColor,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, contentColor.copy(alpha = 0.2f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    if (isPositive) Icons.Default.Lightbulb else Icons.Default.Info,
+                    contentDescription = null,
+                    tint = contentColor,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(if (isPositive) R.string.title_prepayment_positive else R.string.title_prepayment_negative),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = contentColor
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    stringResource(R.string.label_standard_installment_gain),
+                    fontFamily = DmSansFont,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    result.netGainStandardInstallment.toCurrency(currencySymbol),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    stringResource(if (isPositive) R.string.label_prepayment_benefit else R.string.label_prepayment_loss),
+                    fontFamily = DmSansFont,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = contentColor
+                )
+                Text(
+                    benefit.toCurrency(currencySymbol),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    color = contentColor
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = contentColor.copy(alpha = 0.1f))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = stringResource(if (isPositive) R.string.desc_prepayment_analysis_positive else R.string.desc_prepayment_analysis_negative),
+                fontFamily = DmSansFont,
+                fontSize = 12.sp,
+                lineHeight = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = contentColor.copy(alpha = 0.1f))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.label_total_prepayment_gain),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = contentColor
+                )
+                Text(
+                    result.netGainPrepaidInstallment.toCurrency(currencySymbol),
+                    fontFamily = SoraFont,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 16.sp,
+                    color = contentColor
+                )
+            }
+        }
     }
 }
 
@@ -328,6 +461,9 @@ fun EvolutionChart(result: SimulationResult) {
             lineSeries {
                 series(result.monthlyDetails.map { it.cashBalance })
                 series(result.monthlyDetails.map { it.installmentBalance })
+                result.monthlyDetails.firstOrNull()?.prepaymentInstallmentBalance?.let {
+                    series(result.monthlyDetails.map { it.prepaymentInstallmentBalance ?: 0.0 })
+                }
             }
         }
     }
@@ -336,8 +472,9 @@ fun EvolutionChart(result: SimulationResult) {
         chart = rememberCartesianChart(
             rememberLineCartesianLayer(
                 lines = listOf(
-                    rememberLineSpec(shader = DynamicShader.color(Color(0xFF2E7D32))),
-                    rememberLineSpec(shader = DynamicShader.color(Color(0xFF1565C0)))
+                    rememberLineSpec(shader = DynamicShader.color(Color(0xFF2E7D32))), // Cash
+                    rememberLineSpec(shader = DynamicShader.color(Color(0xFF1565C0))), // Standard
+                    rememberLineSpec(shader = DynamicShader.color(Color(0xFFFF9800)))  // Prepayment (Orange)
                 )
             ),
             startAxis = rememberStartAxis(
@@ -363,6 +500,10 @@ fun EvolutionChart(result: SimulationResult) {
         LegendItem(Color(0xFF2E7D32), stringResource(R.string.legend_cash))
         Spacer(modifier = Modifier.width(16.dp))
         LegendItem(Color(0xFF1565C0), stringResource(R.string.legend_installment))
+        if (result.monthlyDetails.any { it.prepaymentInstallmentBalance != null }) {
+            Spacer(modifier = Modifier.width(16.dp))
+            LegendItem(Color(0xFFFF9800), stringResource(R.string.label_prepayment_legend))
+        }
     }
 }
 
@@ -377,6 +518,8 @@ fun LegendItem(color: Color, label: String) {
 
 @Composable
 fun DetailedTable(result: SimulationResult, currencySymbol: String) {
+    val hasPrepayment = result.monthlyDetails.any { it.prepaymentInstallmentBalance != null }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -389,35 +532,54 @@ fun DetailedTable(result: SimulationResult, currencySymbol: String) {
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                 .padding(12.dp)
         ) {
-            Text(stringResource(R.string.table_month), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text(stringResource(R.string.summary_card_cash), modifier = Modifier.weight(2f), fontWeight = FontWeight.Bold, fontSize = 12.sp, textAlign = TextAlign.End)
-            Text(stringResource(R.string.summary_card_installment), modifier = Modifier.weight(2f), fontWeight = FontWeight.Bold, fontSize = 12.sp, textAlign = TextAlign.End)
+            Text(stringResource(R.string.table_month), modifier = Modifier.weight(0.8f), fontWeight = FontWeight.Bold, fontSize = 10.sp)
+            Text(stringResource(R.string.summary_card_cash), modifier = Modifier.weight(1.5f), fontWeight = FontWeight.Bold, fontSize = 10.sp, textAlign = TextAlign.End)
+            Text(stringResource(R.string.label_standard_short), modifier = Modifier.weight(1.5f), fontWeight = FontWeight.Bold, fontSize = 10.sp, textAlign = TextAlign.End)
+            if (hasPrepayment) {
+                Text(stringResource(R.string.label_prepayment_short), modifier = Modifier.weight(1.5f), fontWeight = FontWeight.Bold, fontSize = 10.sp, textAlign = TextAlign.End)
+            }
         }
         
         result.monthlyDetails.forEach { detail ->
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
-            val isCurrentWinnerParcelado = detail.installmentBalance > detail.cashBalance
             
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
-                Text(detail.month.toString(), modifier = Modifier.weight(1f), fontSize = 12.sp)
+                Text(detail.month.toString(), modifier = Modifier.weight(0.8f), fontSize = 11.sp)
+                
+                // À Vista
                 Text(
                     text = detail.cashBalance.toCurrency(currencySymbol),
-                    modifier = Modifier.weight(2f),
-                    fontSize = 12.sp,
+                    modifier = Modifier.weight(1.5f),
+                    fontSize = 11.sp,
                     textAlign = TextAlign.End,
-                    color = if (!isCurrentWinnerParcelado) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurface
+                    color = Color(0xFF2E7D32)
                 )
+                
+                // Padrão
                 Text(
                     text = detail.installmentBalance.toCurrency(currencySymbol),
-                    modifier = Modifier.weight(2f),
-                    fontSize = 12.sp,
+                    modifier = Modifier.weight(1.5f),
+                    fontSize = 11.sp,
                     textAlign = TextAlign.End,
-                    color = if (isCurrentWinnerParcelado) Color(0xFF1565C0) else MaterialTheme.colorScheme.onSurface
+                    color = Color(0xFF1565C0)
                 )
+
+                // Antecipado (Opcional)
+                if (hasPrepayment && detail.prepaymentInstallmentBalance != null) {
+                    Text(
+                        text = detail.prepaymentInstallmentBalance.toCurrency(currencySymbol),
+                        modifier = Modifier.weight(1.5f),
+                        fontSize = 11.sp,
+                        textAlign = TextAlign.End,
+                        color = Color(0xFFFF9800)
+                    )
+                } else if (hasPrepayment) {
+                    Spacer(modifier = Modifier.weight(1.5f))
+                }
             }
         }
     }

@@ -69,65 +69,118 @@ class CalculateSimulationUseCase @Inject constructor() {
                 input.downPayment
             }
         } else 0.0
+
+        // Step 4.1: Prepayment setup (Nubank Model: Prepayment of the LAST k installments)
+        val prepaidInstallmentsCount = if (input.usePrepaymentDiscount) {
+            input.prepaidInstallmentsCount.coerceIn(0, maxOf(0, installmentsCount - 1))
+        } else 0
+        
+        // Quittance Month: When the user decides to pay off the remaining balance.
+        // If they prepay k installments, it means they are at month (n - k) 
+        // and pay the current installment (n - k) plus all remaining k installments.
+        val quittanceMonth = if (prepaidInstallmentsCount > 0) installmentsCount - prepaidInstallmentsCount else -1
+        var totalPrepaymentDiscountValue = 0.0
         
         // Initial balances: we assume the user has the 'productPrice' available.
-        // If they pay cash: they pay valorAVista now.
-        // If they parcel: they pay downPayment now.
         var balanceAVista = productPrice - valorAVista
-        var balanceParcelado = productPrice - downPayment
+        var balanceParceladoPadrao = productPrice - downPayment
+        var balanceParceladoComAntecipacao = productPrice - downPayment
 
-        // Month 0 (Initial State)
+        // Month 0
         monthlyDetails.add(
             MonthlyDetail(
                 month = 0,
-                installmentBalance = balanceParcelado,
+                installmentBalance = balanceParceladoPadrao,
                 cashBalance = balanceAVista,
                 installmentPaid = downPayment,
                 yieldInstallment = 0.0,
-                yieldCash = 0.0
+                yieldCash = 0.0,
+                prepaymentInstallmentBalance = if (input.usePrepaymentDiscount) balanceParceladoComAntecipacao else null
             )
         )
 
         for (month in 1..n) {
-            // Installment Strategy Evolution
-            val yieldParcelado = maxOf(0.0, balanceParcelado * im)
-            balanceParcelado = balanceParcelado + yieldParcelado - valorParcela
+            // 1. Standard Installment Strategy
+            val yieldPadrao = maxOf(0.0, balanceParceladoPadrao * im)
+            balanceParceladoPadrao = balanceParceladoPadrao + yieldPadrao - valorParcela
 
-            // Cash Strategy Evolution
+            // 2. Prepayment Installment Strategy
+            val yieldAntecipado = maxOf(0.0, balanceParceladoComAntecipacao * im)
+            
+            val installmentPaidPrepayment = when {
+                !input.usePrepaymentDiscount -> valorParcela
+                month < quittanceMonth -> valorParcela // Same as standard until quittance
+                month == quittanceMonth -> {
+                    // Current month installment + prepayment of all remaining k installments
+                    if (input.prepaymentDiscountIsPercentage) {
+                        val annualRate = input.prepaymentDiscountPercentage / 100.0
+                        val monthlyRate = (1 + annualRate).pow(1.0 / 12.0) - 1
+                        
+                        var sumVPPrepaid = 0.0
+                        // Prepay k installments that would be due in months (quittanceMonth + 1) to n.
+                        // Distance for installment j is (j - quittanceMonth)
+                        for (kIdx in 1..prepaidInstallmentsCount) {
+                            val distance = kIdx.toDouble()
+                            val vp = valorParcela / (1 + monthlyRate).pow(distance)
+                            sumVPPrepaid += vp
+                            totalPrepaymentDiscountValue += (valorParcela - vp)
+                        }
+                        valorParcela + sumVPPrepaid
+                    } else {
+                        // Fixed value discount applied to the sum of prepaid installments
+                        val totalOriginalPrepaid = valorParcela * prepaidInstallmentsCount
+                        totalPrepaymentDiscountValue = input.prepaymentDiscountValue
+                        valorParcela + maxOf(0.0, totalOriginalPrepaid - totalPrepaymentDiscountValue)
+                    }
+                }
+                month > quittanceMonth && quittanceMonth != -1 -> 0.0 // Already paid
+                else -> valorParcela // Should not happen if k > 0, but safe fallback
+            }
+            
+            balanceParceladoComAntecipacao = balanceParceladoComAntecipacao + yieldAntecipado - installmentPaidPrepayment
+
+            // 3. Cash Strategy
             val yieldAVista = maxOf(0.0, balanceAVista * im)
             balanceAVista = balanceAVista + yieldAVista
             
             monthlyDetails.add(
                 MonthlyDetail(
                     month = month,
-                    installmentBalance = balanceParcelado,
+                    installmentBalance = balanceParceladoPadrao,
                     cashBalance = balanceAVista,
-                    installmentPaid = valorParcela,
-                    yieldInstallment = yieldParcelado,
-                    yieldCash = yieldAVista
+                    installmentPaid = if (input.usePrepaymentDiscount) installmentPaidPrepayment else valorParcela,
+                    yieldInstallment = yieldPadrao,
+                    yieldCash = yieldAVista,
+                    prepaymentInstallmentBalance = if (input.usePrepaymentDiscount) balanceParceladoComAntecipacao else null
                 )
             )
         }
 
-        // Step 4.1: Prepayment Discount calculation (just as info or comparison)
-        val valorTotalRestante = valorTotalParcelado // This is the sum of installments after down payment
-        val prepaymentDiscountValue = if (input.usePrepaymentDiscount) {
-            if (input.prepaymentDiscountIsPercentage) {
-                valorTotalRestante * (input.prepaymentDiscountPercentage / 100.0)
-            } else {
-                input.prepaymentDiscountValue
-            }
-        } else 0.0
-
         val ganhoLiquidoAVista = balanceAVista
-        val ganhoLiquidoParcelado = balanceParcelado
+        val ganhoLiquidoParceladoPadrao = balanceParceladoPadrao
+        val ganhoLiquidoParceladoComAntecipacao = balanceParceladoComAntecipacao
+        
         val jurosGanhosAVista = maxOf(0.0, ganhoLiquidoAVista - (productPrice - valorAVista))
 
-        // Step 5: Final comparison and recommendation
-        val diferenca = ganhoLiquidoParcelado - ganhoLiquidoAVista
+        // Step 5: Final comparison and recommendation (Comparing 3 strategies)
+        // If prepayment is active, we compare Cash vs (Better of Standard vs Prepaid)
+        val melhorParcelado = if (input.usePrepaymentDiscount) {
+            maxOf(ganhoLiquidoParceladoPadrao, ganhoLiquidoParceladoComAntecipacao)
+        } else {
+            ganhoLiquidoParceladoPadrao
+        }
+
+        val diferenca = melhorParcelado - ganhoLiquidoAVista
+        
         val recomendacao = when {
             kotlin.math.abs(diferenca) < 0.005 -> RecommendationType.EMPATE
-            diferenca > 0 -> RecommendationType.PARCELADO
+            diferenca > 0 -> {
+                if (input.usePrepaymentDiscount && ganhoLiquidoParceladoComAntecipacao > ganhoLiquidoParceladoPadrao) {
+                    RecommendationType.PARCELADO
+                } else {
+                    RecommendationType.PARCELADO
+                }
+            }
             else -> RecommendationType.A_VISTA
         }
 
@@ -146,11 +199,14 @@ class CalculateSimulationUseCase @Inject constructor() {
             annualProfitability = rentabilidadeAnual * 100.0,
             netGainCash = maxOf(0.0, ganhoLiquidoAVista),
             interestGainedCash = jurosGanhosAVista,
-            netGainInstallment = ganhoLiquidoParcelado,
+            netGainInstallment = melhorParcelado,
+            netGainStandardInstallment = ganhoLiquidoParceladoPadrao,
+            netGainPrepaidInstallment = ganhoLiquidoParceladoComAntecipacao,
             difference = kotlin.math.abs(diferenca),
             recommendation = recomendacao,
             downPayment = downPayment,
-            prepaymentDiscountValue = prepaymentDiscountValue,
+            prepaymentDiscountValue = totalPrepaymentDiscountValue,
+            prepaidInstallmentsCount = prepaidInstallmentsCount,
             monthlyDetails = monthlyDetails
         )
     }

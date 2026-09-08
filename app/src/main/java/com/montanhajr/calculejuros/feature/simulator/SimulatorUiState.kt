@@ -23,6 +23,7 @@ data class SimulatorUiState(
     val prepaymentDiscountPercentage: String = "",
     val prepaymentDiscountValue: String = "",
     val prepaymentDiscountIsPercentage: Boolean = true,
+    val prepaidInstallmentsCount: String = "1",
     val isHowItWorksExpanded: Boolean = false,
     val isSaveScenarioEnabled: Boolean = false,
     val scenarioName: String = "",

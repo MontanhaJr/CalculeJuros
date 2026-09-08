@@ -16,10 +16,13 @@ data class SimulationResult(
     val netGainCash: Double,
     val interestGainedCash: Double,
     val netGainInstallment: Double,
+    val netGainStandardInstallment: Double = 0.0,
+    val netGainPrepaidInstallment: Double = 0.0,
     val difference: Double,
     val recommendation: RecommendationType,
     val downPayment: Double = 0.0,
     val prepaymentDiscountValue: Double = 0.0,
+    val prepaidInstallmentsCount: Int = 0,
     val monthlyDetails: List<MonthlyDetail> = emptyList()
 )
 
@@ -35,5 +38,6 @@ data class MonthlyDetail(
     val cashBalance: Double,
     val installmentPaid: Double,
     val yieldInstallment: Double,
-    val yieldCash: Double
+    val yieldCash: Double,
+    val prepaymentInstallmentBalance: Double? = null
 )

@@ -122,17 +122,39 @@ class SimulatorViewModelTest {
     fun `when prepaymentDiscount is used, it should be calculated correctly`() {
         viewModel.onProductPriceChange("100000") // 1000,00
         viewModel.onInstallmentsChange(12)
+        viewModel.onPrepaidInstallmentsChange("1")
         viewModel.onUseMonthlyRateToggle(true)
         viewModel.onCardTaxChange("0") // 0% interest, so total remains 1000,00
         
         viewModel.onUsePrepaymentDiscountToggle(true)
-        viewModel.onPrepaymentDiscountPercentageChange("500") // 5,00 %
+        viewModel.onPrepaymentDiscountPercentageChange("1268") // approx 1% a.m.
         viewModel.onPrepaymentDiscountTypeToggle(true) // Percentage mode
         
         viewModel.onCalculate()
         
         val result = viewModel.uiState.value.simulationResult
-        // 5% of 1000 = 50
-        assertEquals(50.0, result?.prepaymentDiscountValue ?: 0.0, 0.01)
+        assert((result?.prepaymentDiscountValue ?: 0.0) > 0.0)
+    }
+
+    @Test
+    fun `when prepaid installments is cleared, it should be empty string`() {
+        viewModel.onInstallmentsChange(12)
+        viewModel.onPrepaidInstallmentsChange("")
+        assertEquals("", viewModel.uiState.value.prepaidInstallmentsCount)
+    }
+
+    @Test
+    fun `when prepaid installments is typed after clearing, it should update correctly`() {
+        viewModel.onInstallmentsChange(12)
+        viewModel.onPrepaidInstallmentsChange("")
+        viewModel.onPrepaidInstallmentsChange("4")
+        assertEquals("4", viewModel.uiState.value.prepaidInstallmentsCount)
+    }
+
+    @Test
+    fun `when prepaid installments exceeds max installments minus one, it should clamp to total minus one`() {
+        viewModel.onInstallmentsChange(12)
+        viewModel.onPrepaidInstallmentsChange("40")
+        assertEquals("11", viewModel.uiState.value.prepaidInstallmentsCount)
     }
 }

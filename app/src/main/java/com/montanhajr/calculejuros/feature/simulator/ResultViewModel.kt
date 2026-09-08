@@ -67,7 +67,16 @@ class ResultViewModel @Inject constructor(
                     useMonthlyRateToggle = entity.inputUseMonthlyRateToggle,
                     annualProfitability = entity.inputAnnualProfitability,
                     monthlyProfitability = entity.inputMonthlyProfitability,
-                    useAnnualProfitabilityToggle = entity.inputUseAnnualProfitabilityToggle
+                    useAnnualProfitabilityToggle = entity.inputUseAnnualProfitabilityToggle,
+                    downPayment = entity.inputDownPayment,
+                    useDownPayment = entity.inputUseDownPayment,
+                    prepaymentDiscountPercentage = entity.inputPrepaymentDiscountPercentage,
+                    prepaymentDiscountValue = entity.inputPrepaymentDiscountValue,
+                    usePrepaymentDiscount = entity.inputUsePrepaymentDiscount,
+                    prepaymentDiscountIsPercentage = entity.inputPrepaymentDiscountIsPercentage,
+                    downPaymentPercentage = entity.inputDownPaymentPercentage,
+                    downPaymentIsPercentage = entity.inputDownPaymentIsPercentage,
+                    prepaidInstallmentsCount = entity.inputPrepaidInstallmentsCount
                 )
                 currentInput = input
                 val result = calculateSimulationUseCase(input)

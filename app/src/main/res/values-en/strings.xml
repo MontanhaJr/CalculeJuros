@@ -39,6 +39,8 @@
     <string name="helper_prepayment_discount">Enter the discount offered by the card when anticipating installments</string>
     <string name="label_prepayment_discount_percentage_mode">% Discount</string>
     <string name="label_prepayment_discount_value_mode">Fixed value</string>
+    <string name="label_prepaid_installments_count">Anticipated installments</string>
+    <string name="helper_prepaid_installments_count">How many installments do you want to pay now with a discount? (Max: %d)</string>
     <string name="section_how_it_works_title">How it works?</string>
     <string name="section_how_it_works_desc">We compare your investment yield with the cost of paying in installments to help you decide the best option.</string>
     <string name="btn_calculate">Calculate</string>
@@ -91,9 +93,22 @@
     <!-- Result Card -->
     <string name="result_cash_better">PAYING IN CASH IS BETTER!</string>
     <string name="result_installment_better">INSTALLMENTS AND INVESTING IS BETTER!</string>
+    <string name="result_installment_prepayment_better">INSTALLMENTS AND ANTICIPATING IS BETTER!</string>
     <string name="result_tie">PRACTICALLY A TIE</string>
     <string name="label_gain_cash">Cash gain:</string>
     <string name="label_gain_installment">Installment gain:</string>
+    <string name="label_standard_installment_gain">Installments (without anticipating):</string>
+    <string name="label_prepayment_benefit">Prepayment bonus:</string>
+    <string name="label_prepayment_loss">Prepayment loss:</string>
+    <string name="desc_prepayment_analysis_positive">Anticipating is advantageous! The discount offered exceeds the return you would get by investing that amount.</string>
+    <string name="desc_prepayment_analysis_negative">It\'s not worth anticipating. Your money will earn more invested than the discount offered by the card.</string>
+    <string name="title_prepayment_positive">Advantageous Prepayment</string>
+    <string name="title_prepayment_negative">Attention: Disadvantageous Prepayment</string>
+    <string name="label_prepayment_section_title">Prepayment Benefit</string>
+    <string name="label_total_prepayment_gain">Final Gain with Prepayment:</string>
+    <string name="label_standard_short">Standard</string>
+    <string name="label_prepayment_short">Prepaid</string>
+    <string name="label_prepayment_legend">Prepaid</string>
     <string name="label_difference">Difference of %s</string>
 
     <!-- Result Screen -->

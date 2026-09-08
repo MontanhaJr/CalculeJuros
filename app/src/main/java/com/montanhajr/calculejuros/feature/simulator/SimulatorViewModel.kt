@@ -73,6 +73,7 @@ class SimulatorViewModel @Inject constructor(
                     prepaymentDiscountPercentage = fromDoubleToDigits(entity.inputPrepaymentDiscountPercentage),
                     prepaymentDiscountValue = fromDoubleToDigits(entity.inputPrepaymentDiscountValue),
                     prepaymentDiscountIsPercentage = entity.inputPrepaymentDiscountIsPercentage,
+                    prepaidInstallmentsCount = entity.inputPrepaidInstallmentsCount.toString(),
                     isSavedAsFavorite = entity.isFavorite,
                     scenarioName = entity.scenarioName ?: "",
                     simulationResult = null, // Do not show previous results
@@ -117,13 +118,30 @@ class SimulatorViewModel @Inject constructor(
     }
 
     fun onInstallmentsChange(count: Int) {
-        _uiState.update { it.copy(installmentsCount = count.coerceIn(0, 1000)) }
+        val finalCount = count.coerceIn(1, 1000)
+        _uiState.update { state ->
+            val prepaidCount = state.prepaidInstallmentsCount.toIntOrNull() ?: 0
+            val maxPrepaid = maxOf(0, finalCount - 1)
+            val finalPrepaid = if (prepaidCount > maxPrepaid) maxPrepaid.toString() else state.prepaidInstallmentsCount
+            state.copy(
+                installmentsCount = finalCount,
+                prepaidInstallmentsCount = finalPrepaid
+            )
+        }
     }
 
     fun onInstallmentsTextChange(value: String) {
         val count = value.filter { it.isDigit() }.toIntOrNull() ?: 0
-        val finalCount = count.coerceIn(0, 1000)
-        _uiState.update { it.copy(installmentsCount = finalCount) }
+        val finalCount = count.coerceIn(1, 1000)
+        _uiState.update { state ->
+            val prepaidCount = state.prepaidInstallmentsCount.toIntOrNull() ?: 0
+            val maxPrepaid = maxOf(0, finalCount - 1)
+            val finalPrepaid = if (prepaidCount > maxPrepaid) maxPrepaid.toString() else state.prepaidInstallmentsCount
+            state.copy(
+                installmentsCount = finalCount,
+                prepaidInstallmentsCount = finalPrepaid
+            )
+        }
     }
 
     fun onUseMonthlyRateToggle(useMonthlyRate: Boolean) {
@@ -213,6 +231,19 @@ class SimulatorViewModel @Inject constructor(
         _uiState.update { it.copy(prepaymentDiscountIsPercentage = isPercentage) }
     }
 
+    fun onPrepaidInstallmentsChange(value: String) {
+        val cleanValue = value.filter { it.isDigit() }
+        if (cleanValue.isEmpty()) {
+            _uiState.update { it.copy(prepaidInstallmentsCount = "") }
+            return
+        }
+        val count = cleanValue.toIntOrNull() ?: 0
+        val maxInstallments = _uiState.value.installmentsCount
+        val maxPrepaid = maxOf(0, maxInstallments - 1)
+        val finalCount = if (count > maxPrepaid) maxPrepaid else count
+        _uiState.update { it.copy(prepaidInstallmentsCount = finalCount.toString()) }
+    }
+
     private fun fromDoubleToDigits(value: Double): String {
         return kotlin.math.round(value * 100).toLong().toString()
     }
@@ -257,7 +288,8 @@ class SimulatorViewModel @Inject constructor(
                 prepaymentDiscountPercentage = state.prepaymentDiscountPercentage.toBrazilDouble(),
                 prepaymentDiscountValue = state.prepaymentDiscountValue.toBrazilDouble(),
                 usePrepaymentDiscount = state.usePrepaymentDiscount,
-                prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage
+                prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage,
+                prepaidInstallmentsCount = state.prepaidInstallmentsCount.toIntOrNull() ?: 0
             )
 
             viewModelScope.launch {
@@ -305,7 +337,8 @@ class SimulatorViewModel @Inject constructor(
             prepaymentDiscountPercentage = state.prepaymentDiscountPercentage.toBrazilDouble(),
             prepaymentDiscountValue = state.prepaymentDiscountValue.toBrazilDouble(),
             usePrepaymentDiscount = state.usePrepaymentDiscount,
-            prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage
+            prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage,
+            prepaidInstallmentsCount = state.prepaidInstallmentsCount.toIntOrNull() ?: 0
         )
 
         viewModelScope.launch {
@@ -346,7 +379,8 @@ class SimulatorViewModel @Inject constructor(
             prepaymentDiscountPercentage = state.prepaymentDiscountPercentage.toBrazilDouble(),
             prepaymentDiscountValue = state.prepaymentDiscountValue.toBrazilDouble(),
             usePrepaymentDiscount = state.usePrepaymentDiscount,
-            prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage
+            prepaymentDiscountIsPercentage = state.prepaymentDiscountIsPercentage,
+            prepaidInstallmentsCount = state.prepaidInstallmentsCount.toIntOrNull() ?: 0
         )
         
         val result = calculateSimulationUseCase(input)

@@ -42,6 +42,7 @@ class SaveSimulationUseCase @Inject constructor(
             inputPrepaymentDiscountIsPercentage = input.prepaymentDiscountIsPercentage,
             inputDownPaymentPercentage = input.downPaymentPercentage,
             inputDownPaymentIsPercentage = input.downPaymentIsPercentage,
+            inputPrepaidInstallmentsCount = input.prepaidInstallmentsCount,
             
             // Results
             productPrice = result.productPrice,

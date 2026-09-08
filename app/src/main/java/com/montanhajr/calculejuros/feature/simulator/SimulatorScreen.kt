@@ -275,6 +275,19 @@ fun SimulatorScreen(
                                 helperText = stringResource(R.string.helper_prepayment_discount)
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        SimulatorInputField(
+                            label = stringResource(R.string.label_prepaid_installments_count),
+                            value = uiState.prepaidInstallmentsCount,
+                            onValueChange = viewModel::onPrepaidInstallmentsChange,
+                            icon = Icons.AutoMirrored.Filled.FactCheck,
+                            suffix = " parcelas",
+                            helperText = stringResource(R.string.helper_prepaid_installments_count, maxOf(0, uiState.installmentsCount - 1)),
+                            keyboardType = androidx.compose.ui.text.input.KeyboardType.Number,
+                            isDecimal = false
+                        )
                     }
                 }
             }

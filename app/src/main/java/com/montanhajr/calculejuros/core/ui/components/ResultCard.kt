@@ -48,12 +48,20 @@ fun ResultCard(
             modifier = Modifier.padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val recommendationText = when (result.recommendation) {
+                RecommendationType.A_VISTA -> stringResource(R.string.result_cash_better)
+                RecommendationType.PARCELADO -> {
+                    if (result.prepaidInstallmentsCount > 0 && result.prepaymentDiscountValue > 0) {
+                        stringResource(R.string.result_installment_prepayment_better)
+                    } else {
+                        stringResource(R.string.result_installment_better)
+                    }
+                }
+                RecommendationType.EMPATE -> stringResource(R.string.result_tie)
+            }
+
             Text(
-                text = when (result.recommendation) {
-                    RecommendationType.A_VISTA -> stringResource(R.string.result_cash_better)
-                    RecommendationType.PARCELADO -> stringResource(R.string.result_installment_better)
-                    RecommendationType.EMPATE -> stringResource(R.string.result_tie)
-                },
+                text = recommendationText,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -74,6 +82,35 @@ fun ResultCard(
             ) {
                 Text(stringResource(R.string.label_gain_installment), style = MaterialTheme.typography.bodyMedium)
                 Text(currencyFormat.format(result.netGainInstallment), style = MonoValueStyle)
+            }
+
+            if (result.prepaidInstallmentsCount > 0 && result.prepaymentDiscountValue > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Surface(
+                    color = contentColor.copy(alpha = 0.1f),
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(stringResource(R.string.label_standard_installment_gain), style = MaterialTheme.typography.bodySmall, color = contentColor.copy(alpha = 0.8f))
+                            Text(currencyFormat.format(result.netGainStandardInstallment), style = MaterialTheme.typography.bodySmall, color = contentColor.copy(alpha = 0.8f))
+                        }
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            val benefit = result.netGainInstallment - result.netGainStandardInstallment
+                            Text(stringResource(R.string.label_prepayment_benefit), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                            Text(currencyFormat.format(benefit), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
             }
             
             HorizontalDivider(
