@@ -173,23 +173,42 @@
     <string name="home_action_recent_desc">Continue where you left off</string>
     <string name="home_action_scenarios_title">Ready Scenarios</string>
     <string name="home_action_scenarios_desc">Examples to help you</string>
-    <string name="home_action_learn_title">Learn to Invest</string>
-    <string name="home_action_learn_desc">Start now</string>
+    <string name="home_action_learn_title">How to Use</string>
+    <string name="home_action_learn_desc">Understand how it works</string>
     <string name="home_recent_header">Recent simulations</string>
     <string name="home_view_all">View all ></string>
+
+    <!-- Education Screen -->
+    <string name="education_title">How the App Works</string>
+    <string name="education_subtitle">Clear your doubts and make precise simulations</string>
+
+    <string name="education_what_is_title">What is this app?</string>
+    <string name="education_what_is_desc">We help you decide whether it\'s more worth it to pay in cash with a discount or pay in installments and invest the remaining money.</string>
+
+    <string name="education_how_to_fill_title">How to fill?</string>
+    <string name="education_fill_price_title">Product Price</string>
+    <string name="education_fill_price_desc">The total sticker price, without discounts.</string>
+    <string name="education_fill_cash_title">Cash Payment</string>
+    <string name="education_fill_cash_desc">Enter the discount or final price for paying now.</string>
+    <string name="education_fill_installment_title">Installment Payment</string>
+    <string name="education_fill_installment_desc">Set the number of installments and if the card charges interest.</string>
+    <string name="education_fill_investment_title">Profitability</string>
+    <string name="education_fill_investment_desc">How much your money would yield if it remained invested (e.g., 100% of CDI).</string>
+
+    <string name="education_when_to_use_title">When to use?</string>
+    <string name="education_when_to_use_desc">Whenever you have the option of a discount for cash payment on high-value purchases.</string>
+
+    <string name="education_result_title">Understanding the result</string>
+    <string name="education_result_desc">We show which strategy leaves more money in your pocket at the end of the period, considering your investment returns.</string>
+
+    <string name="btn_got_it">Got it!</string>
 
     <!-- Home ViewModel / Suggested -->
     <string name="home_suggested_title_format">It\'s worth it %s</string>
     <string name="home_suggested_details">You can gain up to</string>
     <string name="home_suggested_yield">investing what you would stop paying in cash.</string>
     <string name="home_recent_yield_format">Yield: %1$.1f%% p.a.</string>
-
-    <!-- Learn to Invest Dialog -->
-    <string name="dialog_learn_to_invest_title">Want to learn how to invest?</string>
-    <string name="dialog_learn_to_invest_message">Since paying in installments and investing is more advantageous in this simulation, discover how to make your money grow even more with our exclusive training.</string>
-    <string name="dialog_btn_learn_to_invest">Learn to invest</string>
     <string name="dialog_btn_close">Close</string>
-    <string name="content_desc_learn_to_invest_info">Learn more about investments</string>
 
     <!-- Currency Selection -->
     <string name="dialog_choose_currency_title">Choose Currency</string>

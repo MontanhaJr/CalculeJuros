@@ -173,23 +173,42 @@
     <string name="home_action_recent_desc">Continúe donde lo dejó</string>
     <string name="home_action_scenarios_title">Escenarios Listos</string>
     <string name="home_action_scenarios_desc">Ejemplos para ayudarte</string>
-    <string name="home_action_learn_title">Aprenda a Invertir</string>
-    <string name="home_action_learn_desc">Comienza ahora</string>
+    <string name="home_action_learn_title">Cómo Usar</string>
+    <string name="home_action_learn_desc">Entiende cómo funciona</string>
     <string name="home_recent_header">Simulaciones recientes</string>
     <string name="home_view_all">Ver todas ></string>
+
+    <!-- Education Screen -->
+    <string name="education_title">Cómo funciona la App</string>
+    <string name="education_subtitle">Aclara tus dudas y haz simulaciones precisas</string>
+
+    <string name="education_what_is_title">¿Qué es esta app?</string>
+    <string name="education_what_is_desc">Te ayudamos a decidir si vale más la pena pagar al contado con descuento o pagar a plazos e invertir el dinero sobrante.</string>
+
+    <string name="education_how_to_fill_title">¿Cómo completar?</string>
+    <string name="education_fill_price_title">Precio del Producto</string>
+    <string name="education_fill_price_desc">El precio total de la etiqueta, sin descuentos.</string>
+    <string name="education_fill_cash_title">Pago al Contado</string>
+    <string name="education_fill_cash_desc">Informa el descuento o el precio final para pagar ahora.</string>
+    <string name="education_fill_installment_title">Pago a Plazos</string>
+    <string name="education_fill_installment_desc">Define el número de cuotas y si la tarjeta cobra intereses.</string>
+    <string name="education_fill_investment_title">Rentabilidad</string>
+    <string name="education_fill_investment_desc">Cuánto rendiría tu dinero si permaneciera invertido (ej: 100% del CDI).</string>
+
+    <string name="education_when_to_use_title">¿Cuándo usar?</string>
+    <string name="education_when_to_use_desc">Siempre que tengas la opción de descuento por pago al contado en compras de alto valor.</string>
+
+    <string name="education_result_title">Entendendo el resultado</string>
+    <string name="education_result_desc">Mostramos qué estrategia deja más dinero en tu bolsillo al final del período, considerando el rendimiento de tus inversiones.</string>
+
+    <string name="btn_got_it">¡Entendido!</string>
 
     <!-- Home ViewModel / Suggested -->
     <string name="home_suggested_title_format">Vale la pena %s</string>
     <string name="home_suggested_details">Puedes ganar hasta</string>
     <string name="home_suggested_yield">invirtiendo lo que dejarías de pagar al contado.</string>
     <string name="home_recent_yield_format">Rentabilidad: %1$.1f%% anual</string>
-
-    <!-- Learn to Invest Dialog -->
-    <string name="dialog_learn_to_invest_title">¿Quieres aprender a investir?</string>
-    <string name="dialog_learn_to_invest_message">Como pagar en cuotas e invertir conviene más en esta simulación, descubre cómo hacer que tu dinheiro rinda aún más con nuestro entrenamiento exclusivo.</string>
-    <string name="dialog_btn_learn_to_invest">Quiero aprender a investir</string>
     <string name="dialog_btn_close">Cerrar</string>
-    <string name="content_desc_learn_to_invest_info">Saber más sobre inversiones</string>
 
     <!-- Currency Selection -->
     <string name="dialog_choose_currency_title">Elegir Moneda</string>

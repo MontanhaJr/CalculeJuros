@@ -173,23 +173,42 @@
     <string name="home_action_recent_desc">Continue de onde parou</string>
     <string name="home_action_scenarios_title">Cenários Prontos</string>
     <string name="home_action_scenarios_desc">Exemplos para te ajudar</string>
-    <string name="home_action_learn_title">Aprenda a Investir</string>
-    <string name="home_action_learn_desc">Clique e comece já</string>
+    <string name="home_action_learn_title">Como Usar</string>
+    <string name="home_action_learn_desc">Entenda como funciona</string>
     <string name="home_recent_header">Simulações recentes</string>
     <string name="home_view_all">Ver todas ></string>
+
+    <!-- Education Screen -->
+    <string name="education_title">Como funciona o App</string>
+    <string name="education_subtitle">Tire suas dúvidas e faça simulações precisas</string>
+
+    <string name="education_what_is_title">O que é este app?</string>
+    <string name="education_what_is_desc">Ajudamos você a decidir se vale mais a pena pagar à vista com desconto ou parcelar e investir o dinheiro que sobra.</string>
+
+    <string name="education_how_to_fill_title">Como preencher?</string>
+    <string name="education_fill_price_title">Preço do Produto</string>
+    <string name="education_fill_price_desc">O valor total da etiqueta, sem os descontos.</string>
+    <string name="education_fill_cash_title">Pagamento à Vista</string>
+    <string name="education_fill_cash_desc">Informe o desconto ou o preço final para pagar agora.</string>
+    <string name="education_fill_installment_title">Pagamento a Prazo</string>
+    <string name="education_fill_installment_desc">Defina o número de parcelas e se o cartão cobra juros.</string>
+    <string name="education_fill_investment_title">Rentabilidade</string>
+    <string name="education_fill_investment_desc">Quanto seu dinheiro renderia se ficasse investido (ex: 100% do CDI).</string>
+
+    <string name="education_when_to_use_title">Quando usar?</string>
+    <string name="education_when_to_use_desc">Sempre que tiver a opção de desconto para pagamento à vista em compras de alto valor.</string>
+
+    <string name="education_result_title">Entendendo o resultado</string>
+    <string name="education_result_desc">Mostramos qual estratégia deixa mais dinheiro no seu bolso ao final do período, considerando o rendimento dos seus investimentos.</string>
+
+    <string name="btn_got_it">Entendi!</string>
+    <string name="dialog_btn_close">Fechar</string>
 
     <!-- Home ViewModel / Suggested -->
     <string name="home_suggested_title_format">Vale a pena %s</string>
     <string name="home_suggested_details">Você pode ganhar até</string>
     <string name="home_suggested_yield">investindo o que deixaria de pagar à vista.</string>
     <string name="home_recent_yield_format">Rentabilidade: %1$.1f%% a.a.</string>
-
-    <!-- Learn to Invest Dialog -->
-    <string name="dialog_learn_to_invest_title">Quer aprender a investir?</string>
-    <string name="dialog_learn_to_invest_message">Como parcelar e investir compensa mais nesta simulação, descubra como fazer seu dinheiro render ainda mais com nosso treinamento exclusivo.</string>
-    <string name="dialog_btn_learn_to_invest">Quero aprender a investir</string>
-    <string name="dialog_btn_close">Fechar</string>
-    <string name="content_desc_learn_to_invest_info">Saiba mais sobre investimentos</string>
 
     <!-- Currency Selection -->
     <string name="dialog_choose_currency_title">Escolher Moeda</string>

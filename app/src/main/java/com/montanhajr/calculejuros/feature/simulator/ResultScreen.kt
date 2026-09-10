@@ -43,8 +43,7 @@ import com.patrykandpatrick.vico.core.common.shader.*
 @Composable
 fun ResultScreen(
     viewModel: ResultViewModel,
-    onNavigateBack: () -> Unit,
-    onLearnToInvestClick: () -> Unit
+    onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -96,7 +95,7 @@ fun ResultScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    RecommendationHeader(result, uiState.currencySymbol, onLearnToInvestClick)
+                    RecommendationHeader(result, uiState.currencySymbol)
                     
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -149,7 +148,7 @@ fun ResultScreen(
 }
 
 @Composable
-fun RecommendationHeader(result: SimulationResult, currencySymbol: String, onLearnToInvestClick: () -> Unit) {
+fun RecommendationHeader(result: SimulationResult, currencySymbol: String) {
     val bgColor = when (result.recommendation) {
         RecommendationType.A_VISTA -> Color(0xFFE8F5E9)
         RecommendationType.PARCELADO -> Color(0xFFE3F2FD)
@@ -172,8 +171,6 @@ fun RecommendationHeader(result: SimulationResult, currencySymbol: String, onLea
         }
         RecommendationType.EMPATE -> stringResource(R.string.rec_label_tie)
     }
-
-    var showLearnToInvestDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -212,79 +209,7 @@ fun RecommendationHeader(result: SimulationResult, currencySymbol: String, onLea
                 )
             }
         }
-
-        if (result.recommendation == RecommendationType.PARCELADO) {
-            IconButton(
-                onClick = { showLearnToInvestDialog = true },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = stringResource(R.string.content_desc_learn_to_invest_info),
-                    tint = textColor
-                )
-            }
-        }
     }
-
-    if (showLearnToInvestDialog) {
-        LearnToInvestDialog(
-            onDismiss = { showLearnToInvestDialog = false },
-            onConfirm = {
-                showLearnToInvestDialog = false
-                onLearnToInvestClick()
-            }
-        )
-    }
-}
-
-@Composable
-fun LearnToInvestDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = {
-            Icon(
-                Icons.Default.Lightbulb,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(32.dp)
-            )
-        },
-        title = {
-            Text(
-                text = stringResource(R.string.dialog_learn_to_invest_title),
-                fontFamily = SoraFont,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-        },
-        text = {
-            Text(
-                text = stringResource(R.string.dialog_learn_to_invest_message),
-                fontFamily = DmSansFont,
-                textAlign = TextAlign.Center
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text(stringResource(R.string.dialog_btn_learn_to_invest), fontFamily = SoraFont, fontWeight = FontWeight.Bold)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_btn_close), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        },
-        shape = RoundedCornerShape(24.dp)
-    )
 }
 
 @Composable

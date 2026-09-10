@@ -330,7 +330,7 @@ fun QuickActionsGrid(
             onClick = onScenariosClick
         )
         QuickActionCard(
-            icon = Icons.Default.School,
+            icon = Icons.Default.Lightbulb,
             title = stringResource(R.string.home_action_learn_title),
             subtitle = stringResource(R.string.home_action_learn_desc),
             color = MaterialTheme.colorScheme.secondary,

@@ -1,7 +1,5 @@
 package com.montanhajr.calculejuros
 
-import android.content.Intent
-import androidx.core.net.toUri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,6 +23,7 @@ import androidx.navigation.navArgument
 import androidx.compose.ui.res.stringResource
 import com.montanhajr.calculejuros.feature.favorites.FavoritesScreen
 import com.montanhajr.calculejuros.feature.favorites.FavoritesViewModel
+import com.montanhajr.calculejuros.feature.education.EducationScreen
 import com.montanhajr.calculejuros.feature.history.HistoryScreen
 import com.montanhajr.calculejuros.feature.history.HistoryViewModel
 import com.montanhajr.calculejuros.feature.home.HomeScreen
@@ -151,9 +150,13 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onLearnToInvestClick = {
-                                        val intent = Intent(Intent.ACTION_VIEW, "https://kiwify.app/6Qk6810?afid=o0Ox0dKX".toUri())
-                                        startActivity(intent)
+                                        navController.navigate("education")
                                     }
+                                )
+                            }
+                            composable("education") {
+                                EducationScreen(
+                                    onNavigateBack = { navController.popBackStack() }
                                 )
                             }
                             composable(
@@ -186,11 +189,7 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: ResultViewModel = hiltViewModel()
                                 ResultScreen(
                                     viewModel = viewModel,
-                                    onNavigateBack = { navController.popBackStack() },
-                                    onLearnToInvestClick = {
-                                        val intent = Intent(Intent.ACTION_VIEW, "https://kiwify.app/6Qk6810?afid=o0Ox0dKX".toUri())
-                                        startActivity(intent)
-                                    }
+                                    onNavigateBack = { navController.popBackStack() }
                                 )
                             }
                             composable("history") {
