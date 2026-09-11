@@ -56,10 +56,10 @@ fun FavoritesScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .statusBarsPadding()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.statusBarsPadding())
             FavoritesHeader { onNavigateToSimulator(null) }
             
             Spacer(modifier = Modifier.height(24.dp))

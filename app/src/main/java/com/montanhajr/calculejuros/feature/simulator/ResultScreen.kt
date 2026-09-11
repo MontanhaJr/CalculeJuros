@@ -62,10 +62,10 @@ fun ResultScreen(
                     modifier = Modifier
                         .padding(padding)
                         .fillMaxSize()
+                        .statusBarsPadding()
                         .verticalScroll(scrollState)
                         .padding(horizontal = 20.dp, vertical = 12.dp)
                 ) {
-                    Spacer(modifier = Modifier.statusBarsPadding())
                     // Custom Header
                     Row(
                         modifier = Modifier.fillMaxWidth(),

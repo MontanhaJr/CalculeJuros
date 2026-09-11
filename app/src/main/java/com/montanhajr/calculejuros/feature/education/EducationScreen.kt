@@ -35,10 +35,10 @@ fun EducationScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.statusBarsPadding())
             
             // Header
             Row(

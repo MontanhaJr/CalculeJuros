@@ -61,10 +61,10 @@ fun SimulatorScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .statusBarsPadding()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.statusBarsPadding())
             SimulatorHeader(
                 currencySymbol = uiState.currencySymbol,
                 onCurrencyClick = { showCurrencyDialog = true },

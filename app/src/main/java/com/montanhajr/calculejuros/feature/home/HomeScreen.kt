@@ -51,10 +51,10 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.statusBarsPadding())
             Spacer(modifier = Modifier.height(24.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Column {
@@ -310,7 +310,9 @@ fun QuickActionsGrid(
     onLearnClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         QuickActionCard(
@@ -318,7 +320,7 @@ fun QuickActionsGrid(
             title = stringResource(R.string.home_action_recent_title),
             subtitle = stringResource(R.string.home_action_recent_desc),
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).fillMaxHeight(),
             onClick = onRecentClick
         )
         QuickActionCard(
@@ -326,7 +328,7 @@ fun QuickActionsGrid(
             title = stringResource(R.string.home_action_scenarios_title),
             subtitle = stringResource(R.string.home_action_scenarios_desc),
             color = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).fillMaxHeight(),
             onClick = onScenariosClick
         )
         QuickActionCard(
@@ -334,7 +336,7 @@ fun QuickActionsGrid(
             title = stringResource(R.string.home_action_learn_title),
             subtitle = stringResource(R.string.home_action_learn_desc),
             color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).fillMaxHeight(),
             onClick = onLearnClick
         )
     }
@@ -354,7 +356,7 @@ fun QuickActionCard(
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = modifier.height(140.dp)
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
