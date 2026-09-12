@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,6 +21,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.lifecycleScope
+import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
+import com.montanhajr.calculejuros.core.util.AdManager
 import com.montanhajr.calculejuros.feature.favorites.FavoritesScreen
 import com.montanhajr.calculejuros.feature.favorites.FavoritesViewModel
 import com.montanhajr.calculejuros.feature.education.EducationScreen
@@ -36,17 +39,60 @@ import com.montanhajr.calculejuros.ui.components.AdBanner
 import com.montanhajr.calculejuros.ui.theme.CashWiseTheme
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var adManager: AdManager
+
+    @Inject
+    lateinit var adsPreferencesRepository: AdsPreferencesRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        adManager.loadInterstitial(this)
+        adManager.loadRewarded(this)
+
+        if (savedInstanceState == null) {
+            lifecycleScope.launch {
+                adsPreferencesRepository.resetInterstitialCounter()
+            }
+        }
+
         setContent {
             CashWiseTheme {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
+                var lastRoute by remember { mutableStateOf<String?>(null) }
+
+                // Ad monitoring logic
+                LaunchedEffect(currentDestination) {
+                    val currentRoute = currentDestination?.route?.split("?")?.firstOrNull()
+
+                    if (currentRoute != null) {
+                        // Detect back from result to simulator
+                        if (lastRoute == "simulation_result" && currentRoute == "simulator") {
+                            val skip = adsPreferencesRepository.skipNextRewardedAd.first()
+                            adsPreferencesRepository.setSkipNextRewardedAd(!skip)
+                        }
+
+                        // Interstitial logic
+                        adsPreferencesRepository.incrementInterstitialCounter()
+                        val counter = adsPreferencesRepository.interstitialCounter.first()
+                        if (counter >= 5) {
+                            adManager.showInterstitial(this@MainActivity)
+                        }
+
+                        lastRoute = currentRoute
+                    }
+                }
 
                 Scaffold(
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),

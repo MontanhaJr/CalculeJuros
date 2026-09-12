@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.model.InvestmentType
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
@@ -22,16 +23,26 @@ class SimulatorViewModel @Inject constructor(
     private val saveSimulationUseCase: SaveSimulationUseCase,
     private val getSimulationByIdUseCase: GetSimulationByIdUseCase,
     private val currencyPreferencesRepository: CurrencyPreferencesRepository,
+    private val adsPreferencesRepository: AdsPreferencesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SimulatorUiState())
     val uiState: StateFlow<SimulatorUiState> = _uiState.asStateFlow()
 
+    private val _showRewardedAdEvent = MutableSharedFlow<Unit>()
+    val showRewardedAdEvent: SharedFlow<Unit> = _showRewardedAdEvent.asSharedFlow()
+
     init {
         viewModelScope.launch {
             currencyPreferencesRepository.currencySymbol.collect { symbol ->
                 _uiState.update { it.copy(currencySymbol = symbol) }
+            }
+        }
+
+        viewModelScope.launch {
+            adsPreferencesRepository.skipNextRewardedAd.collect { skip ->
+                _uiState.update { it.copy(shouldShowRewardedAdIcon = !skip) }
             }
         }
 
@@ -358,6 +369,16 @@ class SimulatorViewModel @Inject constructor(
     }
 
     fun onCalculate() {
+        if (_uiState.value.shouldShowRewardedAdIcon) {
+            viewModelScope.launch {
+                _showRewardedAdEvent.emit(Unit)
+            }
+        } else {
+            onActualCalculate()
+        }
+    }
+
+    fun onActualCalculate() {
         val state = _uiState.value
         
         val input = SimulationInput(

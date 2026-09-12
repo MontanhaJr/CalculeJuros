@@ -30,6 +30,8 @@ android {
         debug {
             manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
             buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"ca-app-pub-3940256099942544/6300978111\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL_UNIT_ID", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "ADMOB_REWARDED_UNIT_ID", "\"ca-app-pub-3940256099942544/5224354917\"")
         }
         release {
             isMinifyEnabled = false
@@ -39,6 +41,8 @@ android {
             )
             manifestPlaceholders["admobAppId"] = "ca-app-pub-4612925515848375~7839521591"
             buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"ca-app-pub-4612925515848375/8706870388\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL_UNIT_ID", "\"ca-app-pub-4612925515848375/5354273109\"")
+            buildConfigField("String", "ADMOB_REWARDED_UNIT_ID", "\"ca-app-pub-4612925515848375/8253478192\"")
         }
     }
     compileOptions {

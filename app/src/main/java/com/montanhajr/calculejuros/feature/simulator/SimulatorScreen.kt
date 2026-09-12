@@ -19,11 +19,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import com.montanhajr.calculejuros.MainActivity
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.CurrencySelectionDialog
 import com.montanhajr.calculejuros.core.ui.components.ResultCard
+import com.montanhajr.calculejuros.core.util.AdManager
 import com.montanhajr.calculejuros.feature.simulator.components.*
 import com.montanhajr.calculejuros.ui.theme.*
+import javax.inject.Inject
 
 @Composable
 fun SimulatorScreen(
@@ -34,6 +38,17 @@ fun SimulatorScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
     var showCurrencyDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.showRewardedAdEvent.collect {
+            (context as? MainActivity)?.let { activity ->
+                activity.adManager.showRewarded(activity) {
+                    viewModel.onActualCalculate()
+                }
+            }
+        }
+    }
 
     if (showCurrencyDialog) {
         CurrencySelectionDialog(
@@ -309,6 +324,14 @@ fun SimulatorScreen(
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
+                if (uiState.shouldShowRewardedAdIcon) {
+                    Icon(
+                        Icons.Default.PlayCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
                 Text(
                     stringResource(R.string.btn_calculate),
                     fontFamily = SoraFont,
