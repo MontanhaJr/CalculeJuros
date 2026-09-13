@@ -11,6 +11,19 @@ class CalculateSimulationUseCase @Inject constructor() {
         val productPrice = maxOf(0.0, input.productPrice)
         val installmentsCount = maxOf(1, input.installmentsCount)
 
+        // Step 0: Resolve Down Payment (Entrada) early
+        val downPayment = if (input.useDownPayment) {
+            if (input.downPaymentIsPercentage) {
+                productPrice * (input.downPaymentPercentage / 100.0)
+            } else {
+                input.downPayment
+            }
+        } else {
+            0.0
+        }.coerceIn(0.0, productPrice)
+
+        val principalToFinance = productPrice - downPayment
+
         // Step 1: Resolve Cash Price
         val (valorAVista, percentualDesconto) = if (input.useDiscountToggle) {
             val cleanPerc = input.discountPercentage.coerceIn(0.0, 100.0)
@@ -26,21 +39,23 @@ class CalculateSimulationUseCase @Inject constructor() {
         val valorDesconto = productPrice - valorAVista
 
         // Step 2: Resolve Installment, Total Value, and Card Rate
-        val (valorParcela, valorTotalParcelado, taxaCartaoMensal) = if (input.useMonthlyRateToggle) {
+        val (valorParcela, totalInstallmentsOnly, taxaCartaoMensal) = if (input.useMonthlyRateToggle) {
             val i = maxOf(0.0, input.monthlyCardRate) / 100.0
             val installment = if (i == 0.0) {
-                productPrice / installmentsCount
+                principalToFinance / installmentsCount
             } else {
-                productPrice * i / (1 - (1 + i).pow(-installmentsCount))
+                principalToFinance * i / (1 - (1 + i).pow(-installmentsCount))
             }
             val total = installment * installmentsCount
             Triple(installment, total, input.monthlyCardRate)
         } else {
-            val cleanTotal = maxOf(productPrice, input.totalInstallmentValue)
-            val installment = cleanTotal / installmentsCount
-            val implicitRate = calculateImplicitRate(productPrice, installment, installmentsCount)
-            Triple(installment, cleanTotal, implicitRate * 100.0)
+            val cleanTotalPrazo = maxOf(productPrice, input.totalInstallmentValue)
+            val installmentsOnly = cleanTotalPrazo - downPayment
+            val installment = installmentsOnly / installmentsCount
+            val implicitRate = calculateImplicitRate(principalToFinance, installment, installmentsCount)
+            Triple(installment, installmentsOnly, implicitRate * 100.0)
         }
+        val valorTotalParcelado = totalInstallmentsOnly + downPayment
         val taxaCartaoAnual = (1 + taxaCartaoMensal / 100.0).pow(12) - 1
         val jurosTotaisFinanciamento = maxOf(0.0, valorTotalParcelado - productPrice)
 
@@ -61,15 +76,6 @@ class CalculateSimulationUseCase @Inject constructor() {
 
         val monthlyDetails = mutableListOf<MonthlyDetail>()
         
-        // Down Payment consideration
-        val downPayment = if (input.useDownPayment) {
-            if (input.downPaymentIsPercentage) {
-                productPrice * (input.downPaymentPercentage / 100.0)
-            } else {
-                input.downPayment
-            }
-        } else 0.0
-
         // Step 4.1: Prepayment setup (Nubank Model: Prepayment of the LAST k installments)
         val prepaidInstallmentsCount = if (input.usePrepaymentDiscount) {
             input.prepaidInstallmentsCount.coerceIn(0, maxOf(0, installmentsCount - 1))

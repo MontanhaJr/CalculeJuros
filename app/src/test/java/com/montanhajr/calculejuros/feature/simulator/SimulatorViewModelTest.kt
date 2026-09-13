@@ -2,6 +2,7 @@ package com.montanhajr.calculejuros.feature.simulator
 
 import androidx.lifecycle.SavedStateHandle
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
+import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
 import com.montanhajr.calculejuros.core.domain.model.RecommendationType
@@ -36,6 +37,15 @@ class SimulatorViewModelTest {
         override val currencySymbol: Flow<String> = flowOf("R$")
         override suspend fun saveCurrencySymbol(symbol: String) {}
     }
+    private val fakeAdsRepository = object : AdsPreferencesRepository {
+        override val showAds: Flow<Boolean> = flowOf(true)
+        override val interstitialCounter: Flow<Int> = flowOf(0)
+        override val skipNextRewardedAd: Flow<Boolean> = flowOf(true)
+        override suspend fun setAdsVisible(visible: Boolean) {}
+        override suspend fun incrementInterstitialCounter() {}
+        override suspend fun resetInterstitialCounter() {}
+        override suspend fun setSkipNextRewardedAd(skip: Boolean) {}
+    }
     private val saveUseCase = SaveSimulationUseCase(fakeRepository)
     private val getByIdUseCase = GetSimulationByIdUseCase(fakeRepository)
     private val savedStateHandle = SavedStateHandle()
@@ -44,7 +54,7 @@ class SimulatorViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = SimulatorViewModel(calculateUseCase, saveUseCase, getByIdUseCase, fakeCurrencyRepository, savedStateHandle)
+        viewModel = SimulatorViewModel(calculateUseCase, saveUseCase, getByIdUseCase, fakeCurrencyRepository, fakeAdsRepository, savedStateHandle)
     }
 
     @After

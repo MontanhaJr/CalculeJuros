@@ -144,4 +144,37 @@ class CalculateSimulationUseCaseTest {
         
         assertEquals(0.82, result.prepaymentDiscountValue, 0.05)
     }
+
+    @Test
+    fun `Example G - user reported scenario with down payment and zero interest`() {
+        // valor do produto - 1000
+        // valor do produto a vista - 1000
+        // valor do produto a prazo - 1000
+        // parcelamento em 12x
+        // entrada de 100
+        // juros do investimento 0%
+        val input = SimulationInput(
+            productPrice = 1000.0,
+            cashPrice = 1000.0,
+            useDiscountToggle = false,
+            installmentsCount = 12,
+            totalInstallmentValue = 1000.0,
+            useMonthlyRateToggle = false,
+            monthlyProfitability = 0.0,
+            useAnnualProfitabilityToggle = false,
+            useDownPayment = true,
+            downPayment = 100.0,
+            downPaymentIsPercentage = false
+        )
+
+        val result = useCase(input)
+
+        assertEquals(100.0, result.downPayment, 0.01)
+        assertEquals(75.0, result.installmentValue, 0.01) // (1000 - 100) / 12 = 75
+        assertEquals(1000.0, result.totalInstallmentValue, 0.01)
+        assertEquals(0.00, result.netGainCash, 0.01)
+        assertEquals(0.00, result.netGainInstallment, 0.01)
+        assertEquals(RecommendationType.EMPATE, result.recommendation)
+        assertEquals(0.0, result.difference, 0.01)
+    }
 }
