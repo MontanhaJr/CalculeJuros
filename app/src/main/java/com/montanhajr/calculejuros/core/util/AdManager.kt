@@ -13,6 +13,7 @@ import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,87 +28,109 @@ class AdManager @Inject constructor(
     private val scope = CoroutineScope(Dispatchers.Main)
 
     fun loadInterstitial(context: Context) {
-        val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(
-            context,
-            BuildConfig.ADMOB_INTERSTITIAL_UNIT_ID,
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    interstitialAd = null
-                }
+        scope.launch {
+            if (adsPreferencesRepository.showAds.first()) {
+                val adRequest = AdRequest.Builder().build()
+                InterstitialAd.load(
+                    context,
+                    BuildConfig.ADMOB_INTERSTITIAL_UNIT_ID,
+                    adRequest,
+                    object : InterstitialAdLoadCallback() {
+                        override fun onAdFailedToLoad(adError: LoadAdError) {
+                            interstitialAd = null
+                        }
 
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    interstitialAd = ad
-                }
+                        override fun onAdLoaded(ad: InterstitialAd) {
+                            interstitialAd = ad
+                        }
+                    }
+                )
             }
-        )
+        }
     }
 
     fun showInterstitial(activity: Activity, onAdDismissed: () -> Unit = {}) {
-        if (interstitialAd != null) {
-            interstitialAd?.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    interstitialAd = null
-                    loadInterstitial(activity)
-                    scope.launch {
-                        adsPreferencesRepository.resetInterstitialCounter()
-                    }
-                    onAdDismissed()
-                }
-
-                override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
-                    interstitialAd = null
-                    onAdDismissed()
-                }
+        scope.launch {
+            if (!adsPreferencesRepository.showAds.first()) {
+                onAdDismissed()
+                return@launch
             }
-            interstitialAd?.show(activity)
-        } else {
-            loadInterstitial(activity)
-            onAdDismissed()
+
+            if (interstitialAd != null) {
+                interstitialAd?.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        interstitialAd = null
+                        loadInterstitial(activity)
+                        scope.launch {
+                            adsPreferencesRepository.resetInterstitialCounter()
+                        }
+                        onAdDismissed()
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
+                        interstitialAd = null
+                        onAdDismissed()
+                    }
+                }
+                interstitialAd?.show(activity)
+            } else {
+                loadInterstitial(activity)
+                onAdDismissed()
+            }
         }
     }
 
     fun loadRewarded(context: Context) {
-        val adRequest = AdRequest.Builder().build()
-        RewardedAd.load(
-            context,
-            BuildConfig.ADMOB_REWARDED_UNIT_ID,
-            adRequest,
-            object : RewardedAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    rewardedAd = null
-                }
+        scope.launch {
+            if (adsPreferencesRepository.showAds.first()) {
+                val adRequest = AdRequest.Builder().build()
+                RewardedAd.load(
+                    context,
+                    BuildConfig.ADMOB_REWARDED_UNIT_ID,
+                    adRequest,
+                    object : RewardedAdLoadCallback() {
+                        override fun onAdFailedToLoad(adError: LoadAdError) {
+                            rewardedAd = null
+                        }
 
-                override fun onAdLoaded(ad: RewardedAd) {
-                    rewardedAd = ad
-                }
+                        override fun onAdLoaded(ad: RewardedAd) {
+                            rewardedAd = ad
+                        }
+                    }
+                )
             }
-        )
+        }
     }
 
     fun showRewarded(activity: Activity, onRewardEarned: () -> Unit) {
-        if (rewardedAd != null) {
-            rewardedAd?.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    rewardedAd = null
-                    loadRewarded(activity)
-                    scope.launch {
-                        adsPreferencesRepository.resetInterstitialCounter()
+        scope.launch {
+            if (!adsPreferencesRepository.showAds.first()) {
+                onRewardEarned()
+                return@launch
+            }
+
+            if (rewardedAd != null) {
+                rewardedAd?.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        rewardedAd = null
+                        loadRewarded(activity)
+                        scope.launch {
+                            adsPreferencesRepository.resetInterstitialCounter()
+                        }
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
+                        rewardedAd = null
+                        onRewardEarned() // Call reward earned even on failure to avoid blocking the user? Or handle differently.
                     }
                 }
-
-                override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
-                    rewardedAd = null
-                    onRewardEarned() // Call reward earned even on failure to avoid blocking the user? Or handle differently.
+                rewardedAd?.show(activity) {
+                    onRewardEarned()
                 }
+            } else {
+                loadRewarded(activity)
+                onRewardEarned() // If not loaded, just proceed
             }
-            rewardedAd?.show(activity) {
-                onRewardEarned()
-            }
-        } else {
-            loadRewarded(activity)
-            onRewardEarned() // If not loaded, just proceed
         }
     }
 }

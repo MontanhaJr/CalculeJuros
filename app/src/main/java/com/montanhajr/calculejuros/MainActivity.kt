@@ -56,12 +56,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        adManager.loadInterstitial(this)
-        adManager.loadRewarded(this)
+        lifecycleScope.launch {
+            if (adsPreferencesRepository.showAds.first()) {
+                adManager.loadInterstitial(this@MainActivity)
+                adManager.loadRewarded(this@MainActivity)
 
-        if (savedInstanceState == null) {
-            lifecycleScope.launch {
-                adsPreferencesRepository.resetInterstitialCounter()
+                if (savedInstanceState == null) {
+                    adsPreferencesRepository.resetInterstitialCounter()
+                }
             }
         }
 
@@ -74,6 +76,8 @@ class MainActivity : ComponentActivity() {
 
                 // Ad monitoring logic
                 LaunchedEffect(currentDestination) {
+                    if (!adsPreferencesRepository.showAds.first()) return@LaunchedEffect
+
                     val currentRoute = currentDestination?.route?.split("?")?.firstOrNull()
 
                     if (currentRoute != null) {

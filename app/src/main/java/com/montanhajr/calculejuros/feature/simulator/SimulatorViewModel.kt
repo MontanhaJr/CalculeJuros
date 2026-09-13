@@ -41,9 +41,16 @@ class SimulatorViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            adsPreferencesRepository.skipNextRewardedAd.collect { skip ->
-                _uiState.update { it.copy(shouldShowRewardedAdIcon = !skip) }
-            }
+            combine(
+                adsPreferencesRepository.showAds,
+                adsPreferencesRepository.skipNextRewardedAd
+            ) { showAds, skip ->
+                if (!showAds) {
+                    _uiState.update { it.copy(shouldShowRewardedAdIcon = false) }
+                } else {
+                    _uiState.update { it.copy(shouldShowRewardedAdIcon = !skip) }
+                }
+            }.collect()
         }
 
         savedStateHandle.getStateFlow<Long>("simulationId", -1L)
