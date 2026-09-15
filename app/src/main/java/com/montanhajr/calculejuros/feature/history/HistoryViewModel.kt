@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.usecase.DeleteSimulationUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.GetHistoryUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
 import com.montanhajr.calculejuros.core.util.toCurrency
@@ -32,6 +34,7 @@ data class HistoryItem(
     val resultValue: String,
     val iconType: String, // "laptop", "phone", "tv", "watch", "ps5"
     val isFavorite: Boolean,
+    val isLocked: Boolean = false,
     val fullEntity: SimulationEntity
 )
 
@@ -45,7 +48,9 @@ data class HistoryUiState(
     val recentSimulations: List<HistoryItem> = emptyList(),
     val selectedSimulation: SimulationEntity? = null,
     val activeFilter: HistoryFilter = HistoryFilter.ALL,
-    val pendingDelete: SimulationEntity? = null
+    val pendingDelete: SimulationEntity? = null,
+    val isPro: Boolean = false,
+    val showProLimitAlert: Boolean = false
 )
 
 @HiltViewModel
@@ -53,25 +58,38 @@ class HistoryViewModel @Inject constructor(
     getHistoryUseCase: GetHistoryUseCase,
     private val deleteSimulationUseCase: DeleteSimulationUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val getFavoritesUseCase: GetFavoritesUseCase,
     currencyPreferencesRepository: CurrencyPreferencesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _selectedSimulation = MutableStateFlow<SimulationEntity?>(null)
     private val _activeFilter = MutableStateFlow(HistoryFilter.ALL)
     private val _pendingDelete = MutableStateFlow<SimulationEntity?>(null)
+    private val _showProLimitAlert = MutableStateFlow(false)
+
+    private data class HistoryInternalState(
+        val selected: SimulationEntity?,
+        val filter: HistoryFilter,
+        val pendingDelete: SimulationEntity?,
+        val showProLimitAlert: Boolean
+    )
 
     val uiState: StateFlow<HistoryUiState> = combine(
         getHistoryUseCase(),
         currencyPreferencesRepository.currencySymbol,
-        _selectedSimulation,
-        _activeFilter,
-        _pendingDelete
-    ) { simulations, currencySymbol, selected, filter, pendingDelete ->
-        val filteredSimulations = when (filter) {
-            HistoryFilter.ALL -> simulations
-            HistoryFilter.INSTALLMENTS -> simulations.filter { it.winner == "PARCELADO" }
-            HistoryFilter.CASH -> simulations.filter { it.winner == "A_VISTA" }
+        userPreferencesRepository.isPro,
+        combine(_selectedSimulation, _activeFilter, _pendingDelete, _showProLimitAlert) { sel, filt, pend, alert ->
+            HistoryInternalState(sel, filt, pend, alert)
+        }
+    ) { simulations, currencySymbol, isPro, internal ->
+        val sortedSimulations = simulations.sortedByDescending { it.date }
+
+        val filteredSimulations = when (internal.filter) {
+            HistoryFilter.ALL -> sortedSimulations
+            HistoryFilter.INSTALLMENTS -> sortedSimulations.filter { it.winner == "PARCELADO" }
+            HistoryFilter.CASH -> sortedSimulations.filter { it.winner == "A_VISTA" }
         }
 
         val totalGain = simulations.sumOf { it.difference }
@@ -82,7 +100,7 @@ class HistoryViewModel @Inject constructor(
             potentialGainLabel = context.getString(R.string.label_in_total),
             averageGain = if (simulations.isNotEmpty()) (totalGain / simulations.size).toCurrency(currencySymbol) else 0.0.toCurrency(currencySymbol),
             averageGainLabel = context.getString(R.string.label_advantage),
-            recentSimulations = filteredSimulations.map { entity ->
+            recentSimulations = filteredSimulations.mapIndexed { index, entity ->
                 HistoryItem(
                     id = entity.id.toString(),
                     title = entity.scenarioName ?: context.getString(R.string.default_simulation_name),
@@ -93,12 +111,15 @@ class HistoryViewModel @Inject constructor(
                     resultValue = entity.difference.toCurrency(currencySymbol),
                     iconType = entity.iconType,
                     isFavorite = entity.isFavorite,
+                    isLocked = !isPro && index >= 6,
                     fullEntity = entity
                 )
             },
-            selectedSimulation = selected,
-            activeFilter = filter,
-            pendingDelete = pendingDelete
+            selectedSimulation = internal.selected,
+            activeFilter = internal.filter,
+            pendingDelete = internal.pendingDelete,
+            isPro = isPro,
+            showProLimitAlert = internal.showProLimitAlert
         )
     }
     .stateIn(
@@ -133,8 +154,19 @@ class HistoryViewModel @Inject constructor(
 
     fun toggleFavorite(simulation: SimulationEntity) {
         viewModelScope.launch {
+            if (!simulation.isFavorite) {
+                val currentFavorites = getFavoritesUseCase().first().size
+                if (!uiState.value.isPro && currentFavorites >= 3) {
+                    _showProLimitAlert.value = true
+                    return@launch
+                }
+            }
             toggleFavoriteUseCase(simulation)
         }
+    }
+
+    fun dismissProLimitAlert() {
+        _showProLimitAlert.value = false
     }
 
     fun setFilter(filter: HistoryFilter) {

@@ -222,4 +222,13 @@
     <string name="name_eur">Euro</string>
     <string name="name_gbp">British Pound</string>
     <string name="currency_label_format">Currency: %s</string>
+
+    <!-- PRO Plan -->
+    <string name="title_pro_limit_reached">Favorites Limit Reached</string>
+    <string name="desc_pro_limit_favorites">In the free version you can save up to 3 favorites. Unlock unlimited favorites with the PRO version!</string>
+    <string name="teaser_pro_title">Detailed Evolution (PRO)</string>
+    <string name="teaser_pro_desc">See the month-by-month chart and detailed yield table to make the best decision.</string>
+    <string name="teaser_pro_history_title">Full History (PRO)</string>
+    <string name="teaser_pro_history_desc">Unlock the view of all your past simulations and track your financial evolution.</string>
+    <string name="btn_unlock_pro">Unlock PRO Version</string>
 </resources>

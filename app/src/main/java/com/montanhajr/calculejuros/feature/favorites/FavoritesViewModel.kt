@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
-import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.ToggleFavoriteUseCase
 import com.montanhajr.calculejuros.core.util.toCurrency
@@ -44,7 +44,7 @@ class FavoritesViewModel @Inject constructor(
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val repository: SimulationRepository,
     currencyPreferencesRepository: CurrencyPreferencesRepository,
-    private val adsPreferencesRepository: AdsPreferencesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -163,10 +163,10 @@ class FavoritesViewModel @Inject constructor(
         _pendingUnfavorite.value = null
     }
 
-    fun toggleAdsVisibility() {
+    fun toggleProStatus() {
         viewModelScope.launch {
-            val current = adsPreferencesRepository.showAds.first()
-            adsPreferencesRepository.setAdsVisible(!current)
+            val current = userPreferencesRepository.isPro.first()
+            userPreferencesRepository.setProStatus(!current)
         }
     }
 }

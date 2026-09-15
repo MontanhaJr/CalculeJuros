@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import java.util.Locale
 import com.montanhajr.calculejuros.R
+import com.montanhajr.calculejuros.core.ui.components.ProBadge
 import com.montanhajr.calculejuros.core.util.toCurrency
 import com.montanhajr.calculejuros.ui.theme.*
 
@@ -62,14 +63,24 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     NewSimulationCard(onClick = onNavigateToSimulator)
                 }
-                Image(
-                    painter = painterResource(id = R.drawable.calc_coin_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(130.dp)
-                        .align(Alignment.TopEnd)
-                        .offset(x = 10.dp, y = (-5).dp)
-                )
+                
+                Column(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    ProBadge(
+                        isPro = uiState.isPro,
+                        onClick = viewModel::togglePro
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.calc_coin_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(130.dp)
+                            .offset(x = 10.dp, y = (-20).dp) // "Invade" the badge area
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
             SuggestedResultCard(

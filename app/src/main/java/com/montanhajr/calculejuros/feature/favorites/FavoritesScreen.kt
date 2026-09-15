@@ -176,7 +176,7 @@ fun FavoritesScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             TipCard(
-                onTripleClick = viewModel::toggleAdsVisibility
+                onTripleClick = viewModel::toggleProStatus
             )
             
             Spacer(modifier = Modifier.height(32.dp))

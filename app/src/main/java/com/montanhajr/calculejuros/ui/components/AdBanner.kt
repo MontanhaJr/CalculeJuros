@@ -16,23 +16,30 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.montanhajr.calculejuros.BuildConfig
 import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.viewModelScope
 import javax.inject.Inject
 
 @HiltViewModel
 class AdViewModel @Inject constructor(
-    adsPreferencesRepository: AdsPreferencesRepository
+    adsPreferencesRepository: AdsPreferencesRepository,
+    userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-    val showAds: StateFlow<Boolean> = adsPreferencesRepository.showAds
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = true
-        )
+    val showAds: StateFlow<Boolean> = combine(
+        adsPreferencesRepository.showAds,
+        userPreferencesRepository.isPro
+    ) { showAds, isPro ->
+        showAds && !isPro
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = true
+    )
 }
 
 @Composable

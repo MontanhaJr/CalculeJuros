@@ -222,4 +222,13 @@
     <string name="name_eur">Euro</string>
     <string name="name_gbp">Libra Esterlina</string>
     <string name="currency_label_format">Moeda: %s</string>
+
+    <!-- PRO Plan -->
+    <string name="title_pro_limit_reached">Limite de Favoritos Atingido</string>
+    <string name="desc_pro_limit_favorites">Na versão gratuita você pode salvar até 3 favoritos. Libere favoritos ilimitados com a versão PRO!</string>
+    <string name="teaser_pro_title">Evolução Detalhada (PRO)</string>
+    <string name="teaser_pro_desc">Veja o gráfico mês a mês e a tabela detalhada de rendimentos para tomar a melhor decisão.</string>
+    <string name="teaser_pro_history_title">Histórico Completo (PRO)</string>
+    <string name="teaser_pro_history_desc">Libere a visualização de todas as suas simulações anteriores e acompanhe sua evolução financeira.</string>
+    <string name="btn_unlock_pro">Liberar Versão PRO</string>
 </resources>

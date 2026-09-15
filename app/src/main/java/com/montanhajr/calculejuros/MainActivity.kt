@@ -23,6 +23,7 @@ import androidx.navigation.navArgument
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
 import com.montanhajr.calculejuros.core.util.AdManager
 import com.montanhajr.calculejuros.feature.favorites.FavoritesScreen
 import com.montanhajr.calculejuros.feature.favorites.FavoritesViewModel
@@ -52,12 +53,17 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var adsPreferencesRepository: AdsPreferencesRepository
 
+    @Inject
+    lateinit var userPreferencesRepository: UserPreferencesRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         lifecycleScope.launch {
-            if (adsPreferencesRepository.showAds.first()) {
+            val showAds = adsPreferencesRepository.showAds.first()
+            val isPro = userPreferencesRepository.isPro.first()
+            if (showAds && !isPro) {
                 adManager.loadInterstitial(this@MainActivity)
                 adManager.loadRewarded(this@MainActivity)
 
@@ -76,7 +82,9 @@ class MainActivity : ComponentActivity() {
 
                 // Ad monitoring logic
                 LaunchedEffect(currentDestination) {
-                    if (!adsPreferencesRepository.showAds.first()) return@LaunchedEffect
+                    val showAds = adsPreferencesRepository.showAds.first()
+                    val isPro = userPreferencesRepository.isPro.first()
+                    if (!showAds || isPro) return@LaunchedEffect
 
                     val currentRoute = currentDestination?.route?.split("?")?.firstOrNull()
 

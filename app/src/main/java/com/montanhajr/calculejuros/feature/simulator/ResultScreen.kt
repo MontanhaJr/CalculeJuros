@@ -11,12 +11,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -123,11 +126,27 @@ fun ResultScreen(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     
-                    EvolutionChart(result)
-                    
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
-                    DetailedTable(result, uiState.currencySymbol)
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = if (!uiState.isPro) Modifier.blur(10.dp) else Modifier
+                        ) {
+                            EvolutionChart(result)
+                            Spacer(modifier = Modifier.height(24.dp))
+                            DetailedTable(result, uiState.currencySymbol)
+                        }
+
+                        if (!uiState.isPro) {
+                            // Overlay blocker to prevent interaction with blurred content
+                            Box(modifier = Modifier.matchParentSize().clickable(enabled = false) {})
+
+                            ProTeaserCard(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .offset(y = 125.dp) // Half of EvolutionChart height (250dp / 2)
+                                    .padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -137,6 +156,19 @@ fun ResultScreen(
                 }
             }
         }
+    }
+
+    if (uiState.showProLimitAlert) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissProLimitAlert,
+            title = { Text(stringResource(R.string.title_pro_limit_reached), fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(R.string.desc_pro_limit_favorites), fontFamily = DmSansFont) },
+            confirmButton = {
+                Button(onClick = viewModel::dismissProLimitAlert) {
+                    Text("OK")
+                }
+            }
+        )
     }
 
     if (uiState.showSaveDialog) {
@@ -505,6 +537,55 @@ fun DetailedTable(result: SimulationResult, currencySymbol: String) {
                 } else if (hasPrepayment) {
                     Spacer(modifier = Modifier.weight(1.5f))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProTeaserCard(modifier: Modifier = Modifier) {
+    Surface(
+        color = BrandYellow.copy(alpha = 0.95f),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, BrandYellow.copy(alpha = 0.3f)),
+        shadowElevation = 8.dp,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.WorkspacePremium,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.teaser_pro_title),
+                fontFamily = SoraFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.teaser_pro_desc),
+                fontFamily = DmSansFont,
+                fontSize = 13.sp,
+                color = Color.White.copy(alpha = 0.9f),
+                textAlign = TextAlign.Center,
+                lineHeight = 18.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { /* Will be handled by Home toggle for now */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BrandYellow),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.btn_unlock_pro), fontFamily = SoraFont, fontWeight = FontWeight.Bold)
             }
         }
     }

@@ -4,9 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
 import com.montanhajr.calculejuros.core.domain.model.SimulationResult
 import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
+import com.montanhajr.calculejuros.core.domain.usecase.GetFavoritesUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.GetSimulationByIdUseCase
 import com.montanhajr.calculejuros.core.domain.usecase.SaveSimulationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,8 +21,10 @@ data class ResultUiState(
     val scenarioName: String? = null,
     val isFavorite: Boolean = false,
     val showSaveDialog: Boolean = false,
+    val showProLimitAlert: Boolean = false,
     val isLoading: Boolean = true,
-    val currencySymbol: String = "R$"
+    val currencySymbol: String = "R$",
+    val isPro: Boolean = false
 )
 
 @HiltViewModel
@@ -28,7 +32,9 @@ class ResultViewModel @Inject constructor(
     private val getSimulationByIdUseCase: GetSimulationByIdUseCase,
     private val calculateSimulationUseCase: CalculateSimulationUseCase,
     private val saveSimulationUseCase: SaveSimulationUseCase,
+    private val getFavoritesUseCase: GetFavoritesUseCase,
     private val currencyPreferencesRepository: CurrencyPreferencesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -42,8 +48,13 @@ class ResultViewModel @Inject constructor(
         simulationId = savedStateHandle.get<Long>("simulationId") ?: -1L
 
         viewModelScope.launch {
-            currencyPreferencesRepository.currencySymbol.collect { symbol ->
-                _uiState.update { it.copy(currencySymbol = symbol) }
+            combine(
+                currencyPreferencesRepository.currencySymbol,
+                userPreferencesRepository.isPro
+            ) { symbol, isPro ->
+                symbol to isPro
+            }.collect { (symbol, isPro) ->
+                _uiState.update { it.copy(currencySymbol = symbol, isPro = isPro) }
             }
         }
 
@@ -108,8 +119,19 @@ class ResultViewModel @Inject constructor(
                 _uiState.update { it.copy(isFavorite = false, scenarioName = "") }
             }
         } else {
-            _uiState.update { it.copy(showSaveDialog = true) }
+            viewModelScope.launch {
+                val currentFavorites = getFavoritesUseCase().first().size
+                if (!state.isPro && currentFavorites >= 3) {
+                    _uiState.update { it.copy(showProLimitAlert = true) }
+                } else {
+                    _uiState.update { it.copy(showSaveDialog = true) }
+                }
+            }
         }
+    }
+
+    fun dismissProLimitAlert() {
+        _uiState.update { it.copy(showProLimitAlert = false) }
     }
 
     fun onDismissSaveDialog() {

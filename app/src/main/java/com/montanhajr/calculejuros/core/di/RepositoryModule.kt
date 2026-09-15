@@ -6,6 +6,8 @@ import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepos
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepositoryImpl
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepository
 import com.montanhajr.calculejuros.core.data.repository.SimulationRepositoryImpl
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindAdsPreferencesRepository(
         adsPreferencesRepositoryImpl: AdsPreferencesRepositoryImpl
     ): AdsPreferencesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserPreferencesRepository(
+        userPreferencesRepositoryImpl: UserPreferencesRepositoryImpl
+    ): UserPreferencesRepository
 }

@@ -12,6 +12,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.montanhajr.calculejuros.R
 import com.montanhajr.calculejuros.core.ui.components.SimulationDetailModal
@@ -78,7 +81,10 @@ fun HistoryScreen(
                     Text(stringResource(R.string.empty_history), fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
-                uiState.recentSimulations.forEach { item ->
+                val clearItems = uiState.recentSimulations.filter { !it.isLocked }
+                val lockedItems = uiState.recentSimulations.filter { it.isLocked }
+
+                clearItems.forEach { item ->
                     HistoryListItem(
                         item = item,
                         onClick = { viewModel.onSimulationClick(item.fullEntity) },
@@ -86,6 +92,37 @@ fun HistoryScreen(
                         onToggleFavorite = { viewModel.toggleFavorite(item.fullEntity) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
+                }
+                
+                if (lockedItems.isNotEmpty()) {
+                    // Show only the first 2 locked items to keep the UI clean and avoid huge empty spaces
+                    val displayedLockedItems = lockedItems.take(2)
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Column {
+                            displayedLockedItems.forEach { item ->
+                                HistoryListItem(
+                                    item = item,
+                                    onClick = {},
+                                    onDelete = {},
+                                    onToggleFavorite = {}
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+                            // Small spacer just to ensure the teaser card shadow doesn't get clipped 
+                            // and the banner below is correctly positioned
+                            Spacer(modifier = Modifier.height(70.dp))
+                        }
+                        
+                        // Transparent overlay to prevent interactions
+                        Box(modifier = Modifier.matchParentSize().clickable(enabled = false, onClick = {}))
+
+                        HistoryProTeaserCard(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .offset(y = 46.dp)
+                                .padding(horizontal = 4.dp)
+                        )
+                    }
                 }
             }
             
@@ -129,6 +166,19 @@ fun HistoryScreen(
                 dismissButton = {
                     TextButton(onClick = viewModel::dismissDeleteDialog) {
                         Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            )
+        }
+
+        if (uiState.showProLimitAlert) {
+            AlertDialog(
+                onDismissRequest = viewModel::dismissProLimitAlert,
+                title = { Text(stringResource(R.string.title_pro_limit_reached), fontFamily = SoraFont, fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.desc_pro_limit_favorites), fontFamily = DmSansFont) },
+                confirmButton = {
+                    Button(onClick = viewModel::dismissProLimitAlert) {
+                        Text("OK")
                     }
                 }
             )
@@ -347,80 +397,148 @@ fun HistoryListItem(
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (item.isLocked) Modifier.blur(10.dp) else Modifier)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.size(56.dp)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .then(if (item.isLocked) Modifier.alpha(0.5f) else Modifier),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = when(item.iconType) {
-                        "laptop" -> Icons.Default.Laptop
-                        "phone" -> Icons.Default.Smartphone
-                        "tv" -> Icons.Default.Tv
-                        "watch" -> Icons.Default.Watch
-                        "ps5" -> Icons.Default.Gamepad
-                        else -> Icons.Default.ShoppingBag
-                    },
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(12.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            Column(modifier = Modifier.weight(1f)) {
-                Text(item.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(item.description, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
-                Text(item.timestamp, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.outline, fontSize = 10.sp)
-            }
-            
-            Column(horizontalAlignment = Alignment.End) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        color = (if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            item.resultType,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                            fontFamily = SoraFont,
-                            color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(onClick = onToggleFavorite, modifier = Modifier.size(24.dp)) {
-                        Icon(
-                            imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                            contentDescription = if (item.isFavorite) stringResource(R.string.content_desc_remove_favorite) else stringResource(R.string.content_desc_add_favorite),
-                            tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                Surface(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Icon(
+                        imageVector = when(item.iconType) {
+                            "laptop" -> Icons.Default.Laptop
+                            "phone" -> Icons.Default.Smartphone
+                            "tv" -> Icons.Default.Tv
+                            "watch" -> Icons.Default.Watch
+                            "ps5" -> Icons.Default.Gamepad
+                            else -> Icons.Default.ShoppingBag
+                        },
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(12.dp)
+                    )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(item.resultLabel, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
-                Text(
-                    item.resultValue,
-                    fontFamily = SoraFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
-                )
+                
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(item.title, fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(item.description, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
+                    Text(item.timestamp, fontFamily = DmSansFont, color = MaterialTheme.colorScheme.outline, fontSize = 10.sp)
+                }
+                
+                Column(horizontalAlignment = Alignment.End) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            color = (if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error).copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                item.resultType,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                fontFamily = SoraFont,
+                                color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(onClick = onToggleFavorite, modifier = Modifier.size(24.dp)) {
+                            Icon(
+                                imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                                contentDescription = if (item.isFavorite) stringResource(R.string.content_desc_remove_favorite) else stringResource(R.string.content_desc_add_favorite),
+                                tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(item.resultLabel, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp, fontFamily = DmSansFont)
+                    Text(
+                        item.resultValue,
+                        fontFamily = SoraFont,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                        color = if (item.resultType == stringResource(R.string.winner_installments)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(4.dp))
+                
+                IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                    Icon(Icons.Default.DeleteOutline, contentDescription = stringResource(R.string.btn_delete), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+                }
             }
             
-            Spacer(modifier = Modifier.width(4.dp))
-            
-            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                Icon(Icons.Default.DeleteOutline, contentDescription = stringResource(R.string.btn_delete), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f), modifier = Modifier.size(18.dp))
+            if (item.isLocked) {
+                Box(
+                    modifier = Modifier.matchParentSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HistoryProTeaserCard(modifier: Modifier = Modifier) {
+    Surface(
+        color = BrandYellow.copy(alpha = 0.95f), // More opaque to cover content behind
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, BrandYellow.copy(alpha = 0.3f)),
+        shadowElevation = 8.dp,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.WorkspacePremium,
+                contentDescription = null,
+                tint = BrandYellow,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.teaser_pro_history_title),
+                fontFamily = SoraFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.teaser_pro_history_desc),
+                fontFamily = DmSansFont,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                lineHeight = 16.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { /* Home toggle handles this for now */ },
+                colors = ButtonDefaults.buttonColors(containerColor = BrandYellow, contentColor = Color.White),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.btn_unlock_pro), fontFamily = SoraFont, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             }
         }
     }
