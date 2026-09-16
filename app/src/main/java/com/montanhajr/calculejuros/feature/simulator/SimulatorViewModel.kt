@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.montanhajr.calculejuros.core.data.db.SimulationEntity
 import com.montanhajr.calculejuros.core.data.repository.AdsPreferencesRepository
 import com.montanhajr.calculejuros.core.data.repository.CurrencyPreferencesRepository
+import com.montanhajr.calculejuros.core.data.repository.UserPreferencesRepository
 import com.montanhajr.calculejuros.core.domain.model.InvestmentType
 import com.montanhajr.calculejuros.core.domain.model.SimulationInput
 import com.montanhajr.calculejuros.core.domain.usecase.CalculateSimulationUseCase
@@ -24,6 +25,7 @@ class SimulatorViewModel @Inject constructor(
     private val getSimulationByIdUseCase: GetSimulationByIdUseCase,
     private val currencyPreferencesRepository: CurrencyPreferencesRepository,
     private val adsPreferencesRepository: AdsPreferencesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -43,9 +45,10 @@ class SimulatorViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 adsPreferencesRepository.showAds,
-                adsPreferencesRepository.skipNextRewardedAd
-            ) { showAds, skip ->
-                if (!showAds) {
+                adsPreferencesRepository.skipNextRewardedAd,
+                userPreferencesRepository.isPro
+            ) { showAds, skip, isPro ->
+                if (!showAds || isPro) {
                     _uiState.update { it.copy(shouldShowRewardedAdIcon = false) }
                 } else {
                     _uiState.update { it.copy(shouldShowRewardedAdIcon = !skip) }

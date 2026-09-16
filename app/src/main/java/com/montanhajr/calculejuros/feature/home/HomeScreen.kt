@@ -40,7 +40,8 @@ fun HomeScreen(
     onNavigateToHistory: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToSimulationDetail: (String) -> Unit,
-    onLearnToInvestClick: () -> Unit
+    onLearnToInvestClick: () -> Unit,
+    onNavigateToSubscription: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -70,7 +71,13 @@ fun HomeScreen(
                 ) {
                     ProBadge(
                         isPro = uiState.isPro,
-                        onClick = viewModel::togglePro
+                        onClick = {
+                            if (uiState.isPro) {
+                                viewModel.togglePro()
+                            } else {
+                                onNavigateToSubscription()
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Image(

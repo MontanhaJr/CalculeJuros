@@ -231,4 +231,31 @@
     <string name="teaser_pro_history_title">Full History (PRO)</string>
     <string name="teaser_pro_history_desc">Unlock the view of all your past simulations and track your financial evolution.</string>
     <string name="btn_unlock_pro">Unlock PRO Version</string>
+
+    <!-- PRO Subscription Screen -->
+    <string name="pro_title">Unlock all the\napp potential</string>
+    <string name="pro_subtitle">Go Premium and make the best\nfinancial decisions always.</string>
+    <string name="pro_benefit_unlimited_sims_title">Unlimited history</string>
+    <string name="pro_benefit_unlimited_sims_desc">Access all your previous simulations.</string>
+    <string name="pro_benefit_reports_title">View all calculation detail charts</string>
+    <string name="pro_benefit_reports_desc">Deep analysis with wealth evolution charts.</string>
+    <string name="pro_benefit_unlimited_favs_title">Unlimited favorites</string>
+    <string name="pro_benefit_unlimited_favs_desc">Save as many scenarios as you want to compare.</string>
+    <string name="pro_benefit_pdf_title">Simulations without watching ads</string>
+    <string name="pro_benefit_pdf_desc">Total speed in each new calculation.</string>
+    <string name="pro_benefit_no_ads_title">Removal of banners and interstitials</string>
+    <string name="pro_benefit_no_ads_desc">Clean, fast, and interruption-free experience.</string>
+    <string name="pro_choose_plan">Choose your plan</string>
+    <string name="pro_most_chosen">Most chosen</string>
+    <string name="pro_best_value">Best value</string>
+    <string name="pro_annual">Annual</string>
+    <string name="pro_semiannual">Semiannual</string>
+    <string name="pro_monthly">Monthly</string>
+    <string name="pro_price_format">%s/%s</string>
+    <string name="pro_price_equivalent_format">Equivalent to %s/month</string>
+    <string name="pro_save_percentage">Save %d%%</string>
+    <string name="pro_subscribe_button_format">Subscribe %1$s for %2$s</string>
+    <string name="pro_google_play_secure">Secure purchase via Google Play</string>
+    <string name="pro_cancel_anytime">Cancel anytime</string>
+    <string name="pro_ideal_start">Ideal to start</string>
 </resources>

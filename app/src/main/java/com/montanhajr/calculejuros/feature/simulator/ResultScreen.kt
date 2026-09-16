@@ -46,7 +46,8 @@ import com.patrykandpatrick.vico.core.common.shader.*
 @Composable
 fun ResultScreen(
     viewModel: ResultViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToSubscription: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -143,7 +144,8 @@ fun ResultScreen(
                                 modifier = Modifier
                                     .align(Alignment.TopCenter)
                                     .offset(y = 125.dp) // Half of EvolutionChart height (250dp / 2)
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp),
+                                onClick = onNavigateToSubscription
                             )
                         }
                     }
@@ -543,7 +545,10 @@ fun DetailedTable(result: SimulationResult, currencySymbol: String) {
 }
 
 @Composable
-fun ProTeaserCard(modifier: Modifier = Modifier) {
+fun ProTeaserCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Surface(
         color = BrandYellow.copy(alpha = 0.95f),
         shape = RoundedCornerShape(16.dp),
@@ -581,7 +586,7 @@ fun ProTeaserCard(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* Will be handled by Home toggle for now */ },
+                onClick = onClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BrandYellow),
                 shape = RoundedCornerShape(12.dp)
             ) {

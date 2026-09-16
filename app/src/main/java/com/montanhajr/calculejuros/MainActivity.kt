@@ -36,6 +36,8 @@ import com.montanhajr.calculejuros.feature.simulator.ResultScreen
 import com.montanhajr.calculejuros.feature.simulator.ResultViewModel
 import com.montanhajr.calculejuros.feature.simulator.SimulatorScreen
 import com.montanhajr.calculejuros.feature.simulator.SimulatorViewModel
+import com.montanhajr.calculejuros.feature.subscription.ProSubscriptionScreen
+import com.montanhajr.calculejuros.feature.subscription.ProSubscriptionViewModel
 import com.montanhajr.calculejuros.ui.components.AdBanner
 import com.montanhajr.calculejuros.ui.theme.CashWiseTheme
 import com.montanhajr.calculejuros.ui.theme.DmSansFont
@@ -109,52 +111,55 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
-                        Column {
-                            AdBanner()
-                            NavigationBar(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ) {
-                                val items = listOf(
-                                    Triple("home", stringResource(R.string.nav_label_home), Icons.Default.Home),
-                                    Triple("simulator", stringResource(R.string.nav_label_simulator), Icons.Default.Calculate),
-                                    Triple("history", stringResource(R.string.nav_label_history), Icons.Default.History),
-                                    Triple("favorites", stringResource(R.string.nav_label_favorites), Icons.Default.Star)
-                                )
-                                items.forEach { (itemRoute, label, icon) ->
-                                    val isSelected = currentDestination?.hierarchy?.any { 
-                                        it.route?.split("?")?.firstOrNull() == itemRoute 
-                                    } == true
-
-                                    NavigationBarItem(
-                                        icon = { Icon(icon, contentDescription = label) },
-                                        label = { Text(label, fontFamily = DmSansFont) },
-                                        selected = isSelected,
-                                        onClick = {
-                                            if (!isSelected) {
-                                                navController.navigate(itemRoute) {
-                                                    // Pop up to the start destination of the graph to
-                                                    // avoid building up a large stack of destinations
-                                                    // on the back stack as users select items
-                                                    popUpTo(navController.graph.findStartDestination().id) {
-                                                        saveState = true
-                                                    }
-                                                    // Avoid multiple copies of the same destination when
-                                                    // reselecting the same item
-                                                    launchSingleTop = true
-                                                    // Restore state when reselecting a previously selected item
-                                                    restoreState = true
-                                                }
-                                            }
-                                        },
-                                        colors = NavigationBarItemDefaults.colors(
-                                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            indicatorColor = Color.Transparent
-                                        )
+                        val currentRoute = currentDestination?.route?.split("?")?.firstOrNull()
+                        if (currentRoute != "subscription") {
+                            Column {
+                                AdBanner()
+                                NavigationBar(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                ) {
+                                    val items = listOf(
+                                        Triple("home", stringResource(R.string.nav_label_home), Icons.Default.Home),
+                                        Triple("simulator", stringResource(R.string.nav_label_simulator), Icons.Default.Calculate),
+                                        Triple("history", stringResource(R.string.nav_label_history), Icons.Default.History),
+                                        Triple("favorites", stringResource(R.string.nav_label_favorites), Icons.Default.Star)
                                     )
+                                    items.forEach { (itemRoute, label, icon) ->
+                                        val isSelected = currentDestination?.hierarchy?.any { 
+                                            it.route?.split("?")?.firstOrNull() == itemRoute 
+                                        } == true
+
+                                        NavigationBarItem(
+                                            icon = { Icon(icon, contentDescription = label) },
+                                            label = { Text(label, fontFamily = DmSansFont) },
+                                            selected = isSelected,
+                                            onClick = {
+                                                if (!isSelected) {
+                                                    navController.navigate(itemRoute) {
+                                                        // Pop up to the start destination of the graph to
+                                                        // avoid building up a large stack of destinations
+                                                        // on the back stack as users select items
+                                                        popUpTo(navController.graph.findStartDestination().id) {
+                                                            saveState = true
+                                                        }
+                                                        // Avoid multiple copies of the same destination when
+                                                        // reselecting the same item
+                                                        launchSingleTop = true
+                                                        // Restore state when reselecting a previously selected item
+                                                        restoreState = true
+                                                    }
+                                                }
+                                            },
+                                            colors = NavigationBarItemDefaults.colors(
+                                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                indicatorColor = Color.Transparent
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -209,7 +214,17 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onLearnToInvestClick = {
                                         navController.navigate("education")
+                                    },
+                                    onNavigateToSubscription = {
+                                        navController.navigate("subscription")
                                     }
+                                )
+                            }
+                            composable("subscription") {
+                                val viewModel: ProSubscriptionViewModel = hiltViewModel()
+                                ProSubscriptionScreen(
+                                    viewModel = viewModel,
+                                    onClose = { navController.popBackStack() }
                                 )
                             }
                             composable("education") {
@@ -247,7 +262,8 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: ResultViewModel = hiltViewModel()
                                 ResultScreen(
                                     viewModel = viewModel,
-                                    onNavigateBack = { navController.popBackStack() }
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToSubscription = { navController.navigate("subscription") }
                                 )
                             }
                             composable("history") {

@@ -231,4 +231,31 @@
     <string name="teaser_pro_history_title">Histórico Completo (PRO)</string>
     <string name="teaser_pro_history_desc">Libere a visualização de todas as suas simulações anteriores e acompanhe sua evolução financeira.</string>
     <string name="btn_unlock_pro">Liberar Versão PRO</string>
+
+    <!-- PRO Subscription Screen -->
+    <string name="pro_title">Desbloqueie todo\no potencial do app</string>
+    <string name="pro_subtitle">Seja Premium e tome as melhores\ndecisões financeiras sempre.</string>
+    <string name="pro_benefit_unlimited_sims_title">Histórico ilimitado</string>
+    <string name="pro_benefit_unlimited_sims_desc">Acesse todas as suas simulações anteriores.</string>
+    <string name="pro_benefit_reports_title">Visualização de todos os gráficos dos detalhes do cálculo</string>
+    <string name="pro_benefit_reports_desc">Análise profunda com gráficos de evolução patrimonial.</string>
+    <string name="pro_benefit_unlimited_favs_title">Favoritos ilimitado</string>
+    <string name="pro_benefit_unlimited_favs_desc">Salve quantos cenários quiser para comparar.</string>
+    <string name="pro_benefit_pdf_title">Simulações sem precisar assistir propaganda</string>
+    <string name="pro_benefit_pdf_desc">Rapidez total em cada novo cálculo.</string>
+    <string name="pro_benefit_no_ads_title">Remoção de banners e intersticiais</string>
+    <string name="pro_benefit_no_ads_desc">Experiência limpa, rápida e sem interrupções.</string>
+    <string name="pro_choose_plan">Escolha seu plano</string>
+    <string name="pro_most_chosen">Mais escolhido</string>
+    <string name="pro_best_value">Melhor custo benefício</string>
+    <string name="pro_annual">Anual</string>
+    <string name="pro_semiannual">Semestral</string>
+    <string name="pro_monthly">Mensal</string>
+    <string name="pro_price_format">%s/%s</string>
+    <string name="pro_price_equivalent_format">Equivale a %s/mês</string>
+    <string name="pro_save_percentage">Economize %d%%</string>
+    <string name="pro_subscribe_button_format">Assinar %1$s por %2$s</string>
+    <string name="pro_google_play_secure">Compra segura pelo Google Play</string>
+    <string name="pro_cancel_anytime">Cancele quando quiser</string>
+    <string name="pro_ideal_start">Ideal para começar</string>
 </resources>
