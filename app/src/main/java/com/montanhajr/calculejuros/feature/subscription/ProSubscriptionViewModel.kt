@@ -56,15 +56,7 @@ class ProSubscriptionViewModel @Inject constructor(
     private fun queryProducts() {
         val productList = listOf(
             QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("pro_annual")
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build(),
-            QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("pro_semiannual")
-                .setProductType(BillingClient.ProductType.SUBS)
-                .build(),
-            QueryProductDetailsParams.Product.newBuilder()
-                .setProductId("pro_monthly")
+                .setProductId("pro_subscription")
                 .setProductType(BillingClient.ProductType.SUBS)
                 .build()
         )
@@ -75,11 +67,39 @@ class ProSubscriptionViewModel @Inject constructor(
 
         billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsResult ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                val list = productDetailsResult.productDetailsList
+                val productDetails = productDetailsResult.productDetailsList?.firstOrNull()
+                val offers = productDetails?.subscriptionOfferDetails ?: emptyList()
+                
+                // Map base plans to our UI model using tags as a fallback or primary identification
+                val mappedPlans = offers.mapNotNull { offer ->
+                    val tags = offer.offerTags
+                    val basePlanId = offer.basePlanId.lowercase()
+                    
+                    // Identify if it's annual or monthly based on tags or basePlanId
+                    val hasAnnualTag = tags.any { it.contains("anual", ignoreCase = true) }
+                    val hasMonthlyTag = tags.any { it.contains("mensal", ignoreCase = true) }
+                    
+                    val isAnnual = hasAnnualTag || basePlanId.contains("anual")
+                    val isMonthly = hasMonthlyTag || basePlanId.contains("mensal")
+                    
+                    if (isAnnual || isMonthly) {
+                        SubscriptionPlan(
+                            productDetails = productDetails!!,
+                            offerDetails = offer,
+                            basePlanId = if (isAnnual) "anual" else "mensal"
+                        )
+                    } else {
+                        null
+                    }
+                }
+                .sortedWith(compareBy({ it.basePlanId }, { it.offerDetails.offerId != null })) // Prioritize null offerId (base plans)
+                .distinctBy { it.basePlanId }
+                .sortedByDescending { it.basePlanId == "anual" }
+
                 _uiState.update { 
                     it.copy(
-                        products = list.sortedByDescending { p -> p.productId == "pro_annual" },
-                        selectedProduct = list.find { p -> p.productId == "pro_annual" } ?: list.firstOrNull(),
+                        plans = mappedPlans,
+                        selectedPlan = mappedPlans.find { p -> p.basePlanId == "anual" } ?: mappedPlans.firstOrNull(),
                         isLoading = false
                     ) 
                 }
@@ -89,18 +109,17 @@ class ProSubscriptionViewModel @Inject constructor(
         }
     }
 
-    fun selectProduct(product: ProductDetails) {
-        _uiState.update { it.copy(selectedProduct = product) }
+    fun selectPlan(plan: SubscriptionPlan) {
+        _uiState.update { it.copy(selectedPlan = plan) }
     }
 
     fun launchBillingFlow(activity: Activity) {
-        val product = uiState.value.selectedProduct ?: return
-        val offerToken = product.subscriptionOfferDetails?.firstOrNull()?.offerToken ?: ""
+        val selectedPlan = uiState.value.selectedPlan ?: return
 
         val productDetailsParamsList = listOf(
             BillingFlowParams.ProductDetailsParams.newBuilder()
-                .setProductDetails(product)
-                .setOfferToken(offerToken)
+                .setProductDetails(selectedPlan.productDetails)
+                .setOfferToken(selectedPlan.offerDetails.offerToken)
                 .build()
         )
 
