@@ -128,6 +128,7 @@
     <string name="table_month">Mês</string>
     <string name="table_balance">Saldo</string>
     <string name="table_yield">Rendimento</string>
+    <string name="btn_share">Compartilhar</string>
 
     <!-- Simulation Detail Modal -->
     <string name="simulation_details">Detalhes da Simulação</string>

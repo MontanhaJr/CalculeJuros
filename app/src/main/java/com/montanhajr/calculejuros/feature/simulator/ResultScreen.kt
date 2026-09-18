@@ -42,6 +42,15 @@ import com.patrykandpatrick.vico.core.cartesian.data.*
 import com.patrykandpatrick.vico.core.cartesian.layer.*
 import com.patrykandpatrick.vico.core.common.shader.*
 
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import com.montanhajr.calculejuros.core.util.PdfExportUtils
+import com.montanhajr.calculejuros.core.util.ShareUtils
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
@@ -51,6 +60,9 @@ fun ResultScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val graphicsLayer = rememberGraphicsLayer()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -93,8 +105,40 @@ fun ResultScreen(
                             fontFamily = SoraFont,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f)
                         )
+                        
+                        if (uiState.isPro) {
+                            IconButton(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        uiState.result?.let { result ->
+                                            PdfExportUtils.sharePdf(
+                                                context = context,
+                                                result = result,
+                                                currencySymbol = uiState.currencySymbol,
+                                                chartGraphicsLayer = graphicsLayer,
+                                                scenarioName = uiState.scenarioName
+                                            )
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outlineVariant,
+                                        RoundedCornerShape(12.dp)
+                                    )
+                            ) {
+                                Icon(
+                                    Icons.Default.Share,
+                                    contentDescription = stringResource(R.string.btn_share),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -131,7 +175,18 @@ fun ResultScreen(
                         Column(
                             modifier = if (!uiState.isPro) Modifier.blur(10.dp) else Modifier
                         ) {
-                            EvolutionChart(result)
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .drawWithContent {
+                                        graphicsLayer.record {
+                                            this@drawWithContent.drawContent()
+                                        }
+                                        drawContent()
+                                    }
+                            ) {
+                                EvolutionChart(result)
+                            }
                             Spacer(modifier = Modifier.height(24.dp))
                             DetailedTable(result, uiState.currencySymbol)
                         }
