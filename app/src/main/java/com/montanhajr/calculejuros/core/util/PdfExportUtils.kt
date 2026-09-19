@@ -127,7 +127,37 @@ object PdfExportUtils {
         paint.color = installmentColor
         canvas.drawText(result.netGainStandardInstallment.toCurrency(currencySymbol), 300f, yPos, paint)
         
-        yPos += 40f
+        yPos += 30f
+
+        // Prepayment Benefit Section (if applicable)
+        if (result.prepaidInstallmentsCount > 0 && result.prepaymentDiscountValue > 0) {
+            val benefit = result.netGainPrepaidInstallment - result.netGainStandardInstallment
+            val isPositive = benefit > 0.005
+            
+            val boxColor = if (isPositive) 0xFFE8F5E9.toInt() else 0xFFFFEBEE.toInt()
+            val contentColor = if (isPositive) 0xFF2E7D32.toInt() else 0xFFC62828.toInt()
+            
+            paint.color = boxColor
+            canvas.drawRoundRect(40f, yPos, 555f, yPos + 70f, 12f, 12f, paint)
+            
+            paint.color = contentColor
+            paint.textSize = 12f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            val title = if (isPositive) context.getString(R.string.title_prepayment_positive) else context.getString(R.string.title_prepayment_negative)
+            canvas.drawText(title, 60f, yPos + 25f, paint)
+            
+            paint.textSize = 10f
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            val benefitLabel = if (isPositive) context.getString(R.string.label_prepayment_benefit) else context.getString(R.string.label_prepayment_loss)
+            canvas.drawText("$benefitLabel ${benefit.toCurrency(currencySymbol)}", 60f, yPos + 45f, paint)
+            
+            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            canvas.drawText("${context.getString(R.string.label_total_prepayment_gain)} ${result.netGainPrepaidInstallment.toCurrency(currencySymbol)}", 60f, yPos + 60f, paint)
+            
+            yPos += 90f
+        } else {
+            yPos += 10f
+        }
         
         // Chart
         val chartWidth = 515f
